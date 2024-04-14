@@ -1,0 +1,46 @@
+image::cup.png[width=384]
+
+[.lead]
+*Compose Ur Pres* helps you declare your presentations' deck in pure Kotlin using Compose Multiplatform.
+
+- Declare your slides with the same component system you use for your UIs.
+- Animate your slides with the same animation system you use for your UIs.
+- Create re-usable deck styles as Kotlin libraries.
+- Animate and highlight source code either in code or in a dedicated editor.
+- Present with presenter tools such as speaker mode window or laser.
+- Export your presentation as a web page and/or as a PDF file.
+- Control your presentation remotely with your smartphone or tablet.
+
+.example
+[source,kotlin]
+----
+val example by Slide(stepCount = 4) { step ->
+    Image(
+        painterResource(Res.drawable.cup),
+        contentDescription = "Compose ur Pres",
+        modifier = Modifier.size(96.dp).clip(CircleShape)
+    )
+    Text(
+        text = "Compose ur Pres",
+        fontSize = 32.sp,
+        fontWeight = FontWeight.Bold
+    )
+    BulletPoints(Modifier.padding(top = 16.dp)) {
+        BulletPoint(visible = step >= 1) {
+            Text(styled { "A ${+b}first${-b} bullet point" })
+        }
+        BulletPoint(visible = step >= 2) {
+            Text(styled { "A ${+b}second${-b} bullet point" })
+        }
+    }
+    AnimatedVisibility(visible = step >= 3) {
+        TextWithNotoAnimatedEmoji(
+            text = "${Emoji.Sparkles} Having fun! ${Emoji.Sparkles}",
+            fontSize = 32.sp,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+    }
+}
+----
+
+image::example.png[]

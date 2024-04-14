@@ -1,0 +1,23 @@
+= Animating Source Code
+
+There are two ways to animate source-code in CuP.
+Both display the same result on screen but the method to achieve that result is very different.
+
+- Use *inline markers* if you want to display a *few* (or no) animations.
+- Use the *external editor* if you want to display multiple *complex* animations.
+
+
+[[inline]]
+== With inline markers
+
+
+
+//TODO
+> Stay tuned, documentation is coming!
+
+
+[[external]]
+== With external editor
+
+//TODO
+> Stay tuned, documentation is coming!

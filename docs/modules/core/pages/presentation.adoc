@@ -1,0 +1,29 @@
+= Creating a Presentation
+
+
+[[creating]]
+== Creating a CuP application
+
+//TODO
+> Stay tuned, documentation is coming!
+
+
+[[theming]]
+== Theming your presentation
+
+//TODO
+> Stay tuned, documentation is coming!
+
+
+[[grouping]]
+== Grouping slides
+
+//TODO
+> Stay tuned, documentation is coming!
+
+
+[[configuring]]
+== Configuring the default Slide ratio & transitions
+
+//TODO
+> Stay tuned, documentation is coming!

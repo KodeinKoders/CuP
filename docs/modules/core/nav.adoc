@@ -1,0 +1,31 @@
+* xref:slide.adoc[Writing a Slide]
+** xref:slide.adoc#creating[Creating a Slide]
+** xref:slide.adoc#animating[Animating the Slide content]
+** xref:slide.adoc#displaying[Displaying styled text]
+** xref:slide.adoc#configuring[Configuring a Slide ratio & transitions]
+** xref:slide.adoc#previewing[Previewing a Slide content]
+** xref:slide.adoc#preloading[Preloading some Slide content]
+
+* xref:source-code.adoc[Animating Source Code]
+** xref:source-code.adoc#inline[With inline markers]
+** xref:source-code.adoc#external[With external editor]
+
+* xref:presentation.adoc[Creating a Presentation]
+** xref:presentation.adoc#creating[Creating a CuP application]
+** xref:presentation.adoc#theming[Theming your presentation]
+** xref:presentation.adoc#grouping[Grouping slides]
+** xref:presentation.adoc#configuring[Configuring the default Slide ratio & transitions]
+
+* xref:app-desktop.adoc[Presenting with the desktop app]
+** xref:app-desktop.adoc#running[Running & distributing the app]
+** xref:app-desktop.adoc#presenting[Presenting]
+** xref:app-desktop.adoc#overlay[Using the overlay core tools]
+
+* xref:app-web.adoc[Exporting as a Web Page]
+** xref:app-web.adoc#limitations[Disclaimer & limitations]
+** xref:app-web.adoc#generating[Generating the web app]
+** xref:app-web.adoc#pages[Using GitHub Pages]
+
+* xref:external-theme.adoc[Externalising your theme]
+
+* xref:good-practices.adoc[Good practice when preparing a presentation]

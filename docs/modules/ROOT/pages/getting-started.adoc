@@ -1,0 +1,123 @@
+= Getting Started with CuP
+
+. Clone or create a new repository based on the https://github.com/kosi-libs/CuP-Presentation-Template[Cup template project].
+
+. Edit `settings.gradle.kts`:
++
+--
+* Change the name of your project (which will define the package of the compose Res class).
+--
++
+.Example: `settings.gradle.kts`
+[source, kotlin]
+----
+rootProject.name = "How-to-CuP"
+----
+
+. Edit `build.gradle.kts`:
++
+--
+* Choose if you want to export your presentation as a Web page (target web).
+* Select the plugins you want to activate in your presentation.
+* Choose to compose your presentation with material 2 or material 3.
+--
++
+.Example: `build.gradle.kts`
+[source, kotlin]
+----
+plugins {
+    kotlin("multiplatform") version "1.9.23"
+    id("org.jetbrains.compose") version "1.6.1"
+    id("org.kodein.pres.cup") version "0.1.0"
+}
+
+cup {
+    targetDesktop()
+    targetWeb()
+}
+
+kotlin {
+    sourceSets.commonMain {
+        dependencies {
+            implementation(cup.speakerMode)
+            implementation(cup.laser)
+            implementation(cup.imageExport)
+
+            implementation(compose.material)
+            implementation("org.kodein.emoji:emoji-compose-m2:1.3.0")
+        }
+    }
+}
+----
+
+. Edit `src/commonMain/kotlin/main.kt`:
++
+--
+* Change the title of your presentation.
+* Configure the plugins you selected in your build config.
+* Configure & apply your theme.
+--
++
+.Example: `src/commonMain/kotlin/main.kt`
+[source, kotlin]
+----
+fun main() = cupApplication(title = "How to create a CuP!") {
+    Presentation(
+        slides = slides,
+        configuration = {
+            speakerMode()
+            laser()
+            imageExport()
+        }
+    ) {
+        MaterialTheme(colors = darkColors()) {
+            Surface(Modifier.fillMaxSize()) {
+                Slides()
+            }
+        }
+    }
+}
+
+val slides = Slides(
+    intro,
+    whatIsCup,
+    /*...*/
+)
+----
+
+. *Write your slides!*
++
+--
+* Write each slide in `src/commonMain/kotlin/slides/`.
+* Report them in order in `src/commonMain/kotlin/main.kt`.
+--
++
+.Example: `src/commonMain/kotlin/slides/intro.kt`
+[source, kotlin]
+----
+val intro by Slide(
+    stepCount = 2
+) { step ->
+    Image(
+        painterResource(Res.drawable.cup),
+        contentDescription = "Compose ur Pres",
+        modifier = Modifier.size(96.dp).clip(CircleShape)
+    )
+    Text("Hello, friend!", fontSize = 32.sp)
+    AnimatedVisibility(visible = step >= 1) {
+        TextWithPlatformEmoji(
+            styled { "Welcome to ${+b}Compose ur Pres${-b}! ${Emoji.Wink}" }
+        )
+    }
+}
+----
+
+. Run your presentation:
+* On desktop with the `./gradlew run` command.
+* On the web (if you chose to target it) with the `./gradlew wasmJsBrowserRun` command.
+
+. Export your presentation web page (if target web):
+* If you are using Github Pages, run the `./gradlew distDoc` command that will generate the web page in the `doc/` directory.
+* If you are using another system, run the `./gradlew wasmJsBrowserDistribution`  command that will generate the web page in the `build/dist/wasmJs/productionExecutable` directory.
+
+. Change the `README.md` file to present your presentation ;)

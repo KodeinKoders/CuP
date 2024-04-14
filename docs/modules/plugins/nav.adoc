@@ -1,0 +1,19 @@
+* xref:speaker-mode.adoc[Plugin: Speaker Mode window]
+** xref:speaker-mode.adoc#install[Installing]
+** xref:speaker-mode.adoc#usage[Using to present]
+** xref:speaker-mode.adoc#notes[Writing speaker notes]
+** xref:speaker-mode.adoc#highlight[Highlighting]
+
+* xref:laser.adoc[Plugin: Laser]
+** xref:laser.adoc#install[Installing]
+** xref:laser.adoc#usage[Using while presenting]
+
+* xref:image-export.adoc[Plugin: Image & PDF export]
+** xref:image-export.adoc#install[Installing]
+** xref:image-export.adoc#usage[Exporting your presentation]
+
+* xref:external-presenter.adoc[Plugin: External presenter remote]
+** xref:external-presenter.adoc#install[Installing]
+** xref:external-presenter.adoc#usage[Remotely controlling your presentation]
+
+* xref:create.adoc[Create your own plugin]

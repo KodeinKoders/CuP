@@ -1,0 +1,15 @@
+= Plugin: Image & PDF export
+
+
+[[install]]
+== Installing
+
+//TODO
+> Stay tuned, documentation is coming!
+
+
+[[usage]]
+== Exporting your presentation
+
+//TODO
+> Stay tuned, documentation is coming!

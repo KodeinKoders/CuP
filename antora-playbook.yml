@@ -1,0 +1,24 @@
+site:
+  title: Compose Ur Pres Documentation
+  url: https://kosi-libs.github.io/CuP
+  start_page: CuP::index.adoc
+  robots: allow
+content:
+  sources:
+#    - url: https://github.com/kosi-libs/CuP.git
+#      branches: [ 'main', '1.*' ]
+    - url: ./
+      worktree: true
+      start_path: docs
+ui:
+  bundle:
+    url: https://github.com/kosi-libs/documentation-ui/raw/cup/build/ui-bundle-v1.1.1.zip
+  supplemental_files:
+    - path: ui.yml
+      contents: |
+        static_files: [ .nojekyll ]
+    - path: .nojekyll
+urls:
+  redirect_facility: 'static'
+output:
+  dir: build/site

@@ -1,0 +1,14 @@
+name: CuP
+title: Compose Ur Pres
+version: '1.0'
+display_version: '1.0.0-SNAPSHOT'
+nav:
+  - modules/ROOT/nav.adoc
+  - modules/core/nav.adoc
+  - modules/plugins/nav.adoc
+asciidoc:
+  attributes:
+    branch: 'main'
+    version: 1.0.0-SNAPSHOT
+    kotlin: '1.9.23'
+    jdk: '1.8'

@@ -1,0 +1,18 @@
+### Gradle ###
+.gradle
+build/
+.gradletasknamecache
+
+### IntelliJ IDEA ###
+.idea
+
+### Mac OS ###
+.DS_Store
+
+### CuP ###
+.cup/
+cup-export/
+**/**/resources/cup-external-presenter-remote
+
+### Js ###
+node_modules/

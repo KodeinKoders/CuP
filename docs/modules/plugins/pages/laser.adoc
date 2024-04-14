@@ -1,0 +1,15 @@
+= Plugin: Laser
+
+
+[[install]]
+== Installing
+
+//TODO
+> Stay tuned, documentation is coming!
+
+
+[[usage]]
+== Using while presenting
+
+//TODO
+> Stay tuned, documentation is coming!

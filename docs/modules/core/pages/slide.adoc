@@ -1,0 +1,266 @@
+= Writing a Slide
+
+In CuP, each "screen" you present is a Slide written in Compose Multiplatform.
+
+
+[[creating]]
+== Creating a Slide
+
+To create a Slide, use the `Slide` function:
+
+[source, kotlin]
+----
+val helloWorld by Slide {
+    Text("Hello, World!", fontSize = 24.sp)
+}
+----
+
+A Slide must have a unique name, which is used by CuP to handle navigation.
+The `Slide` function uses a https://kotlinlang.org/docs/delegated-properties.html[Kotlin Property Delegate] to create a Slide with the same name as the variable that holds it.
+
+You can provide the name yourself with the `Slide` constructor:
+
+[source, kotlin]
+----
+val helloWorld = Slide(name = "myFirstSlide") {
+    Text("Hello, World!", fontSize = 24.sp)
+}
+----
+
+CAUTION: The name of a Slide should not contain spaces or special characters as it is used in the URL of the presentation when it is exported to the web.
+
+
+[[animating]]
+== Animating the Slide content
+
+A Slide can have multiple steps.
+
+[source, kotlin]
+----
+val mySlide by Slide(
+    stepCount = 4
+) { step ->
+    /*...*/
+}
+----
+
+How a slide displays each of these steps and animates the transition between them is up to you.
+
+WARNING: Steps will range from `0` up to *excluding* `stepCount`.
+         With `stepCount = 4`, the first step is `0`, and the last is therefore `3`.
+
+Here's an example of a Slide with 2 steps, and only showing the subtitle on second step:
+
+[source, kotlin]
+----
+val title by Slide(
+    stepCount = 2
+) { step ->
+    Text("How to CuP?", fontSize = 24.sp)
+    AnimatedVisibility(visible = step >= 1) { //<1>
+        Text("You'll see, it's easy!")
+    }
+}
+----
+<1> The use of `>=` rather than `==` allows to add steps later without breaking the slide.
+
+
+[[displaying]]
+== Displaying styled text
+
+CuP provides two utilities to make easier to display styled text in a Slide.
+
+
+[[styled-text]]
+=== Styled text
+
+While Compose allows you to style your text efficiently with `AnnotatedString`, building one can be verbose.
+For example, to create a simple styled text with an inline content:
+
+[source, kotlin]
+----
+Text(buildAnnotatedString {
+    append("Hello, ")
+    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+        append("my friend")
+    }
+    append(" ")
+    appendInlineContent("foobar")
+    append("!")
+})
+----
+
+CuP provides the `styled` function, which allows you to create the same string in a much more readable way:
+
+[source, kotlin]
+----
+Text(styled { "Hello, ${+b}my friend${-b} ${IC("foobar")}!" })
+----
+
+The `styled` function allows you to use *markers* that define the beginning (with `${+marker}`) and end (with `${-marker}`) of that marker's style.
+It also allows you to insert inline content (with `${IC("id")}`).
+
+The default stylesheet only contains two markers:
+
+- *b*: to make text *bold*.
+- *i*: to make text _italic_.
+
+You can extend this and provide your own `SpanStylesheet`:
+
+[source, kotlin]
+----
+object MyStyleSheet : SpanStyleSheet() {
+    val em by registerMarker(SpanStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 1.2.em
+    ))
+}
+
+@Composable
+fun Title() {
+    Text(
+        styled(MyStyleSheet) { "There is ${+em}so much${-em} to do!" },
+        fontSize = 32.sp
+    )
+}
+----
+
+
+[[bullet-points]]
+=== Bullet Points
+
+Bullet points are a standard way of presenting a list of items in presentations.
+Cup Provides a `BulletPoints` composable function that animates each item as it appears:
+
+[source, kotlin]
+----
+BulletPoints {
+    BulletPoint(visible = step >= 1) {
+        Text("The first item.")
+    }
+    BulletPoint(visible = step >= 2) {
+        Text("The second item.")
+    }
+}
+----
+
+
+[[configuring]]
+== Configuring a Slide ratio & transitions
+
+TIP: If you want to configure all your slides ratio and transitions throughout your presentation, you should do it in xref:presentation.adoc#configuring[the presentation configuration].
+
+By default, the screen ratio of a Slide is 4/3.
+This is to prevent long sentences that span across the entire screen. +
+If you want to have more space, you can configure a Slide to have a wider ratio.
+
+[source, kotlin]
+----
+val helloWorld by Slide(
+    specs = { copy(size = SLIDE_SIZE_16_9) } //<1>
+) {
+    Text("Hello, World!", fontSize = 24.sp)
+}
+----
+<1> Use `copy` to make a copy of the default configuration, changing only the slide size.
+
+You can also configure the Slide's transitions:
+
+[source, kotlin]
+----
+val helloWorld by Slide(
+    specs = { copy(
+        startTransitions = TransitionSet.fade, //<1>
+        endTransitions = TransitionSet.fade //<2>
+    ) }
+) {
+    Text("Hello, World!", fontSize = 24.sp)
+}
+----
+<1> When transitioning between the previous slide and this slide, or vice versa.
+<2> When transitioning between this slide and the next slide, or vice versa.
+
+
+[[transition]]
+=== Creating a custom Slide transition
+
+To create a Slide custom transition, you need to provide a https://github.com/kosi-libs/CuP/blob/main/cup/src/commonMain/kotlin/org/kodein/pres/TransitionSet.kt[TransitionSet].
+
+You can draw inspiration from:
+
+- The https://github.com/kosi-libs/CuP/blob/main/cup/src/commonMain/kotlin/org/kodein/pres/TransitionSet.kt[default provided transitions] (`moveHorizontal`, `moveVertical`, & `fade`).
+- This https://github.com/kosi-libs/CuP/blob/main/demo/src/commonMain/kotlin/utils/transitions.kt[demo transition] (that implements a 3D rotation transition).
+
+
+[[previewing]]
+== Previewing a Slide content
+
+[[preview-run]]
+=== By running the app
+
+You can run the desktop application either by executing the `./gradlew run` command or by running the `main` function in the IDE.
+
+CuP will remember the size and position of its window, as well as the current slide and step displaying. +
+This allows you to preview your slide simply by running the app on the JVM.
+This is, at the moment, the easier way to preview and work on a slide.
+
+
+[[preview-annotation]]
+=== With the preview annotation
+
+WARNING: The `@Preview` annotation is currently only compatible with Desktop JVM.
+         You therefore cannot use the `@Preview` annotation in the `commonMain` source set when targeting the web.
+
+CuP provides the `PresentationPreview` composable that allows you to preview a Slide with the Compose preview annotation:
+
+[source, kotlin]
+----
+@Preview
+fun helloWorldPreview() {
+    PresentationPreview(
+        slide = helloWorld,
+        step = 1
+    ) { slides ->
+        Presentation(slides)
+    }
+}
+----
+
+
+[[preloading]]
+== Preloading some Slide content
+
+A slide composable content only runs when the slide is displayed.
+
+You may need to preload some content so that you don't have to do it when the slide displays (to avoid janks).
+Here is how to preload content, and access preloaded content.
+
+[source, kotlin]
+----
+// The content you want to preload.
+class Content { /*...*/ }
+suspend fun loadContent(): Content { TODO() }
+
+// Holds a Deferred to the content.
+data class SlideContent(
+    val content: Deferred<Content>
+) {
+    // Key that allows you to access the content in the slide.
+    object Key: DataMap.Key<SlideContent>
+}
+
+@OptIn(ExperimentalResourceApi::class)
+val intro by Slide(
+    prepare = {
+        // Starts the loading of the content in a coroutine Deferred
+        // and stores it to be accessed in the Slide.
+        data[SlideContent.Key] = SlideContent(
+            content = scope.async { loadContent() }
+        )
+    }
+) {
+    // Gets the Deferred from the SlideContent stored in prepare.
+    val asyncContent: Deferred<Content> =
+        LocalSlidePreparation.current[SlideContent.Key].content
+}
+----
