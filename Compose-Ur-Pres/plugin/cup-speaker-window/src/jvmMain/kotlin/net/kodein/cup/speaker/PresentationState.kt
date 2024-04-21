@@ -6,10 +6,9 @@ import androidx.compose.runtime.setValue
 import net.kodein.cup.PresentationState
 import net.kodein.cup.PresentationStateWrapper
 import net.kodein.cup.Slide
+import net.kodein.cup.currentSlide
 
 internal class ShiftedPresentationState(state: PresentationState) : PresentationStateWrapper(state) {
-    override val currentSlide: Slide get() = originalState.slides[currentSlideIndex]
-    override val currentSlideName: String get() = currentSlide.name
     override val currentSlideIndex: Int get() = when {
         originalState.currentSlideIndex == originalState.slides.lastIndex -> originalState.currentSlideIndex
         originalState.currentStep == originalState.currentSlide.lastStep -> originalState.currentSlideIndex + 1

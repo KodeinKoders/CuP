@@ -57,7 +57,7 @@ internal fun OverlayScope.PresentationOverlay(
             ) {
                 SelectionContainer {
                     Row(Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
-                        Text(state.currentSlideName)
+                        Text(state.currentSlide.name)
                         if (state.currentSlide.stepCount > 1) {
                             Text(" ")
                             Text("(${state.currentStep})")
@@ -187,7 +187,7 @@ public fun SlideList(
                         .fillMaxSize(),
                     state = lazyListState
                 ) {
-                    state.slides.forEach { slide ->
+                    state.slides.forEachIndexed { slideIndex, slide ->
                         item { Spacer(Modifier.height(12.dp)) }
                         repeat(slide.stepCount) { step ->
                             item {
@@ -195,13 +195,13 @@ public fun SlideList(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable { state.goTo(slide.name, step) }
+                                        .clickable { state.goTo(slideIndex, step) }
                                         .padding(vertical = 6.dp)
                                         .padding(end = 4.dp)
                                 ) {
                                     Box(Modifier.size(32.dp)) {
                                         androidx.compose.animation.AnimatedVisibility(
-                                            visible = state.currentSlideName == slide.name && state.currentStep == step,
+                                            visible = state.currentSlideIndex == slideIndex && state.currentStep == step,
                                             enter = fadeIn() + slideIn { IntOffset(-it.width / 2, 0) },
                                             exit = fadeOut() + slideOut { IntOffset(-it.width / 2, 0) },
                                         ) {

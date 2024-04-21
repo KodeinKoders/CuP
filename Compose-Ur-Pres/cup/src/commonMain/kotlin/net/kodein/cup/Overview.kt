@@ -48,21 +48,16 @@ private const val shrinkRatio = 4.5f
 
 private class OverviewPresentationState(
     state: PresentationState,
-    private val slide: Slide,
-    private val slideIndex: Int,
-    private val step: Int
+    override val currentSlideIndex: Int,
+    override val currentStep: Int
 ) : PresentationStateWrapper(state) {
-    override val currentSlide: Slide get() = slide
-    override val currentSlideName: String get() = slide.name
-    override val currentSlideIndex: Int get() = slideIndex
-    override val currentStep: Int get() = step
+    override fun goTo(slideIndex: Int, step: Int): Unit = error("Cannot move with an OverviewPresentationState")
 }
 
 @Composable
 private fun OverviewSlideView(
     outerContainerSize: Size,
-    slide: Slide,
-    index: Int,
+    slideIndex: Int,
     step: Int,
 ) {
     val density = LocalDensity.current
@@ -70,18 +65,20 @@ private fun OverviewSlideView(
     val state = LocalPresentationState.current
     val config = state.impl().config
 
-    val slideSize = config.slideSpecs(slide, index, state.lastSlideIndex).size
+    val slide = state.slides[slideIndex]
+
+    val slideSize = config.slideSpecs(slide, slideIndex, state.slides.lastIndex).size
     val outerContainerDpSize = with(density) { outerContainerSize.toDpSize() }
 
     CompositionLocalProvider(LocalDensity provides Density(density.density / shrinkRatio)) {
-        val alpha by animateFloatAsState(if (state.currentSlideName == slide.name && state.currentStep == step) 1f else 0f)
+        val alpha by animateFloatAsState(if (state.currentSlideIndex == slideIndex && state.currentStep == step) 1f else 0f)
         Box(
             Modifier
                 .border(24.dp, Color.DarkGray.copy(alpha = alpha), RoundedCornerShape(32.dp))
                 .padding(56.dp)
                 .pointerHoverIcon(PointerIcon.Hand)
                 .clickable {
-                    state.goTo(slide.name, step)
+                    state.goTo(slideIndex, step)
                     state.isInOverview = false
                 }
         ) {
@@ -96,11 +93,11 @@ private fun OverviewSlideView(
                     PresentationRatioContainer(
                         defaultSlideSize = slideSize,
                     ) {
-                        CompositionLocalProvider(LocalPresentationState provides OverviewPresentationState(state, slide, index, step)) {
+                        CompositionLocalProvider(LocalPresentationState provides OverviewPresentationState(state, slideIndex, step)) {
                             config.presentation(
                                 PresentationOverviewScope(
                                     boxScope = this,
-                                    content = LocalSlideContents.current[index],
+                                    content = LocalSlideContents.current[slideIndex],
                                     step = step,
                                     slideSize = slideSize,
                                 )
@@ -149,11 +146,11 @@ public fun Overview() {
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-            itemsIndexed(state.slides) { index, slide ->
+            itemsIndexed(state.slides) { slideIndex, slide ->
                 Box {
-                    val vState = rememberLazyListState(if (state.currentSlideName == slide.name) state.currentStep + 2 else 2, -spacerHeightPx)
-                    LaunchedEffect(state.currentSlideName, state.currentStep) {
-                        if (state.currentSlideName == slide.name && slide.stepCount > 1) {
+                    val vState = rememberLazyListState(if (state.currentSlideIndex == slideIndex) state.currentStep + 2 else 2, -spacerHeightPx)
+                    LaunchedEffect(state.currentSlideIndex, state.currentStep) {
+                        if (state.currentSlideIndex == slideIndex && slide.stepCount > 1) {
                             vState.animateScrollToItem(state.currentStep + 2, -spacerHeightPx)
                         }
                     }
@@ -180,8 +177,7 @@ public fun Overview() {
                         items(slide.stepCount) { step ->
                             OverviewSlideView(
                                 outerContainerSize = Size(outerContainerSize.width, outerContainerSize.width / ratio),
-                                slide = slide,
-                                index = index,
+                                slideIndex = slideIndex,
                                 step = step,
                             )
                         }

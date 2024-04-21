@@ -23,6 +23,7 @@ import com.mikepenz.markdown.m2.Markdown
 import kotlinx.coroutines.delay
 import net.kodein.cup.LocalPresentationState
 import net.kodein.cup.PresentationState
+import net.kodein.cup.currentSlide
 import net.kodein.cup.laser.Laser
 
 @Composable

@@ -18,8 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import demo.generated.resources.Res
-import demo.generated.resources.logo
+import cup_demo.generated.resources.Res
+import cup_demo.generated.resources.logo
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import net.kodein.cup.SLIDE_SIZE_16_9

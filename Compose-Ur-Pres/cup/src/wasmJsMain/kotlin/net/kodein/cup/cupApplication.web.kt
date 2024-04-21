@@ -23,13 +23,15 @@ public actual fun cupApplication(
 ) {
     val isMobile = isAnyMobile()
 
-    val (initialSlide, initialStep) = initialStateFromHash()
+    val (initialName, initialStep) = initialStateFromHash()
 
     CanvasBasedWindow(
         title = title,
         canvasElementId = "cup"
     ) {
-        withPresentationState(initialSlide, initialStep) {
+        withPresentationState(
+            initial = { slides -> slides.indexOfFirst { it.name == initialName } to initialStep }
+        ) {
             SynchronizeState()
 
             val handler by rememberUpdatedState(PresentationKeyHandler())

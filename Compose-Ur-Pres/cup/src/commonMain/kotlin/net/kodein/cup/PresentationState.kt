@@ -1,20 +1,13 @@
 package net.kodein.cup
 
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.node.Ref
-import kotlinx.coroutines.CoroutineScope
+import kotlin.math.max
 
 
 public sealed interface PresentationState {
 
-    public val currentSlide: Slide
-    public val currentSlideName: String
     public val currentSlideIndex: Int
     public val currentStep: Int
-
-    public val lastSlideIndex: Int
 
     public val forward: Boolean
 
@@ -22,11 +15,26 @@ public sealed interface PresentationState {
 
     public val slides: List<Slide>
 
-    public fun goTo(slideName: String, step: Int)
-    public fun goToNextSlide()
-    public fun goToNextStep()
-    public fun goToPreviousSlide()
-    public fun goToPreviousStep()
+    public fun goTo(slideIndex: Int, step: Int = 0)
+}
+
+public val PresentationState.currentSlide: Slide get() {
+    if (slides.isEmpty()) error("PresentationState has not been connected to a Presentation.")
+    return slides[currentSlideIndex]
+}
+
+public fun PresentationState.goToNextSlide() {
+    goTo(slideIndex = currentSlideIndex + 1, step = 0)
+}
+
+public fun PresentationState.goToNextStep() {
+    if (currentStep == currentSlide.lastStep) {
+        if (currentSlideIndex == slides.lastIndex) return
+        goTo(slideIndex = currentSlideIndex + 1, step = 0)
+    }
+    else {
+        goTo(slideIndex = currentSlideIndex, step = currentStep + 1)
+    }
 }
 
 public fun PresentationState.goToNext() {
@@ -34,142 +42,110 @@ public fun PresentationState.goToNext() {
     else goToNextStep()
 }
 
+public fun PresentationState.goToPreviousSlide() {
+    goTo(slideIndex = currentSlideIndex - 1, step = 0)
+}
+
+public fun PresentationState.goToPreviousStep() {
+    if (currentStep == 0) {
+        if (currentSlideIndex == 0) return
+        goTo(slideIndex = currentSlideIndex - 1, step = slides[currentSlideIndex - 1].lastStep)
+    } else {
+        goTo(slideIndex = currentSlideIndex, step = currentStep - 1)
+    }
+}
+
 public fun PresentationState.goToPrevious() {
     if (isInOverview) goToPreviousSlide()
     else goToPreviousStep()
 }
 
-
-
 internal class PresentationStateImpl(
-    state: MutableState<Pair<String, Int>>,
+    private val initial: (List<Slide>) -> Pair<Int, Int> = { 0 to 0 }
 ) : PresentationState {
-    private var pair by state
-    override val currentSlideName: String get() = pair.first
-    override val currentStep: Int get() = pair.second
-    override var forward: Boolean = true ; private set
 
-    private lateinit var railway: LinkedHashMap<String, Slide>
-    internal lateinit var config: PresentationConfig private set
+    override var slides: List<Slide> by mutableStateOf(emptyList()) ; private set
+
+    override var currentSlideIndex: Int by mutableStateOf(0) ; private set
+    override var currentStep: Int by mutableStateOf(0) ; private set
+
+    override var forward: Boolean by mutableStateOf(true) ; private set
+
+    internal lateinit var config: PresentationConfig ; private set
 
     override var isInOverview: Boolean by mutableStateOf(false)
 
     internal fun connect(slides: SlideGroup, config: PresentationConfig) {
-        val list = slides.slideList
-        require(list.isNotEmpty()) { "Cannot connect to an empty slide List." }
+        val initial: (List<Slide>) -> Pair<Int, Int> =
+            if (this.slides.isEmpty()) this.initial
+            else {
+                val previousSlideName = this.slides.getOrNull(currentSlideIndex)?.name
+                val previousStep = currentStep
+                ({ newSlides ->
+                    val newSlideIndex = newSlides.indexOfFirst { it.name == previousSlideName }
+                    if (newSlideIndex != -1) newSlideIndex to previousStep
+                    else 0 to 0
+                })
+            }
+
+        val newSlides = slides.slideList
+        require(newSlides.isNotEmpty()) { "Cannot connect to an empty slide List." }
+
+        val (initialSlideIndex, initialStep) = initial(newSlides)
+        val newSlideIndex = when {
+            initialSlideIndex < 0 -> 0
+            initialSlideIndex > newSlides.lastIndex -> newSlides.lastIndex
+            else -> initialSlideIndex
+        }
+        val newCurrentSlide = newSlides[newSlideIndex]
+        val newStep = when {
+            initialStep < 0 -> 0
+            initialStep > newCurrentSlide.lastStep -> newCurrentSlide.lastStep
+            else -> initialStep
+        }
 
         this.config = config
-
-        railway = list.associateByTo(LinkedHashMap()) { it.name }
-        if (currentSlideName !in railway) {
-            pair = railway.keys.first() to 0
-            return
-        }
-        if (currentStep >= currentSlide.stepCount) {
-            pair = currentSlideName to 0
-            return
-        }
+        this.slides = newSlides
+        this.currentSlideIndex = newSlideIndex
+        this.currentStep = newStep
     }
 
-    private fun checkRailway() {
-        check(::railway.isInitialized) { "PresentationState has not been connected to a Presentation." }
+    private fun checkConnected() {
+        check(slides.isNotEmpty()) { "PresentationState has not been connected to a Presentation." }
     }
 
-    override fun goTo(slideName: String, step: Int) {
-        checkRailway()
-        require(slideName in railway) { "Slide '$slideName' doest not exist in connected Presentation." }
-        require(step < railway[slideName]!!.stepCount) { "Slide '$slideName' has ${railway[slideName]!!.stepCount} steps, so it cannot be set to requested step $step." }
+    override fun goTo(slideIndex: Int, step: Int) {
+        checkConnected()
+        val newSlideIndex = when {
+            slideIndex > slides.lastIndex -> slides.lastIndex
+            slideIndex < 0 -> 0
+            else -> slideIndex
+        }
+        val newSlide = slides[newSlideIndex]
+        val newStep = when {
+            step > newSlide.lastStep -> newSlide.lastStep
+            step < 0 -> 0
+            else -> step
+        }
+
+        if (newSlideIndex == currentSlideIndex && newStep == currentStep) return
 
         forward = when {
-            this.currentSlideName != slideName -> {
-                val currentIndex = railway.keys.indexOf(this.currentSlideName)
-                val goToIndex = railway.keys.indexOf(slideName)
-                goToIndex > currentIndex
+            newSlideIndex != currentSlideIndex -> {
+                newSlideIndex > currentSlideIndex
             }
-            this.currentStep != step -> {
-                step > this.currentStep
+            newStep != currentStep -> {
+                newStep > currentStep
             }
             else -> forward
         }
 
-        pair = slideName to step
+        currentSlideIndex = newSlideIndex
+        currentStep = newStep
     }
-
-    override fun goToNextSlide() {
-        checkRailway()
-        val keyArray = railway.keys.toTypedArray()
-        val index = keyArray.indexOf(currentSlideName)
-        if (index == keyArray.lastIndex) return
-        pair = keyArray[index + 1] to 0
-        forward = true
-    }
-
-    override fun goToNextStep() {
-        checkRailway()
-        if (currentStep == currentSlide.lastStep) goToNextSlide()
-        else {
-            pair = currentSlideName to (currentStep + 1)
-            forward = true
-        }
-    }
-
-    override fun goToPreviousSlide() {
-        checkRailway()
-        val keyArray = railway.keys.toTypedArray()
-        val index = keyArray.indexOf(currentSlideName)
-        if (index == 0) return
-        pair = keyArray[index - 1] to 0
-        forward = false
-    }
-
-    override fun goToPreviousStep() {
-        checkRailway()
-        if (currentStep == 0) {
-            val keyArray = railway.keys.toTypedArray()
-            val index = keyArray.indexOf(currentSlideName)
-            if (index == 0) return
-            val previous = keyArray[index - 1]
-            pair = previous to (railway[previous]?.lastStep ?: error("Unexpected Presentation state: current Slide '$previous' does not appear in railway."))
-            forward = false
-        }
-        else {
-            pair = currentSlideName to (currentStep - 1)
-            forward = false
-        }
-    }
-
-    internal companion object {
-        val pairSaver = listSaver<Pair<String, Int>, Any>(
-            save = { listOf(it.first, it.second) },
-            restore = { (it[0] as String) to (it[1] as Int) }
-        )
-    }
-
-    override val currentSlideIndex: Int
-        get() {
-            checkRailway()
-            return railway.keys.indexOf(currentSlideName)
-        }
-
-    override val slides: List<Slide>
-        get() {
-            checkRailway()
-            return railway.values.toList()
-        }
-
-    override val currentSlide: Slide
-        get() {
-            checkRailway()
-            return railway[currentSlideName] ?: error("Unexpected Presentation state: current Slide '$currentSlideName' does not appear in railway.")
-        }
-
-    override val lastSlideIndex: Int
-        get() {
-            checkRailway()
-            return railway.size - 1
-        }
 }
 
+@PluginCupAPI
 public abstract class PresentationStateWrapper(public val originalState: PresentationState): PresentationState by originalState
 
 internal fun PresentationState.impl(): PresentationStateImpl =
@@ -183,13 +159,11 @@ public val LocalPresentationState: ProvidableCompositionLocal<PresentationState>
 @Composable
 @PluginCupAPI
 public fun withPresentationState(
-    slide: String = "",
-    step: Int = 0,
+    initial: (List<Slide>) -> Pair<Int, Int> = { 0 to 0 },
     content: @Composable () -> Unit
 ) {
-    val pairState = rememberSaveable(stateSaver = PresentationStateImpl.pairSaver) { mutableStateOf(slide to step) }
     CompositionLocalProvider(
-        LocalPresentationState provides remember { PresentationStateImpl(pairState) },
+        LocalPresentationState provides remember { PresentationStateImpl(initial) },
     ) {
         content()
     }

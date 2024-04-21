@@ -80,11 +80,11 @@ private class PresentationMainViewScope(
         val state = LocalPresentationState.current
         val config = state.impl().config
 
-        state.slides.forEachIndexed { index, slide ->
+        state.slides.forEachIndexed { slideIndex, slide ->
             key(slide.name) {
-                val specs = config.slideSpecs(slide, index, state.lastSlideIndex)
+                val specs = config.slideSpecs(slide, slideIndex, state.slides.lastIndex)
 
-                val visible = slide.name == state.currentSlideName
+                val visible = slideIndex == state.currentSlideIndex
 
                 AnimatedVisibility(
                     visible = visible,
@@ -105,7 +105,7 @@ private class PresentationMainViewScope(
                         step = step,
                         slideSize = specs.size,
                         modifier = transitions.modifier(this, type),
-                        content = LocalSlideContents.current[index]
+                        content = LocalSlideContents.current[slideIndex]
                     )
                 }
             }

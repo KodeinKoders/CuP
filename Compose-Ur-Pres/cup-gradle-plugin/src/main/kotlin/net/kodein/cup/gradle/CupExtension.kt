@@ -45,7 +45,7 @@ public class CupExtension internal constructor(
         val extractIndexHtml = project.tasks.register<ExtractIndexHtml>("extractIndexHtml")
         project.tasks.named<ProcessResources>("wasmJsProcessResources") {
             dependsOn(extractIndexHtml)
-            from(provider { extractIndexHtml.get().output })
+            from(extractIndexHtml.get().output)
         }
 
         project.tasks.register<Sync>("distDoc") {

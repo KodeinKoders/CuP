@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskAction
 
 internal open class ExtractIndexHtml : DefaultTask() {
 
-    @OutputFile
+    @get:OutputFile
     internal val output = project.layout.buildDirectory.file("cup/html/index.html")
 
     @TaskAction

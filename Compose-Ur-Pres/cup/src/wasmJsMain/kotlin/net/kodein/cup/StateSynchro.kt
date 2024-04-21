@@ -18,9 +18,9 @@ internal fun SynchronizeState() {
 
     val state = LocalPresentationState.current
 
-    remember(state.currentSlideName, state.currentStep) {
-        if (state.currentSlideName == "") return@remember
-        var hash = state.currentSlideName
+    remember(state.slides, state.currentSlideIndex, state.currentStep) {
+        if (state.slides.isEmpty()) return@remember
+        var hash = state.currentSlide.name
         if (state.currentStep != 0) hash += "/${state.currentStep}"
         window.location.hash = hash
     }

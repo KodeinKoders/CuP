@@ -35,7 +35,7 @@ internal fun SWWindow(
     val presentationState = LocalPresentationState.current
     val swState = remember { SWPresentationState(presentationState) }
 
-    remember(swState.currentSlideName) {
+    remember(swState.currentSlideIndex) {
         setLaser(null)
     }
 
@@ -150,7 +150,7 @@ private fun SWTopBar(
                     Text(presentationState.slides.size.toString())
                 }
                 Text(
-                    text = presentationState.currentSlideName,
+                    text = presentationState.currentSlide.name,
                     fontWeight = FontWeight.Medium,
                     fontSize = 20.sp,
                     textAlign = TextAlign.Start,

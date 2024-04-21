@@ -33,7 +33,9 @@ public fun PresentationPreview(
                 .border(4.dp, Color.Black)
                 .clipToBounds()
         ) {
-            withPresentationState(slide.name, step) {
+            withPresentationState(
+                initial = { 0 to step }
+            ) {
                 content(slide)
             }
         }

@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.kodein.cup.LocalPresentationState
 import net.kodein.cup.PresentationState
+import net.kodein.cup.currentSlide
 import net.kodein.cup.withPresentationState
 import java.io.IOException
 import java.util.*
@@ -37,13 +38,17 @@ public fun withCupSavedPresentationState(
         content(null)
     }
     else {
-        withPresentationState(slide = restored!!.first, step = restored!!.second) {
+        val (initialName, initialStep) = restored!!
+        withPresentationState(
+            initial = { slides -> slides.indexOfFirst { it.name == initialName } to initialStep }
+        ) {
             val presentationState = LocalPresentationState.current
-            LaunchedEffect(null) {
+            LaunchedEffect(presentationState.slides) {
+                if (presentationState.slides.isEmpty()) return@LaunchedEffect
                 try {
                     withContext(Dispatchers.IO) {
                         Path(".cup").createDirectories()
-                        snapshotFlow { presentationState.currentSlideName to presentationState.currentStep }
+                        snapshotFlow { presentationState.currentSlide.name to presentationState.currentStep }
                             .collect { (slideName, step) ->
                                 Path(".cup", "state.properties").writer().use { writer ->
                                     Properties().also {
