@@ -78,7 +78,7 @@ private class PresentationMainViewScope(
     @Composable
     override fun Slides() {
         val state = LocalPresentationState.current
-        val config = LocalPresentationConfig.current
+        val config = state.impl().config
 
         state.slides.forEachIndexed { index, slide ->
             key(slide.name) {
@@ -120,7 +120,7 @@ internal fun PresentationRatioContainer(
 ) {
     val originalDensity by rememberUpdatedState(LocalDensity.current)
 
-    val config = LocalPresentationConfig.current
+    val config = LocalPresentationState.current.impl().config
     val outerContainerSize = LocalPresentationSize.current
 
     val ratio = rememberRatio(originalDensity, defaultSlideSize)
@@ -150,7 +150,7 @@ internal fun PresentationRatioContainer(
 @Composable
 @PluginCupAPI
 public fun PresentationMainView() {
-    val config = LocalPresentationConfig.current
+    val config = LocalPresentationState.current.impl().config
 
     PresentationRatioContainer(
         defaultSlideSize = config.defaultSpecs.size,
@@ -213,9 +213,6 @@ public class PresentationConfig(
 }
 
 @PluginCupAPI
-public val LocalPresentationConfig: ProvidableCompositionLocal<PresentationConfig> = compositionLocalOf { error("No configuration") }
-
-@PluginCupAPI
 public val LocalPresentationSize: ProvidableCompositionLocal<Size> = compositionLocalOf { error("No size") }
 
 internal val LocalSlideContents: ProvidableCompositionLocal<List<SlideContent>> = compositionLocalOf { error("no content") }
@@ -228,14 +225,8 @@ public fun Presentation(
     presentation: @Composable PresentationScope.() -> Unit = { Slides() },
 ) {
     val state = LocalPresentationState.current
-    val scope = rememberCoroutineScope()
-    remember(slides) { state.impl().connect(slides, scope) }
-
-    var presentationSize: IntSize? by remember { mutableStateOf(null) }
-
     val layoutDirection = LocalLayoutDirection.current
 
-    val applicationPresentationConfigRef = LocalApplicationPresentationConfigRef.current
     val config = remember {
         val builder = CupConfigurationBuilder().apply(configuration)
         PresentationConfig(
@@ -244,15 +235,15 @@ public fun Presentation(
             defaultSpecs = builder.defaultSlideSpecs ?: SlideSpecs.default(layoutDirection),
             plugins = builder.plugins,
             layoutDirection = layoutDirection
-        ).also {
-            applicationPresentationConfigRef?.value = it
-        }
+        )
     }
+    remember(slides) { state.impl().connect(slides, config) }
+
+    var presentationSize: IntSize? by remember { mutableStateOf(null) }
 
     val slideContents = state.slides.map { it.content() }
 
     CompositionLocalProvider(
-        LocalPresentationConfig provides config,
         LocalSlideContents provides slideContents,
     ) {
         Box(Modifier.fillMaxSize()) {

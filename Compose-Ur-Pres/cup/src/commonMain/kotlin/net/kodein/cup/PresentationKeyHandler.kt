@@ -15,12 +15,10 @@ public fun PresentationKeyHandler(
     val fullScreenToggle by rememberUpdatedState(LocalFullScreenState.current?.second ?: {})
     val ltr by rememberUpdatedState(LocalLayoutDirection.current == LayoutDirection.Ltr)
 
-    val applicationPresentationConfigRef by rememberUpdatedState(LocalApplicationPresentationConfigRef.current)
-
     return handler@ { event ->
         val state = getState() ?: return@handler false
 
-        applicationPresentationConfigRef?.value?.plugins?.forEach {
+        state.impl().config.plugins.forEach {
             if (it.onKeyEvent(event)) return@handler true
         }
 

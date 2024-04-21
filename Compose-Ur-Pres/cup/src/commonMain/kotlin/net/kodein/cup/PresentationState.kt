@@ -50,12 +50,15 @@ internal class PresentationStateImpl(
     override var forward: Boolean = true ; private set
 
     private lateinit var railway: LinkedHashMap<String, Slide>
+    internal lateinit var config: PresentationConfig private set
 
     override var isInOverview: Boolean by mutableStateOf(false)
 
-    internal fun connect(slides: SlideGroup, scope: CoroutineScope) {
+    internal fun connect(slides: SlideGroup, config: PresentationConfig) {
         val list = slides.slideList
         require(list.isNotEmpty()) { "Cannot connect to an empty slide List." }
+
+        this.config = config
 
         railway = list.associateByTo(LinkedHashMap()) { it.name }
         if (currentSlideName !in railway) {
@@ -177,8 +180,6 @@ internal fun PresentationState.impl(): PresentationStateImpl =
 
 public val LocalPresentationState: ProvidableCompositionLocal<PresentationState> = compositionLocalOf { error("No presentation state!") }
 
-internal val LocalApplicationPresentationConfigRef  = compositionLocalOf<Ref<PresentationConfig>?> { null }
-
 @Composable
 @PluginCupAPI
 public fun withPresentationState(
@@ -189,7 +190,6 @@ public fun withPresentationState(
     val pairState = rememberSaveable(stateSaver = PresentationStateImpl.pairSaver) { mutableStateOf(slide to step) }
     CompositionLocalProvider(
         LocalPresentationState provides remember { PresentationStateImpl(pairState) },
-        LocalApplicationPresentationConfigRef provides remember { Ref() }
     ) {
         content()
     }

@@ -68,7 +68,7 @@ private fun OverviewSlideView(
     val density = LocalDensity.current
 
     val state = LocalPresentationState.current
-    val config = LocalPresentationConfig.current
+    val config = state.impl().config
 
     val slideSize = config.slideSpecs(slide, index, state.lastSlideIndex).size
     val outerContainerDpSize = with(density) { outerContainerSize.toDpSize() }

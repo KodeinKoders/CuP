@@ -47,7 +47,7 @@ internal fun OverlayScope.PresentationOverlay(
 
     MaterialTheme {
         val state = LocalPresentationState.current
-        val config = LocalPresentationConfig.current
+        val config = state.impl().config
 
         if (!state.isInOverview) {
             Box(
