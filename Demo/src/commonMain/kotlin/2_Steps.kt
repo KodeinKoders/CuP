@@ -23,9 +23,6 @@ import utils.y3DRotation
 val steps by Slide(
     stepCount = 5,
     specs = { copy(endTransitions = y3DRotation(it.layoutDirection)) },
-    prepare = {
-        EmojiService.initialize()
-    },
 ) { step ->
     Title {
         Text("A slide may contain multiple steps.")

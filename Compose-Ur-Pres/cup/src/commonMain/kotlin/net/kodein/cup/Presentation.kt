@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.*
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupPlugin
 import net.kodein.cup.utils.Empty
-import net.kodein.cup.utils.MutableDataMap
 import net.kodein.cup.utils.OverlayedBox
 import net.kodein.cup.utils.rememberOverlayState
 import kotlin.math.min
@@ -41,11 +40,10 @@ private fun rememberRatio(
 
 @Composable
 internal fun SlideContainer(
-    slide: Slide,
-    preparation: MutableDataMap,
     step: Int,
     slideSize: DpSize,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: SlideContent
 ) {
     val originalDensity = LocalDensity.current
     val ratio = rememberRatio(originalDensity, slideSize)
@@ -62,11 +60,7 @@ internal fun SlideContainer(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.size(slideSize)
             ) {
-                CompositionLocalProvider(
-                    LocalSlidePreparation provides preparation
-                ) {
-                    slide.content(this, step)
-                }
+                content(this, step)
             }
         }
     }
@@ -108,11 +102,10 @@ private class PresentationMainViewScope(
                     if (visible) step = state.currentStep
 
                     SlideContainer(
-                        slide = slide,
-                        preparation = state.impl().preparation(slide),
                         step = step,
                         slideSize = specs.size,
-                        modifier = transitions.modifier(this, type)
+                        modifier = transitions.modifier(this, type),
+                        content = LocalSlideContents.current[index]
                     )
                 }
             }
@@ -131,14 +124,6 @@ internal fun PresentationRatioContainer(
     val outerContainerSize = LocalPresentationSize.current
 
     val ratio = rememberRatio(originalDensity, defaultSlideSize)
-
-//    val ratio = remember(outerContainerSize, defaultSlideSize) {
-//        with (originalDensity) {
-//            val wRatio = outerContainerSize.width / defaultSlideSize.width.toPx()
-//            val hRatio = outerContainerSize.height / defaultSlideSize.height.toPx()
-//            min(wRatio, hRatio)
-//        }
-//    }
 
     val innerContainerSize = with (originalDensity) { (outerContainerSize / ratio).toDpSize() }
 
@@ -233,6 +218,8 @@ public val LocalPresentationConfig: ProvidableCompositionLocal<PresentationConfi
 @PluginCupAPI
 public val LocalPresentationSize: ProvidableCompositionLocal<Size> = compositionLocalOf { error("No size") }
 
+internal val LocalSlideContents: ProvidableCompositionLocal<List<SlideContent>> = compositionLocalOf { error("no content") }
+
 @Composable
 public fun Presentation(
     slides: SlideGroup,
@@ -262,7 +249,12 @@ public fun Presentation(
         }
     }
 
-    CompositionLocalProvider(LocalPresentationConfig provides config) {
+    val slideContents = state.slides.map { it.content() }
+
+    CompositionLocalProvider(
+        LocalPresentationConfig provides config,
+        LocalSlideContents provides slideContents,
+    ) {
         Box(Modifier.fillMaxSize()) {
             WithPresentationOverlay(
                 onContainerSizeChanged = { presentationSize = it }

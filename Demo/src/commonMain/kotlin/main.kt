@@ -17,6 +17,7 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -40,6 +41,7 @@ import net.kodein.cup.laser.laser
 import net.kodein.cup.speaker.speakerMode
 import net.kodein.cup.utils.DataMap
 import net.kodein.cup.utils.DataMapElement
+import org.kodein.emoji.compose.EmojiService
 
 
 @Composable
@@ -151,5 +153,6 @@ private val slides = Slides(
 fun main() = cupApplication(
     title = "Presentation Demo",
 ) {
+    remember { EmojiService.initialize() }
     KodeinPresentation(slides)
 }

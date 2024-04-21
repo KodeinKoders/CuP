@@ -1,225 +1,285 @@
 package net.kodein.cup.sa
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import net.kodein.cup.LocalSlidePreparation
-import net.kodein.cup.SlidePrepareScope
-import net.kodein.cup.sa.utils.minus
-import net.kodein.cup.sa.utils.offset
-import net.kodein.cup.utils.DataMap
-import net.kodein.cup.utils.EagerProperty
-import net.kodein.cup.utils.eagerProperty
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.*
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.zIndex
+import net.kodein.cup.sa.utils.*
 import kotlin.math.max
+import kotlin.math.min
 
 
-public class SourceCodeBuilder internal constructor() {
+private data class TextPartNode(
+    val range: TextRange,
+    val type: Type,
+    val blockId: SABlock.ID,
+    val content: String,
+    val children: List<TextPartNode>
+) : Comparable<TextPartNode> {
+    enum class Type { MultipleLines, OneLine, Text }
+    override fun compareTo(other: TextPartNode): Int = this.range.compareTo(other.range)
+}
 
-    private var markerCounter = 0
-    internal val markers = ArrayList<Marker>()
-    internal var lastEmptyStep: Int = 0
+private fun buildTextPartNode(
+    range: TextRange,
+    fullText: String,
+    blockId: SABlock.ID = SABlock.ID.None,
+    children: List<TextPartNode> = emptyList(),
+): TextPartNode {
+    val originalContent = fullText.substring(range)
+    val content = originalContent.removeSuffix("\n")
+    return TextPartNode(
+        range = range,
+        type = if ('\n' in content) {
+            TextPartNode.Type.MultipleLines
+        } else {
+            val startsNewLine = range.min == 0 || fullText[range.min - 1] == '\n'
+            val endsInNewLine = range.max == fullText.length || fullText[range.max - 1] == '\n'
+            if (startsNewLine && endsInNewLine) TextPartNode.Type.OneLine else TextPartNode.Type.Text
+        },
+        blockId = blockId,
+        content = content,
+        children = children
+    )
+}
 
-    public data class Marker internal constructor(
-        internal val id: Int,
-        val name: String,
-        val visibilities: List<State>
+@Composable
+private fun SourceCodePart(
+    part: TextPartNode,
+    steps: List<SAStep>,
+    step: Int,
+    textStyle: TextStyle,
+    codeStyle: List<StyleSection>,
+    isParentHidden: Boolean,
+    isParentHighlighted: Boolean,
+    partFractions: List<State<Float>>,
+    overSpanStyles: Map<Int, Pair<SpanStyle, Float>>
+) {
+    val currentStep = steps[step]
+    val isThisHidden = SAData.State.Hidden in currentStep[part.blockId]
+    val visibility by animateFloatAsState(
+        targetValue = if (isThisHidden) 0f else 1f,
+        animationSpec = tween(600)
+    )
+    val (scaleX, scaleY) = when (part.type) {
+        TextPartNode.Type.MultipleLines, TextPartNode.Type.OneLine -> 1f to visibility
+        TextPartNode.Type.Text -> visibility to 1f
+    }
+    val hasHighlight = currentStep.any { SAData.State.Highlighted in it.value }
+    val isHighlighted = SAData.State.Highlighted in currentStep[part.blockId]
+    val highlight by animateFloatAsState(
+        targetValue = if (hasHighlight && isHighlighted) 1f else 0f,
+        animationSpec = tween(600)
+    )
+
+    val isHidden = isThisHidden || isParentHidden
+
+    val partStyles = remember(steps) {
+        steps.map {
+            it[part.blockId]?.filterIsInstance<SAData.State.Styled>()?.map { it.style }
+        }
+    }
+
+    fun forEachStyle(action: (Int, SAStyle, Float) -> Unit) {
+        steps.forEachIndexed { index, _ ->
+            val stepFraction by partFractions[index]
+            val stepStyles = partStyles[index]
+            if (stepFraction > 0 && stepStyles != null) {
+                stepStyles.forEachIndexed { styleStep, style ->
+                    action(styleStep, style, stepFraction)
+                }
+            }
+        }
+    }
+
+    val partOverStyles = HashMap(overSpanStyles)
+    forEachStyle { index, saStyle, fraction ->
+        partOverStyles[index] = saStyle.spanStyle() to fraction
+    }
+
+    Box(
+        Modifier
+            .scaleWithSize(scaleX, scaleY)
+            .alpha(visibility)
+            .scale(1f + 0.4f * highlight)
+            .zIndex(if (highlight != 0f) 2f else 1f)
+            .drawWithContent {
+                forEachStyle { _, style, fraction -> with(style) { drawBehind(Rect(Offset.Zero, size), fraction) } }
+                drawContent()
+                forEachStyle { _, style, fraction -> with(style) { drawOver(Rect(Offset.Zero, size), fraction) } }
+            }
     ) {
-        override fun toString(): String = "$START_OPEN$id$START_CLOSE"
-    }
-
-    @Suppress("PropertyName")
-    public val X: String get() = END
-
-    public fun marker(vararg visibilities: State): EagerProperty<Marker> =
-        eagerProperty { prop ->
-            Marker(
-                id = markerCounter++,
-                name = prop.name,
-                visibilities = visibilities.toList()
-            ).also { markers += it }
-        }
-    public fun emptyStep(step: Int) {
-        lastEmptyStep = max(step, lastEmptyStep)
-    }
-
-    internal companion object {
-        const val START_OPEN  = "\u2062«\u2064"
-        const val START_CLOSE = "\u2064:\u2062"
-        const val END = "\u2063»\u2063"
-
-        val openRegex = Regex("$START_OPEN([0-9]+)$START_CLOSE")
-    }
-
-    public sealed interface State { public val steps: List<IntRange> }
-    internal data class Hidden(override val steps: List<IntRange>) : State
-    internal data class OnlyShown(override val steps: List<IntRange>) : State
-    internal data class Highlighted(override val steps: List<IntRange>) : State
-    internal data class Styled(override val steps: List<IntRange>, val style: SAStyle) : State
-
-    public fun hidden(vararg steps: Int): State = Hidden(steps.map { IntRange(it, it) })
-    public fun hidden(vararg steps: IntRange): State = Hidden(steps.asList())
-    public fun onlyShown(vararg steps: Int): State = OnlyShown(steps.map { IntRange(it, it) })
-    public fun onlyShown(vararg steps: IntRange): State = OnlyShown(steps.asList())
-    public fun highlighted(vararg steps: Int): State = Highlighted(steps.map { IntRange(it, it) })
-    public fun highlighted(vararg steps: IntRange): State = Highlighted(steps.asList())
-    public fun styled(style: SAStyle, vararg steps: Int): State = Styled(steps.map { IntRange(it, it) }, style)
-    public fun styled(style: SAStyle, vararg steps: IntRange): State = Styled(steps.asList(), style)
-}
-
-private val sourceHighlighter by lazy { SourceHighlighter() }
-public suspend fun initSourceCodeHighlighting() { sourceHighlighter.joinInit() }
-
-public class SourceCode(
-    internal val language: String,
-    internal val create: SourceCodeBuilder.() -> String
-)
-
-private class PreparedSourceCode(
-    val data: SAData,
-    val sections: List<Deferred<List<ClassesSection>>>
-)
-
-@Suppress("ReplaceRangeStartEndInclusiveWithFirstLast")
-private fun prepare(inlineSourceCode: SourceCode, scope: CoroutineScope): PreparedSourceCode {
-    val builder = SourceCodeBuilder()
-    val text = inlineSourceCode.create(builder)
-    val markers = builder.markers
-
-    var cleanText = text
-    val stack = ArrayList<Pair<SourceCodeBuilder.Marker, Int>>()
-    val ranges = ArrayList<Pair<SourceCodeBuilder.Marker, TextRange>>()
-
-    while (true) {
-        val startMatch = SourceCodeBuilder.openRegex.find(cleanText)
-        val endPos = cleanText.indexOf(SourceCodeBuilder.END)
-
-        when {
-            startMatch != null && (endPos == -1 || startMatch.range.start < endPos) -> {
-                cleanText = cleanText.replaceRange(startMatch.range, "")
-                val id = startMatch.groupValues[1].toInt()
-                val marker = markers.firstOrNull { it.id == id } ?: error("Use of a marker that is not created on this InlineSourceCode")
-                stack.add(marker to startMatch.range.start)
-                continue
-            }
-            endPos >= 0 && (startMatch == null || endPos < startMatch.range.start) -> {
-                cleanText = cleanText.replaceRange(endPos..<(endPos + SourceCodeBuilder.END.length), "")
-                require(stack.isNotEmpty()) { "At $endPos: Empty stack: close marker does not corresponds to any opened segment." }
-                val (marker, startPos) = stack.removeLast()
-                ranges.add(marker to TextRange(startPos, endPos))
-                continue
-            }
-            else -> break
-        }
-    }
-
-    var nextBlockId = SABlock.ID(0)
-    val correspondence = HashMap<Int, ArrayList<SABlock.ID>>()
-    val blocks = ranges.map { (marker, range) ->
-        val block = SABlock(nextBlockId, cleanText, range)
-        nextBlockId = SABlock.ID(nextBlockId.id + 1)
-        check(block != null) { "Invalid block ${marker.name}: a block must either be inside a line (it must not contain new line) or it must contain the entirety of one or multiple line(s)." }
-        correspondence.getOrPut(marker.id) { ArrayList() }.add(block.id)
-        block
-    }
-
-    val max = max(
-        markers.flatMap { it.visibilities }.flatMap { it.steps }.maxOfOrNull { it.last } ?: 1,
-        builder.lastEmptyStep + 1
-    )
-
-    val steps = (0..max).map { stepNumber ->
-        val map = HashMap<SABlock.ID, ArrayList<SAData.State>>()
-        markers.forEach { marker ->
-            marker.visibilities.forEach { markerState ->
-                val saState = when {
-                    markerState is SourceCodeBuilder.Hidden && markerState.steps.any { stepNumber in it } -> SAData.State.Hidden
-                    markerState is SourceCodeBuilder.OnlyShown && markerState.steps.none { stepNumber in it } -> SAData.State.Hidden
-                    markerState is SourceCodeBuilder.Highlighted && markerState.steps.any { stepNumber in it } -> SAData.State.Highlighted
-                    markerState is SourceCodeBuilder.Styled && markerState.steps.any { stepNumber in it } -> {
-                        SAData.State.Styled(markerState.style)
+        if (part.children.isEmpty()) {
+            val dim by animateFloatAsState(
+                targetValue = if (hasHighlight && !isHighlighted && !isParentHighlighted) 1f else 0f,
+                animationSpec = tween(600)
+            )
+            var partStyle: Pair<SpanStyle, List<StyleSection>> by remember { mutableStateOf(textStyle.toSpanStyle() to emptyList()) }
+            LaunchedEffect(codeStyle, isHidden, partOverStyles) {
+                if (!isHidden) {
+                    var sections = codeStyle.offset(part.range)
+                    var fullStyle = textStyle.toSpanStyle()
+                    partOverStyles.entries.sortedBy { it.key }.forEach { (_, pair) ->
+                        val (style, fraction) = pair
+                        sections = sections.map {
+                            it.copy(style = lerp(it.style, it.style + style, fraction))
+                        }
+                        fullStyle = lerp(fullStyle, fullStyle + style, fraction)
                     }
-                    else -> null
+                    partStyle = fullStyle to sections
                 }
-                if (saState != null) {
-                    correspondence[marker.id]?.forEach { blockId ->
-                        map.getOrPut(blockId) { ArrayList() }.add(saState)
-                    }
+            }
+
+            Text(
+                text = buildAnnotatedString {
+                    append(part.content)
+                    addStyle(partStyle.first, 0, part.content.length)
+                    addStyles(partStyle.second)
+                },
+                style = textStyle,
+                modifier = Modifier
+                    .alpha(1f - dim * 0.85f)
+            )
+        } else {
+            val container: @Composable (@Composable () -> Unit) -> Unit = when (part.type) {
+                TextPartNode.Type.MultipleLines -> ({ Column { it() } })
+                TextPartNode.Type.OneLine, TextPartNode.Type.Text -> ({ Row { it() } })
+            }
+            container {
+                part.children.forEach {
+                    SourceCodePart(
+                        part = it,
+                        steps = steps,
+                        step = step,
+                        textStyle = textStyle,
+                        codeStyle = codeStyle,
+                        isParentHidden = isHidden,
+                        isParentHighlighted = isHighlighted || isParentHighlighted,
+                        partFractions = partFractions,
+                        overSpanStyles = partOverStyles,
+                    )
                 }
             }
         }
-        map
     }
-
-    val data = SAData(
-        fullText = cleanText,
-        blocks = blocks,
-        steps = steps,
-    )
-
-    val sections = data.steps.indices.map { stepNumber ->
-        val hiddenRanges = data.hiddenRanges(stepNumber)
-        val code = data.fullText - hiddenRanges
-        scope.async { sourceHighlighter.parse(code, inlineSourceCode.language).offset(hiddenRanges) }
-    }
-
-    return PreparedSourceCode(data, sections)
 }
 
-private data class SourceCodeKey(val sourceCode: SourceCode) : DataMap.Key<PreparedSourceCode>
+@Composable
+private fun SourceCodeContent(
+    sourceCode: SourceCode,
+    parts: List<TextPartNode>,
+    step: Int,
+    style: TextStyle,
+    theme: SourceCodeTheme,
+) {
+    val partFractions = sourceCode.data.steps.mapIndexed { index, _ ->
+        animateFloatAsState(
+            targetValue = if (index == step) 1f else 0f,
+            animationSpec = tween(600)
+        )
+    }
+
+    Box {
+        var codeSize by remember { mutableStateOf(IntSize.Zero) }
+        SelectionContainer(
+            modifier = Modifier.size(with (LocalDensity.current) { codeSize.toSize().toDpSize() })
+        ) {
+            Text(
+                text = sourceCode.data.fullText - sourceCode.data.hiddenRanges(step),
+                style = style.copy(color = Color.Transparent),
+                softWrap = false,
+            )
+        }
+
+        val codeStyle by produceState(emptyList<StyleSection>(), step) { value = sourceCode.sections(step).applySourceCodeTheme(theme) }
+        Column(Modifier.onSizeChanged { codeSize = it }) {
+            parts.forEach {
+                SourceCodePart(
+                    part = it,
+                    steps = sourceCode.data.steps,
+                    step = step,
+                    textStyle = style,
+                    codeStyle = codeStyle,
+                    isParentHidden = false,
+                    isParentHighlighted = false,
+                    partFractions = partFractions,
+                    overSpanStyles = emptyMap()
+                )
+            }
+        }
+    }
+}
+
+public class SourceCode internal constructor(
+    internal val data: SAData,
+    internal val sections: suspend (Int) -> List<ClassesSection>
+)
 
 @Composable
 public fun SourceCode(
     sourceCode: SourceCode,
-    step: Int = 0,
+    step: Int,
     style: TextStyle = LocalDefaultSourceCodeTextStyle.current,
     theme: SourceCodeTheme = LocalDefaultSourceCodeTheme.current,
 ) {
-    val scope = rememberCoroutineScope()
-
-    val preparation = LocalSlidePreparation.current
-
-    val prepared = remember(sourceCode) {
-        preparation.getOrPut(SourceCodeKey(sourceCode)) { prepare(sourceCode, scope) }
-    }
-
-    remember(prepared.data.steps.size, step) {
-        if (step > prepared.data.steps.lastIndex) {
-            println("WARNING: Step $step has not been specified in inline source code (last known step is ${prepared.data.steps.lastIndex}).")
+    remember(sourceCode.data.steps.size, step) {
+        if (step > sourceCode.data.steps.lastIndex) {
+            println("WARNING: Step $step has not been specified in source code (last known step is ${sourceCode.data.steps.lastIndex}).")
         }
     }
 
-    AnimatedSourceCode(
-        data = prepared.data,
-        sections = { prepared.sections.getOrNull(it)?.await() ?: emptyList() },
-        step = step,
-        style = style,
+    SourceCodeContent(
+        sourceCode = sourceCode,
+        parts = remember(sourceCode.data) {
+            val lines = sourceCode.data.fullText.lineRanges()
+                .filterNot { line -> sourceCode.data.blocks.any { it.range == line } }
+                .map { SABlock(SABlock.ID.None, SABlock.Type.Lines, it) }
+
+            (lines + sourceCode.data.blocks).asTree(
+                range = SABlock::range,
+                node = newNode@ { block, children ->
+                    if (children.isEmpty()) {
+                        return@newNode buildTextPartNode(block.range, sourceCode.data.fullText, block.id, emptyList())
+                    }
+                    val addedChildren = ArrayList<TextPartNode>()
+                    var lastEnd = block.range.min
+                    children.forEach { child ->
+                        if (child.range.min != lastEnd) {
+                            addedChildren += buildTextPartNode(TextRange(lastEnd, child.range.min), sourceCode.data.fullText)
+                        }
+                        lastEnd = child.range.max
+                    }
+                    if (lastEnd != block.range.max) {
+                        addedChildren += buildTextPartNode(TextRange(lastEnd, block.range.max), sourceCode.data.fullText)
+                    }
+                    buildTextPartNode(block.range, sourceCode.data.fullText, block.id, (children + addedChildren).sorted())
+                }
+            )
+        },
+        step = min(max(0, step), sourceCode.data.steps.lastIndex),
+        style = remember(style, theme) {
+            val defaultTheme = theme("default")
+            if (defaultTheme != null) style.merge(defaultTheme)
+            else style
+        },
         theme = theme
     )
-}
-
-@Composable
-public fun SourceCode(
-    language: String,
-    step: Int = 0,
-    key: Any? = null,
-    style: TextStyle = LocalDefaultSourceCodeTextStyle.current,
-    theme: SourceCodeTheme = LocalDefaultSourceCodeTheme.current,
-    create: SourceCodeBuilder.() -> String
-) {
-    val isc = remember(key, language) { SourceCode(language, create) }
-    SourceCode(
-        sourceCode = isc,
-        step = step,
-        style = style,
-        theme = theme
-    )
-}
-
-public fun SlidePrepareScope.sourceCode(inlineSourceCode: SourceCode) {
-    data[SourceCodeKey(inlineSourceCode)] = prepare(inlineSourceCode, scope)
 }

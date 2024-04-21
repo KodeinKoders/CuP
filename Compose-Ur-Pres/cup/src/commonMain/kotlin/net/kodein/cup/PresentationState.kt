@@ -5,7 +5,6 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.node.Ref
 import kotlinx.coroutines.CoroutineScope
-import net.kodein.cup.utils.MutableDataMap
 
 
 public sealed interface PresentationState {
@@ -50,8 +49,6 @@ internal class PresentationStateImpl(
     override val currentStep: Int get() = pair.second
     override var forward: Boolean = true ; private set
 
-    private var preparation: Map<Slide, MutableDataMap> = emptyMap()
-
     private lateinit var railway: LinkedHashMap<String, Slide>
 
     override var isInOverview: Boolean by mutableStateOf(false)
@@ -59,12 +56,6 @@ internal class PresentationStateImpl(
     internal fun connect(slides: SlideGroup, scope: CoroutineScope) {
         val list = slides.slideList
         require(list.isNotEmpty()) { "Cannot connect to an empty slide List." }
-
-        val newData = HashMap<Slide, MutableDataMap>()
-        list.forEach { slide ->
-            newData[slide] = preparation[slide] ?: MutableDataMap().also { slide.prepare(SlidePrepareScope(scope, it)) }
-        }
-        preparation = newData
 
         railway = list.associateByTo(LinkedHashMap()) { it.name }
         if (currentSlideName !in railway) {
@@ -174,8 +165,6 @@ internal class PresentationStateImpl(
             checkRailway()
             return railway.size - 1
         }
-
-    internal fun preparation(slide: Slide): MutableDataMap = preparation[slide] ?: error("Slide ${slide.name} has not been connected.")
 }
 
 public abstract class PresentationStateWrapper(public val originalState: PresentationState): PresentationState by originalState
@@ -191,6 +180,7 @@ public val LocalPresentationState: ProvidableCompositionLocal<PresentationState>
 internal val LocalApplicationPresentationConfigRef  = compositionLocalOf<Ref<PresentationConfig>?> { null }
 
 @Composable
+@PluginCupAPI
 public fun withPresentationState(
     slide: String = "",
     step: Int = 0,

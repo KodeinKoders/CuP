@@ -19,7 +19,7 @@ allprojects {
     afterEvaluate {
         listOf(
             "publish" to "publishing",
-            "publishToMavenLocal" to "publishing"
+            "publishToMavenLocal" to "publishing",
         ).forEach { (taskName, taskGroup) ->
             if (taskName !in project.tasks.names) {
                 tasks.register(taskName) {

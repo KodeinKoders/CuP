@@ -26,21 +26,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import net.kodein.cup.utils.MutableDataMap
 
 
 private class PresentationOverviewScope(
     boxScope: BoxScope,
-    val slide: Slide,
-    val preparation: MutableDataMap,
+    val content: SlideContent,
     val step: Int,
     val slideSize: DpSize,
 ) : PresentationScope, BoxScope by boxScope {
     @Composable
     override fun Slides() {
         SlideContainer(
-            slide = slide,
-            preparation = preparation,
+            content = content,
             step = step,
             slideSize = slideSize,
         )
@@ -103,8 +100,7 @@ private fun OverviewSlideView(
                             config.presentation(
                                 PresentationOverviewScope(
                                     boxScope = this,
-                                    slide = slide,
-                                    preparation = state.impl().preparation(slide),
+                                    content = LocalSlideContents.current[index],
                                     step = step,
                                     slideSize = slideSize,
                                 )
