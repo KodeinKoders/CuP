@@ -7,8 +7,6 @@
 ** xref:slide.adoc#preloading[Preloading some Slide content]
 
 * xref:source-code.adoc[Animating Source Code]
-** xref:source-code.adoc#inline[With inline markers]
-** xref:source-code.adoc#external[With external editor]
 
 * xref:presentation.adoc[Creating a Presentation]
 ** xref:presentation.adoc#creating[Creating a CuP application]

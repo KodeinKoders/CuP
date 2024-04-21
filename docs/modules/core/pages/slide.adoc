@@ -232,8 +232,8 @@ fun helloWorldPreview() {
 
 A slide composable content only runs when the slide is displayed.
 
-You may need to preload some content so that you don't have to do it when the slide displays (to avoid janks).
-Here is how to preload content, and access preloaded content.
+You may need to prepare some content so that you don't have to do it when the slide displays (to avoid janks).
+To do so, you can declare a `PreparedSlide` instead of a `Slide`:
 
 [source, kotlin]
 ----
@@ -241,26 +241,23 @@ Here is how to preload content, and access preloaded content.
 class Content { /*...*/ }
 suspend fun loadContent(): Content { TODO() }
 
-// Holds a Deferred to the content.
-data class SlideContent(
-    val content: Deferred<Content>
+val contentDemo by PreparedSlide(
+    stepCount = 1
 ) {
-    // Key that allows you to access the content in the slide.
-    object Key: DataMap.Key<SlideContent>
-}
-
-@OptIn(ExperimentalResourceApi::class)
-val intro by Slide(
-    prepare = {
-        // Starts the loading of the content in a coroutine Deferred
-        // and stores it to be accessed in the Slide.
-        data[SlideContent.Key] = SlideContent(
-            content = scope.async { loadContent() }
-        )
+    val content by remember { mutableStateOf<Content?>(null) }
+    LaunchedEffect(Unit) {
+        content = loadContent()
     }
-) {
-    // Gets the Deferred from the SlideContent stored in prepare.
-    val asyncContent: Deferred<Content> =
-        LocalSlidePreparation.current[SlideContent.Key].content
+
+    slideContent { step ->
+        Text("Some amazing content:", fontSize = 24.sp)
+
+        AnimatedVisibility(visible = step >= 1) {
+            if (content == null) Text("Locading...")
+            else ContentDisplay(content)
+        }
+    }
 }
 ----
+
+WARNING: You must not display anything in the "prepare" section of the `PreparedSlide` or you will break your presentation!
