@@ -199,13 +199,12 @@ public class PresentationConfig(
     public val backgroundColor: Color,
     public val defaultSpecs: SlideSpecs,
     public val plugins: List<CupPlugin>,
-    public val layoutDirection: LayoutDirection
 ) {
+    @Composable
     public fun slideSpecs(slide: Slide, indexInGroup: Int, lastGroupIndex: Int): SlideSpecs =
         slide.specs(
             defaultSpecs,
             Slide.Configuration(
-                layoutDirection = layoutDirection,
                 indexInGroup = indexInGroup,
                 lastGroupIndex = lastGroupIndex
             )
@@ -234,7 +233,6 @@ public fun Presentation(
             backgroundColor = backgroundColor,
             defaultSpecs = builder.defaultSlideSpecs ?: SlideSpecs.default(layoutDirection),
             plugins = builder.plugins,
-            layoutDirection = layoutDirection
         )
     }
     remember(slides) { state.impl().connect(slides, config) }

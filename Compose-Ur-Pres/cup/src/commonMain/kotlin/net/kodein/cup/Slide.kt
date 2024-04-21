@@ -2,7 +2,6 @@ package net.kodein.cup
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.LayoutDirection
 import net.kodein.cup.utils.*
 
 
@@ -10,28 +9,27 @@ public interface SlideGroup {
     public val slideList: List<Slide>
 }
 
-private val defaultSpecs: SlideSpecs.(Slide.Configuration) -> SlideSpecs = { this }
+private val defaultSpecsBuilder: SlideSpecBuilder = { this }
 
 public class Slides(
     private val content: List<SlideGroup>,
     private val user: DataMap = emptyDataMap(),
-    private val specs: SlideSpecs.(Slide.Configuration) -> SlideSpecs = defaultSpecs
+    private val specs: SlideSpecBuilder = defaultSpecsBuilder
 ): SlideGroup {
 
     public constructor(
         vararg content: SlideGroup,
         user: DataMap = emptyDataMap(),
-        specs: SlideSpecs.(Slide.Configuration) -> SlideSpecs = defaultSpecs
+        specs: @Composable SlideSpecs.(Slide.Configuration) -> SlideSpecs = defaultSpecsBuilder
     ) : this(content.toList(), user, specs)
 
     override val slideList: List<Slide> by lazy {
         val slides = content.flatMap { it.slideList }
-        if (specs === defaultSpecs && user.isEmpty()) slides
+        if (specs === defaultSpecsBuilder && user.isEmpty()) slides
         else slides.mapIndexed { index, slide ->
-            val wrappedSpecs: SlideSpecs.(Slide.Configuration) -> SlideSpecs =
-                if (specs !== defaultSpecs) ({ originalConfig ->
+            val wrappedSpecs: SlideSpecBuilder =
+                if (specs !== defaultSpecsBuilder) ({ originalConfig ->
                     val wrappedConfig = Slide.Configuration(
-                        layoutDirection = originalConfig.layoutDirection,
                         indexInGroup = index,
                         lastGroupIndex = slides.lastIndex
                     )
@@ -47,16 +45,16 @@ public class Slides(
 }
 
 public typealias SlideContent = @Composable ColumnScope.(Int) -> Unit
+public typealias SlideSpecBuilder = @Composable SlideSpecs.(Slide.Configuration) -> SlideSpecs
 
 public data class Slide internal constructor(
     public val name: String,
     public val stepCount: Int = 1,
-    public val specs: SlideSpecs.(Configuration) -> SlideSpecs = { this },
+    public val specs: SlideSpecBuilder = defaultSpecsBuilder,
     public val user: DataMap = emptyDataMap(),
     public val content: @Composable () -> SlideContent
 ) : SlideGroup {
     public data class Configuration(
-        val layoutDirection: LayoutDirection,
         val indexInGroup: Int,
         val lastGroupIndex: Int,
     )
@@ -67,7 +65,7 @@ public data class Slide internal constructor(
 
 public fun Slide(
     stepCount: Int = 1,
-    specs: SlideSpecs.(Slide.Configuration) -> SlideSpecs = { this },
+    specs: SlideSpecBuilder = defaultSpecsBuilder,
     user: DataMap = emptyDataMap(),
     content: SlideContent
 ): EagerProperty<Slide> =
@@ -88,7 +86,7 @@ public object PreparedSlideScope {
 @Suppress("FunctionName")
 public fun PreparedSlide(
     stepCount: Int = 1,
-    specs: SlideSpecs.(Slide.Configuration) -> SlideSpecs = { this },
+    specs: SlideSpecBuilder = defaultSpecsBuilder,
     user: DataMap = emptyDataMap(),
     prepare: @Composable PreparedSlideScope.() -> SlideContent
 ) : EagerProperty<Slide> =

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import org.kodein.emoji.Emoji
 import org.kodein.emoji.compose.EmojiService
@@ -22,7 +23,7 @@ import utils.y3DRotation
 
 val steps by Slide(
     stepCount = 5,
-    specs = { copy(endTransitions = y3DRotation(it.layoutDirection)) },
+    specs = { copy(endTransitions = y3DRotation(LocalLayoutDirection.current)) },
 ) { step ->
     Title {
         Text("A slide may contain multiple steps.")
