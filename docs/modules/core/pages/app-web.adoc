@@ -4,19 +4,63 @@
 [[limitations]]
 == Disclaimer & limitations
 
-//TODO
-> Stay tuned, documentation is coming!
+The https://www.jetbrains.com/help/kotlin-multiplatform-dev/supported-platforms.html[Kotlin Multiplatform Platform Stability page] states that Kotlin/Wasm is in Alpha and Compose/Wasm is Experimental.
+
+Also, in order to run Kotlin/Wasm in the browser, you need a browser that support both the *Garbage collection* and the *Exception handling* Wasm extension (see the https://webassembly.org/features[WebAssembly browser feature report]).
+
+This means that, at least at the time of writing (22/04/2023):
+
+* *Safari does not support Kotlin/Wasm* (both Safari desktop & Safari mobile are out). This also excludes all iOS browsers (as browsers are required to use the safari engine under the hood).
+* CuP presentations exported as web pages may crash and/or bug, and therefore *must not be used to present* in front of an audience.
+
+The possibility of exporting your presentation as a Web Page is *a fun plus* for CuP, and should not be relied upon.
 
 
 [[generating]]
 == Generating the web app
 
-//TODO
-> Stay tuned, documentation is coming!
+First, make sure you have configured the Web target (see the xref:ROOT:getting-started.adoc[Quick start guide] or the xref:presentation.adoc#creating[Creating a CuP application] chapter).
+
+To test the web application in your browser, execute the `wasmJsBrowserRun` Gradle task:
+
+[tabs]
+====
+Linux / Mac::
++
+[source, shell]
+----
+./gradlew wasmJsBrowserRun
+----
+Windows::
++
+[source, shell]
+----
+gradlew.bat wasmJsBrowserRun
+----
+====
+
+To generate the web application, execute the `wasmJsBrowserDistribution` Gradle task:
+
+[tabs]
+====
+Linux / Mac::
++
+[source, shell]
+----
+./gradlew wasmJsBrowserDistribution
+----
+Windows::
++
+[source, shell]
+----
+gradlew.bat wasmJsBrowserDistribution
+----
+====
+
+All the web application files will be available in the `build/dist/wasmJs/productionExecutable` project directory.
 
 
 [[pages]]
-== Using GitHub Pages
+== Deploying to GitHub Pages
 
-//TODO
-> Stay tuned, documentation is coming!
+We provide a https://github.com/KodeinKoders/CuP-Presentation-Template/blob/main/.github/workflows/pages.yml[Template GitHub deployment workflow].

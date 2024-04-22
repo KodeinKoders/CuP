@@ -28,7 +28,7 @@
 * xref:app-web.adoc[Exporting as a Web Page]
 ** xref:app-web.adoc#limitations[Disclaimer & limitations]
 ** xref:app-web.adoc#generating[Generating the web app]
-** xref:app-web.adoc#pages[Using GitHub Pages]
+** xref:app-web.adoc#pages[Deploying to GitHub Pages]
 
 * xref:external-theme.adoc[Externalising your theme]
 

@@ -1,10 +1,14 @@
 
-tasks.register<Exec>("installAntora") {
+tasks.register<Exec>("npmInstall") {
+    inputs.file("package.json")
+    outputs.dir("node_modules")
     commandLine("npm", "install")
 }
 
 tasks.register<Exec>("generateDocumentation") {
     group = "documentation"
-    dependsOn("installAntora")
+    dependsOn("npmInstall")
+    inputs.dir("docs")
+    outputs.dir("build/site")
     commandLine("npx", "antora", "antora-playbook.yml")
 }
