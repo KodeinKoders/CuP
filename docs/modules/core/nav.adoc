@@ -6,7 +6,11 @@
 ** xref:slide.adoc#previewing[Previewing a Slide content]
 ** xref:slide.adoc#preloading[Preloading some Slide content]
 
-* xref:source-code.adoc[Animating Source Code]
+* xref:source-code.adoc[Displaying & Animating Source Code]
+** xref:source-code.adoc#static[Displaying static source code]
+** xref:source-code.adoc#theme[Theming & coloring your sources]
+** xref:source-code.adoc#animation[Animating sections]
+** xref:source-code.adoc#style[Applying additional styles]
 
 * xref:presentation.adoc[Creating a Presentation]
 ** xref:presentation.adoc#creating[Creating a CuP application]

@@ -1,23 +1,276 @@
-= Animating Source Code
+= Displaying & Animating Source Code
 
-There are two ways to animate source-code in CuP.
-Both display the same result on screen but the method to achieve that result is very different.
+Compose-Ur-Pres provides additional utilities to display and animate source code.
+To access them, you need to add the following dependency in your presentation's `build.gradle.kts`:
 
-- Use *inline markers* if you want to display a *few* (or no) animations.
-- Use the *external editor* if you want to display multiple *complex* animations.
+.build.gradle.kts
+[tabs]
+====
+CuP Plugin::
++
+[source, kotlin]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation(cup.sourceCode)
+    }
+}
+----
+
+Regular Gradle::
++
+[source, kotlin, subs="attributes"]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation("net.kodein.cup:cup-source-code:{version}")
+    }
+}
+----
+====
 
 
-[[inline]]
-== With inline markers
+NOTE: Source Coloring is provided by https://highlightjs.org[highlight.js], which is either run inside a dedicated runtime when targeting the JVM, or directly in the browser when targeting Wasm.
 
 
+[[static]]
+== Displaying static source code
 
-//TODO
-> Stay tuned, documentation is coming!
+To display static source code, you should use the `SourceCode` composable, with the `rememberSourceCode` function, in a xref:slide.adoc#preloading[PreparedSlide]:
+
+[source, kotlin]
+----
+val amazingHtml by PreparedSlide {
+
+    val sourceCode = rememberSourceCode(language = "html") {
+        // language=html <1>
+        """
+            <p>This is <b>Amazing!</b></p>
+        """.trimIndent()
+    }
+
+    slideContent {
+        SourceCode(sourceCode)
+    }
+}
+----
+<1> https://www.jetbrains.com/help/idea/using-language-injections.html#use-language-injection-comments[IntelliJ Language injection]
+
+[TIP]
+====
+The reason you need to use `PreparedSlide` is because to color your code, highlight.js needs to load and then to parse your string.
+As this can take some time, this should be done when the presentation starts, not when the slide is displayed.
+====
 
 
-[[external]]
-== With external editor
+[[theme]]
+== Theming & coloring your sources
 
-//TODO
-> Stay tuned, documentation is coming!
+The `SourceCode` composable takes two parameters that define how the source code text is displayed and colored.
+
+* The `style: TextStyle` parameter defines the default https://developer.android.com/reference/kotlin/androidx/compose/ui/text/TextStyle[TextStyle] of the text.
+It should be mainly used to define the font family, the font size, and the default text color.
+
+* The `theme: SourceCodeTheme` parameter defines the style and color of each section of your code.
+A `SourceCodeTheme` is a function that associates a `SpanStyle` to a class of section detected by highlight.js.
+Think of a CSS, but in Kotlin. +
+CuP provides two themes out of the box: `SourceCodeThemes.intelliJLight` and `SourceCodeThemes.darcula`.
+To create your own `SourceCodeTheme`, have a look at https://github.com/KodeinKoders/CuP/blob/main/Compose-Ur-Pres/cup-source-code/src/commonMain/kotlin/net/kodein/cup/sa/Theme.kt[their sources].
+
+[source, kotlin]
+----
+SourceCode(
+    sourceCode = sourceCode,
+    style = TextStyle(fontFamily = JetBrainsMono),
+    theme = SourceCodeThemes.darcula
+)
+----
+
+
+[TIP]
+====
+These two parameters can be defined at the application level with their respective composition locals:
+
+[source, kotlin]
+----
+CompositionLocalProvider(
+    LocalDefaultSourceCodeTextStyle provides TextStyle(fontFamily = JetBrainsMono),
+    LocalDefaultSourceCodeTheme provides SourceCodeThemes.darcula
+) {
+    Presentation(slides)
+}
+----
+====
+
+[[animation]]
+== Animating sections
+
+=== Markers & animations
+
+To animate sections of your code, create markers that defines when these portions are visible:
+
+[source, kotlin]
+----
+val sourceCode = rememberSourceCode(language = "html") {
+    val bad by marker(onlyShown(0)) //<1>
+    val good by marker(hidden(0)) //<2>
+    val second by marker(hidden(0..1)) //<3>
+    val bold by marker(highlighted(3)) //<4>
+
+    // language=html
+    """
+        <p>
+            This is ${bad}freaking${X}${good}really${X}
+        ${second}    ${bold}<b>${X}Amazing!${bold}</b>${X}${X}
+        </p>
+    """.trimIndent()
+}
+----
+<1> Sections defined by this "bad" marker will be visible on step 0, and hidden every other steps
+<2> Sections defined by this "good" marker will be hidden on step 0, and visible every other steps
+<3> Sections defined by this "second" marker will be hidden on steps 0 to 1, and visible every other steps.
+<4> Sections defined by this "bold" marker will be highlighted on step 2.
+
+To define a section in your string, start it with `$+{marker}+` and end it with `$+{X}+`.
+
+TIP: A marker can be used multiple times to define multiple sections that are animated similarly.
+
+TIP: A section can be contained inside another section.
+
+A marker can be given multiple states:
+
+[source, kotlin]
+----
+val m by marker(hidden(0), highlighted(2))
+----
+
+
+=== Display
+
+You then need to pass the current `step` to `SourceCode`:
+
+[source, kotlin]
+----
+SourceCode(
+    sourceCode = sourceCode,
+    step = step,
+)
+----
+
+[TIP]
+====
+If your Slide's step is different from your SourceCode's step, because you are animating elements in your slides before and/or after your source code animation, you can manipulate the step passed to `SourceCode`:
+
+For example, if your slide has 8 steps, your source code 3, and the source code animation happens from slide step 2 to 5:
+[source, kotlin]
+----
+SourceCode(
+    sourceCode = sourceCode,
+    step = (step - 2).coerceIn(0..3),
+)
+----
+====
+
+
+=== Sections constraints
+
+Sections defined by markers must either be *inside a single line*, or *include the totality of one or more lines*.
+
+Here are some *INVALID* sections:
+
+[source, kotlin]
+----
+"""
+    This is a first ${foo}line. <1>
+    This${X} is a second line.
+        ${bar}This is a third line with an indent. <2>
+        This is a fourth line with an indent.${X}
+""".trimIndent()
+----
+<1> `foo` is invalid because it spans over the first and second lines but does not contain their totality.
+<2> `bar` is invalid because it spans over the third and fourth lines, but does not contain the third line in its totality as it does not include its indentation spaces.
+
+Here are the same sections, but *CORRECT*:
+
+[source, kotlin]
+----
+"""
+    This is a first ${foo}line.${X} <1>
+    ${foo}This${X} is a second line.
+    ${bar}    This is a third line with an indent. <2>
+        This is a fourth line with an indent.${X}
+""".trimIndent()
+----
+<1> `foo` is used to declare two sections, that are each inside their *single lines*.
+<2> `bar` contains the totality of both the third and fourth lines, including their indentation spaces.
+
+[NOTE]
+====
+* Sections that are inside a line appear and disappear horizontally (inside the line, between the previous and next characters).
+* Sections that contain the totality of one or more lines appear and disappear vertically (between the previous and next lines).
+====
+
+
+=== Implicit & explicit steps
+
+Using your defined markers, CuP counts the number of steps that your source code will be colored and animated.
+For example, considering the following markers:
+
+[source, kotlin]
+----
+val a by marker(onlyShown(0))
+val b by marker(hidden(0))
+val c by marker(hidden(0..1))
+val d by marker(highlighted(3))
+----
+
+Here, CuP will infer that your animation contains 4 steps (numbered 0 to 3).
+Even though step 2 is never defined, because marker `d` defines a step 3, then step 2 must exist!
+
+However, if the last step of your animation is defined nowhere, then it needs to be explicitely defined:
+
+[source, kotlin]
+----
+val sourceCode = rememberSourceCode(language = "text") {
+    val bad by marker(onlyShown(0))
+    val good by marker(hidden(0))
+    emptyStep(1) //<1>
+
+    """
+        This is ${bad}freaking${X}${good}really${X} amazing!
+    """.trimIndent()
+}
+----
+<1> Because step 1 is defined nowhere, and it is the last step, it needs to be explicitly defined.
+
+
+[[style]]
+== Applying additional styles
+
+In addition to visibility (with `hidden` and `onlyShown`) and highlighting (with `highlighted`), CuP Source Code Animations supports additional styling with `SAStyle`.
+
+CuP provides the `SAStyle.Line` function that creates an `SAStyle` that draws a line of a given color:
+
+* Either under the text, behind it (underline), or over the text crossing it (line-through).
+* Either straight, or squiggled.
+
+For example, to add a marker that will animate its sections with a red squiggled underline (which traditionally shows an error):
+
+[source, kotlin]
+----
+val errorStyle = SAStyle.line(Color.Red, squiggle = true, through = false)
+
+val error by marker(marker(styled(errorStyle, 1..3))) //<1>
+----
+<1> Will show the red squiggled underline from step 1 to step 3.
+
+You can create your own styles by implementing the `SAStyle` interface:
+
+[source, kotlin]
+----
+interface SAStyle {
+    fun spanStyle(): SpanStyle = SpanStyle()
+    fun DrawScope.drawBehind(rect: Rect, fraction: Float) {}
+    fun DrawScope.drawOver(rect: Rect, fraction: Float) {}
+}
+----

@@ -30,6 +30,9 @@ public class SourceCodeBuilder internal constructor() {
     @Suppress("PropertyName")
     public val X: String get() = END
 
+    @Deprecated("You must give at least one State to a marker", level = DeprecationLevel.ERROR)
+    public fun marker(): EagerProperty<Marker> { error("Must be given at least one State") }
+
     public fun marker(vararg visibilities: State): EagerProperty<Marker> =
         eagerProperty { prop ->
             Marker(

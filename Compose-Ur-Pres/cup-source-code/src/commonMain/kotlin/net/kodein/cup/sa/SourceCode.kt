@@ -236,7 +236,7 @@ public class SourceCode internal constructor(
 @Composable
 public fun SourceCode(
     sourceCode: SourceCode,
-    step: Int,
+    step: Int = 0,
     style: TextStyle = LocalDefaultSourceCodeTextStyle.current,
     theme: SourceCodeTheme = LocalDefaultSourceCodeTheme.current,
 ) {

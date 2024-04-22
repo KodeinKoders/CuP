@@ -1,6 +1,6 @@
 
 tasks.register<Exec>("installAntora") {
-    commandLine("npm", "i", "antora")
+    commandLine("npm", "install")
 }
 
 tasks.register<Exec>("generateDocumentation") {
