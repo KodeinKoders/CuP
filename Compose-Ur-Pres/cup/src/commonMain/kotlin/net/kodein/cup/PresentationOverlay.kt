@@ -109,7 +109,7 @@ internal fun OverlayScope.PresentationOverlay(
                     text = "Full Screen",
                     keys = "F",
                     onClick = { toggleFullScreen() },
-                    icon = if (isFullScreen) Icons.Rounded.ZoomInMap else Icons.Rounded.ZoomOutMap
+                    icon = if (isFullScreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen
                 )
             }
             IconButtonWithTooltip(

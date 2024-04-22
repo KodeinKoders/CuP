@@ -1,22 +1,102 @@
 = Presenting with the desktop app
 
-
 [[running]]
 == Running & distributing the app
 
-//TODO
-> Stay tuned, documentation is coming!
+To run your presentation JVM desktop app, execute the `run` gradle task:
+
+[tabs]
+====
+Linux / Mac::
++
+[source, shell]
+----
+./gradlew run
+----
+Windows::
++
+[source, shell]
+----
+gradlew.bat run
+----
+====
+
+TIP: You can also simply run your `main` function inside your IDE!
+
+To create a distributable binary, execute the `createDistributable` gradle task:
+
+[tabs]
+====
+Linux / Mac::
++
+[source, shell]
+----
+./gradlew createDistributable
+----
+Windows::
++
+[source, shell]
+----
+gradlew.bat createDistributable
+----
+====
+
+The binary will be available in the `build/compose/binaries` directory of your project.
+
+CAUTION: On MacOS, the generated application is not signed, and therefore cannot be run easily on other Macs (the system will warn your users that the app is not to be trusted, and they will have to manually allow your app in the "Privacy & Security" section of the System Settings). +
+If you want to easily distribute your Mac presentation application, https://github.com/JetBrains/compose-multiplatform/blob/master/tutorials/Signing_and_notarization_on_macOS/README.md[you need to sign it], which is a very complex endeavor.
 
 
 [[presenting]]
 == Presenting
 
-//TODO
-> Stay tuned, documentation is coming!
+Once your presentation application is started, the first slide should display in the presentation window.
+
+[NOTE]
+====
+To facilitate development and testing, the application maintains a hidden `.cup` directory which allows it to:
+
+* Start directly with the last viewed slide (so you don't have to navigate to it each time you change something and restart the app to see the result).
+* Position and size the presentation window to its last known position and size (so you don't have to move the window each time the app starts).
+====
+
+The following key stokes allow to navigate through your presentation:
+
+* [Arrow Right], [Arrow Down], [Space], [Enter]: Move forward one *step*.
+* [Shift + Arrow Right], [Shift + Arrow Down], [Shift + Space], [Shift + Enter]: Move forward one *slide* (ignoring the current slide's step).
+* [Arrow Left], [Arrow Up], [Backspace]: Move backward one *step*.
+* [Shift + Arrow Left], [Shift + Arrow Up], [Shift + Backspace]: Move backward one *slide* (going directly to its step 0).
 
 
 [[overlay]]
 == Using the overlay core tools
 
-//TODO
-> Stay tuned, documentation is coming!
+When moving the cursor over the presentation window, an overlay is displayed.
+
+
+=== Navigation
+
+You can navigate with the image:navigate_before.svg[] and image:navigate_next.svg[] buttons in the bottom right of the screen.
+
+
+=== Full Screen
+
+You can toggle full screen with the image:fullscreen.svg[] button in the bar in the top left of the screen.
+You can also press [F] to toggle fullscreen.
+
+
+=== Slides list
+
+You can show the slides and their steps by clicking on the image:filter_list.svg[] button in the top right of the screen.
+
+
+=== Slides Overview
+
+You can toggle the overview by clicking on the image:zoom_out.svg[] button in the bar in the top left of the screen.
+You can also press [Escape] to toggle the overview.
+
+The overview shows each slide (horizontally), and each of their steps (vertically).
+
+Once in the overview, you can navigate with the keyboard arrows, or the mouse ([Shift + Scroll] will scroll horizontally).
+Pressing [Enter] will exit the overview and display the selected slide and step.
+You can also click on representation to exit the overview to the clicked slide and step.
