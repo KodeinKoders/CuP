@@ -15,7 +15,7 @@ val transitions by Slide(
     stepCount = 2,
     specs = { copy(startTransitions = y3DRotation(LocalLayoutDirection.current)) },
     user = dataMapOf(
-        KodeinPresentationBackground(KodeinTheme.Color.BackgroundSpecial),
+        KodeinBackground(KodeinTheme.Color.BackgroundSpecial),
     )
 ) { step ->
     Title(Modifier.padding(16.dp)) {

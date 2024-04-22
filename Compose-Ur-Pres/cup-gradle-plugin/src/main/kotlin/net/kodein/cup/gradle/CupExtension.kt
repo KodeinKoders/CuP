@@ -47,12 +47,5 @@ public class CupExtension internal constructor(
             dependsOn(extractIndexHtml)
             from(extractIndexHtml.get().output)
         }
-
-        project.tasks.register<Sync>("distDoc") {
-            group = "publishing"
-            dependsOn("wasmJsBrowserDistribution")
-            from("build/dist/wasmJs/productionExecutable")
-            into("doc")
-        }
     }
 }

@@ -184,12 +184,12 @@ val helloWorld by Slide(
 [[transition]]
 === Creating a custom Slide transition
 
-To create a Slide custom transition, you need to provide a https://github.com/kosi-libs/CuP/blob/main/cup/src/commonMain/kotlin/org/kodein/pres/TransitionSet.kt[TransitionSet].
+To create a Slide custom transition, you need to provide a `https://github.com/KodeinKoders/CuP/blob/main/Compose-Ur-Pres/cup/src/commonMain/kotlin/net/kodein/cup/TransitionSet.kt[TransitionSet]`.
 
 You can draw inspiration from:
 
-- The https://github.com/kosi-libs/CuP/blob/main/cup/src/commonMain/kotlin/org/kodein/pres/TransitionSet.kt[default provided transitions] (`moveHorizontal`, `moveVertical`, & `fade`).
-- This https://github.com/kosi-libs/CuP/blob/main/demo/src/commonMain/kotlin/utils/transitions.kt[demo transition] (that implements a 3D rotation transition).
+- The https://github.com/KodeinKoders/CuP/blob/main/Compose-Ur-Pres/cup/src/commonMain/kotlin/net/kodein/cup/TransitionSet.kt[default provided transitions] (`moveHorizontal`, `moveVertical`, & `fade`).
+- This https://github.com/KodeinKoders/CuP/blob/main/Demo/src/commonMain/kotlin/utils/transitions.kt[demo transition] (that implements a 3D rotation transition).
 
 
 [[previewing]]
@@ -261,3 +261,60 @@ val contentDemo by PreparedSlide(
 ----
 
 WARNING: You must not display anything in the "prepare" section of the `PreparedSlide` or you will break your presentation!
+
+
+[[user-data]]
+== Attaching user data to a slide
+
+You can attach custom user data to a `Slide` that can be consumed by your xref:presentation.adoc#user-data[presentation decoration] or by a plugin.
+For example, let's say that you want your presentation decoration to display a text banner over certain slides.
+
+You first need to create a `DataMapElement`:
+
+[source, kotlin]
+----
+data class Banner(
+    val text: String,
+) : DataMapElement<Banner>(Key) { //<1>
+    companion object Key : DataMap.Key<Banner> //<2>
+}
+----
+<1> A data class to be attached to a Slide must implement `DataMapElement`.
+<2> Each `DataMapElement` must have a corresponding `DataMap.Key`.
+
+You can now attach this user data to a `Slide`:
+
+[source, kotlin]
+----
+val whatever by Slide(
+    user = Banner("Work In Progress!")
+) {
+    /* Slide content */
+}
+----
+
+[TIP]
+====
+You can combine multiple `DataMapElement` into a `DataMap`:
+
+* With the `plus` operator:
++
+[source, kotlin]
+----
+val whatever by Slide(
+    user = Banner("Work In Progress!") + SpeakerNotesMD("Amazing!")
+) {}
+----
+* With the `dataMapOf` function:
++
+[source, kotlin]
+----
+val whatever by Slide(
+    user = dataMapOf(
+        Banner("Work In Progress!"),
+        SpeakerNotesMD("Amazing!")
+    )
+) {}
+----
+
+====

@@ -1,7 +1,6 @@
 package net.kodein.cup
 
 import androidx.compose.runtime.*
-import kotlin.math.max
 
 
 public sealed interface PresentationState {
@@ -59,6 +58,15 @@ public fun PresentationState.goToPrevious() {
     if (isInOverview) goToPreviousSlide()
     else goToPreviousStep()
 }
+
+public val PresentationState.totalStepCount: Int get() =
+    slides.sumOf { it.stepCount }
+
+public val PresentationState.totalStepCurrent: Int get() =
+    slides.subList(0, currentSlideIndex).sumOf { it.stepCount } + currentStep
+
+public val PresentationState.totalStepLast: Int get() =
+    totalStepCount - 1
 
 internal class PresentationStateImpl(
     private val initial: (List<Slide>) -> Pair<Int, Int> = { 0 to 0 }

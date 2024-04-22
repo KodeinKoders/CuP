@@ -11,4 +11,5 @@ asciidoc:
     branch: 'main'
     version: '1.0.0-Beta-01'
     kotlin: '1.9.23'
+    compose: '1.6.2'
     jdk: '1.8'

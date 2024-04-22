@@ -28,22 +28,6 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 
 
-private class PresentationOverviewScope(
-    boxScope: BoxScope,
-    val content: SlideContent,
-    val step: Int,
-    val slideSize: DpSize,
-) : PresentationScope, BoxScope by boxScope {
-    @Composable
-    override fun Slides() {
-        SlideContainer(
-            content = content,
-            step = step,
-            slideSize = slideSize,
-        )
-    }
-}
-
 private const val shrinkRatio = 4.5f
 
 private class OverviewPresentationState(
@@ -94,14 +78,13 @@ private fun OverviewSlideView(
                         defaultSlideSize = slideSize,
                     ) {
                         CompositionLocalProvider(LocalPresentationState provides OverviewPresentationState(state, slideIndex, step)) {
-                            config.presentation(
-                                PresentationOverviewScope(
-                                    boxScope = this,
+                            config.presentation(this) {
+                                SlideContainer(
                                     content = LocalSlideContents.current[slideIndex],
                                     step = step,
                                     slideSize = slideSize,
                                 )
-                            )
+                            }
                         }
                     }
                 }

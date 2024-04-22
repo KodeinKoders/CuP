@@ -70,48 +70,7 @@ public interface PresentationScope : BoxScope {
     @Composable
     public fun Slides()
 }
-
-private class PresentationMainViewScope(
-    boxScope: BoxScope,
-) : PresentationScope, BoxScope by boxScope {
-
-    @Composable
-    override fun Slides() {
-        val state = LocalPresentationState.current
-        val config = state.impl().config
-
-        state.slides.forEachIndexed { slideIndex, slide ->
-            key(slide.name) {
-                val specs = config.slideSpecs(slide, slideIndex, state.slides.lastIndex)
-
-                val visible = slideIndex == state.currentSlideIndex
-
-                AnimatedVisibility(
-                    visible = visible,
-                    enter = if (state.forward) specs.startTransitions.enterForward else specs.endTransitions.enterBackward,
-                    exit = if (state.forward) specs.endTransitions.exitForward else specs.startTransitions.exitBackward,
-                ) {
-                    val (transitions, type) = when {
-                        visible && state.forward -> specs.startTransitions to TransitionSet.Type.EnterForward
-                        visible && !state.forward -> specs.endTransitions to TransitionSet.Type.EnterBackward
-                        !visible && state.forward -> specs.endTransitions to TransitionSet.Type.ExitForward
-                        !visible && !state.forward -> specs.startTransitions to TransitionSet.Type.ExitBackward
-                        else -> error("Impossible")
-                    }
-                    var step by remember { mutableStateOf(0) }
-                    if (visible) step = state.currentStep
-
-                    SlideContainer(
-                        step = step,
-                        slideSize = specs.size,
-                        modifier = transitions.modifier(this, type),
-                        content = LocalSlideContents.current[slideIndex]
-                    )
-                }
-            }
-        }
-    }
-}
+@Composable public fun PresentationScope.SlidesContent(): Unit = Slides()
 
 @Composable
 internal fun PresentationRatioContainer(
@@ -155,11 +114,40 @@ public fun PresentationMainView() {
     PresentationRatioContainer(
         defaultSlideSize = config.defaultSpecs.size,
     ) {
-        config.presentation(
-            PresentationMainViewScope(
-                boxScope = this,
-            )
-        )
+        config.presentation(this) {
+            val state = LocalPresentationState.current
+
+            state.slides.forEachIndexed { slideIndex, slide ->
+                key(slide.name) {
+                    val specs = config.slideSpecs(slide, slideIndex, state.slides.lastIndex)
+
+                    val visible = slideIndex == state.currentSlideIndex
+
+                    AnimatedVisibility(
+                        visible = visible,
+                        enter = if (state.forward) specs.startTransitions.enterForward else specs.endTransitions.enterBackward,
+                        exit = if (state.forward) specs.endTransitions.exitForward else specs.startTransitions.exitBackward,
+                    ) {
+                        val (transitions, type) = when {
+                            visible && state.forward -> specs.startTransitions to TransitionSet.Type.EnterForward
+                            visible && !state.forward -> specs.endTransitions to TransitionSet.Type.EnterBackward
+                            !visible && state.forward -> specs.endTransitions to TransitionSet.Type.ExitForward
+                            !visible && !state.forward -> specs.startTransitions to TransitionSet.Type.ExitBackward
+                            else -> error("Impossible")
+                        }
+                        var step by remember { mutableStateOf(0) }
+                        if (visible) step = state.currentStep
+
+                        SlideContainer(
+                            step = step,
+                            slideSize = specs.size,
+                            modifier = transitions.modifier(this, type),
+                            content = LocalSlideContents.current[slideIndex]
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -193,9 +181,11 @@ private fun WithPresentationOverlay(
     }
 }
 
+public typealias PresentationContent = @Composable BoxScope.(@Composable () -> Unit) -> Unit
+
 @PluginCupAPI
 public class PresentationConfig(
-    public val presentation: @Composable PresentationScope.() -> Unit,
+    public val presentation: PresentationContent,
     public val backgroundColor: Color,
     public val defaultSpecs: SlideSpecs,
     public val plugins: List<CupPlugin>,
@@ -221,7 +211,7 @@ public fun Presentation(
     slides: SlideGroup,
     configuration: CupConfigurationBuilder.() -> Unit = {},
     backgroundColor: Color = Color.LightGray,
-    presentation: @Composable PresentationScope.() -> Unit = { Slides() },
+    presentation: PresentationContent = { it() },
 ) {
     val state = LocalPresentationState.current
     val layoutDirection = LocalLayoutDirection.current

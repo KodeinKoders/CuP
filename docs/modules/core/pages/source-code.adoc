@@ -8,6 +8,7 @@ To access them, you need to add the following dependency in your presentation's 
 ====
 CuP Plugin::
 +
+.build.gradle.kts
 [source, kotlin]
 ----
 kotlin {
@@ -19,6 +20,7 @@ kotlin {
 
 Regular Gradle::
 +
+.build.gradle.kts
 [source, kotlin, subs="attributes"]
 ----
 kotlin {
@@ -36,7 +38,7 @@ NOTE: Source Coloring is provided by https://highlightjs.org[highlight.js], whic
 [[static]]
 == Displaying static source code
 
-To display static source code, you should use the `SourceCode` composable, with the `rememberSourceCode` function, in a xref:slide.adoc#preloading[PreparedSlide]:
+To display static source code, you should use the `SourceCode` composable, with the `rememberSourceCode` function, in a `xref:slide.adoc#preloading[PreparedSlide]`:
 
 [source, kotlin]
 ----
@@ -68,7 +70,7 @@ As this can take some time, this should be done when the presentation starts, no
 
 The `SourceCode` composable takes two parameters that define how the source code text is displayed and colored.
 
-* The `style: TextStyle` parameter defines the default https://developer.android.com/reference/kotlin/androidx/compose/ui/text/TextStyle[TextStyle] of the text.
+* The `style: TextStyle` parameter defines the default `https://developer.android.com/reference/kotlin/androidx/compose/ui/text/TextStyle[TextStyle]` of the text.
 It should be mainly used to define the font family, the font size, and the default text color.
 
 * The `theme: SourceCodeTheme` parameter defines the style and color of each section of your code.

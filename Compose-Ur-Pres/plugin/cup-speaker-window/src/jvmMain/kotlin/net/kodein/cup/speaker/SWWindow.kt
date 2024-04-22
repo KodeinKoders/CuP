@@ -128,9 +128,6 @@ private fun SWTopBar(
             elevation = AppBarDefaults.TopAppBarElevation,
             modifier = Modifier.fillMaxWidth()
         ) {
-            val totalStepCount = presentationState.slides.sumOf { it.stepCount }
-            val currentStepCount = presentationState.slides.subList(0, presentationState.currentSlideIndex)
-                .sumOf { it.stepCount } + presentationState.currentStep
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -161,9 +158,9 @@ private fun SWTopBar(
                     modifier = Modifier.weight(4f)
                 ) {
                     Text("[")
-                    Text((currentStepCount + 1).toString())
+                    Text((presentationState.totalStepCurrent + 1).toString())
                     Text("..")
-                    Text(totalStepCount.toString())
+                    Text(presentationState.totalStepCount.toString())
                     Text("]")
                 }
                 Spacer(Modifier.weight(3f))

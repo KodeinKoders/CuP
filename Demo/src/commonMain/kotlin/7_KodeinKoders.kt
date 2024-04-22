@@ -28,7 +28,8 @@ import net.kodein.cup.Slide
 
 @OptIn(ExperimentalResourceApi::class)
 val kodeinKoders by Slide(
-    specs = { copy(size = SLIDE_SIZE_16_9) }
+    specs = { copy(size = SLIDE_SIZE_16_9) },
+    user = KodeinBanner(visible = true)
 ) {
     Text(
         text = "CuP is brought to you by:",

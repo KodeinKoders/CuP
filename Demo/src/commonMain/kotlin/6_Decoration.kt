@@ -15,7 +15,8 @@ import utils.Title
 
 
 val decoration by Slide(
-    stepCount = 2
+    stepCount = 2,
+    user = KodeinBanner(visible = true)
 ) { step ->
     Title {
         Text("You can decorate and theme your presentation")

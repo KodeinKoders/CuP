@@ -4,26 +4,419 @@
 [[creating]]
 == Creating a CuP application
 
-//TODO
-> Stay tuned, documentation is coming!
+To create a CuP project, the easiest way is to use the *Cup template project*.
+
+If you need to add a presentation module to a larger Gradle project, you can do so either:
+
+* with the CuP Gradle Plugin, if you are creating a CuP project in your Gradle build.
+* manually, if you want to embed CuP in a larger project.
+
+[tabs]
+====
+With the Template::
++
+--
+Have a look at the xref:ROOT:getting-started.adoc[Quick start guide]!
+--
+
+With the Plugin::
++
+--
+In a regular Gradle project, apply the `kotlin("multiplatform")`, the `org.jetbrains.compose` and the `net.kodein.cup` plugins, *in that order*:
+
+.build.gradle.kts
+[source, kotlin, subs="attributes"]
+----
+plugins {
+    kotlin("multiplatform") version "{kotlin}"
+    id("org.jetbrains.compose") version "{compose}"
+    id("net.kodein.cup") version "{version}"
+}
+----
+
+Then, configure the desktop and the optional web targets:
+
+.build.gradle.kts
+[source, kotlin]
+----
+cup {
+    targetDesktop() // or targetDesktop(mainClass = "AppKt")
+    targetWeb() // optional
+}
+----
+
+Configure the dependencies you will be using in your presentation application:
+
+.build.gradle.kts
+[source, kotlin]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        // Optional: source code animation composables. <1>
+        implementation(cup.sourceCode)
+
+        // Optional: secondary window with preview & speaker notes. <2>
+        implementation(cup.plugin.speakerWindow)
+
+        // Optional: tool to draw over the presentation. <3>
+        implementation(cup.plugin.laser)
+
+        // Mandatory (can be material3 instead).
+        implementation(compose.material)
+    }
+}
+----
+<1> xref:source-code.adoc[Displaying & Animating Source Code]
+<2> xref:plugins:speaker-mode.adoc[Plugin: Speaker Window]
+<3> xref:plugins:laser.adoc[Plugin: Laser]
+
+Finally, add a `main.kt` file with your presentation:
+
+.src/commonMain/kotlin/main.kt
+[source, kotlin]
+----
+val presentationSlides = Slides(
+    /* Your slides here! */
+)
+fun main() = cupApplication(
+    title = "Presentation Title!",
+) {
+    Presentation(
+        slides = presentationSlides,
+        configuration = { //<1>
+            speakerMode()
+            laser()
+        }
+    )
+}
+----
+<1> You need to enable the plugins that you added to your dependencies.
+--
+
+Manually with Gradle::
++
+--
+In a regular Gradle project, apply the `kotlin("multiplatform")` and the `org.jetbrains.compose` plugins:
+
+.build.gradle.kts
+[source, kotlin, subs="attributes"]
+----
+plugins {
+    kotlin("multiplatform") version "{kotlin}"
+    id("org.jetbrains.compose") version "{compose}"
+}
+----
+
+Add the Maven Central and the Google repositories:
+
+.build.gradle.kts
+[source, kotlin]
+----
+repositories {
+    mavenCentral()
+    google()
+}
+----
+
+Configure the JVM desktop target:
+
+.build.gradle.kts
+[source, kotlin]
+----
+kotlin {
+    jvm()
+    sourceSets.jvmMain.dependencies {
+        implementation(compose.desktop.currentOs)
+    }
+}
+compose.desktop {
+    application.mainClass = "MainKt" // main.kt -> MainKt
+    application.nativeDistributions.includeAllModules = true
+}
+----
+
+Add the CuP & Compose dependencies:
+
+.build.gradle.kts
+[source, kotlin, subs="attributes,verbatim"]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation(compose.runtime)
+        implementation(compose.foundation)
+        implementation(compose.components.resources)
+        implementation(compose.material) // or material3
+
+        val cupVersion = "{version}"
+        implementation("net.kodein.cup:cup:$cupVersion")
+
+        // Optional: source code animation composables. <1>
+        implementation("net.kodein.cup:cup-source-code:$cupVersion")
+
+        // Optional: secondary window with preview & speaker notes. <2>
+        implementation("net.kodein.cup:cup-speaker-window:$cupVersion")
+
+        // Optional: tool to draw over the presentation. <3>
+        implementation("net.kodein.cup:cup-laser:$cupVersion")
+    }
+}
+----
+<1> xref:source-code.adoc[Displaying & Animating Source Code]
+<2> xref:plugins:speaker-mode.adoc[Plugin: Speaker Window]
+<3> xref:plugins:laser.adoc[Plugin: Laser]
+
+If you want to deploy your presentation to the web, you'll need to:
+
+* Add and configure the Wasm target:
++
+.build.gradle.kts
+[source, kotlin]
+----
+kotlin {
+    wasmJs {
+        browser {
+            runTask { mainOutputFileName.set("presentation.js") }
+            webpackTask { mainOutputFileName.set("presentation.js") }
+        }
+        binaries.executable()
+    }
+}
+compose.experimental.web.application {}
+----
+* Add the following `index.html` file in the project WasmJS resources:
++
+.src/wasmJsMain/resources/index.html
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Presentation</title>
+    <script type="application/javascript" src="skiko.js"></script>
+    <script type="application/javascript" src="presentation.js"></script>
+</head>
+<body>
+    <canvas id="cup"></canvas>
+</body>
+</html>
+----
+
+Finally, add the presentation to your application.
+
+Here's an example of adding a presentation dedicated dialog window:
+
+.src/jvmMain/kotlin/presentation.kt
+[source, kotlin]
+----
+val presentationSlides = Slides(
+    /* Your slides here! */
+)
+withPresentationState { //<1>
+    DialogWindow(
+        onCloseRequest = { /*...*/ },
+        state = rememberDialogState(size = SLIDE_SIZE_16_9 * 2f),
+        onKeyEvent = PresentationKeyHandler() //<2>
+    ) {
+        Presentation(
+            slides = presentationSlides,
+            configuration = {
+                speakerMode()
+                laser()
+            },
+            backgroundColor = KodeinTheme.Color.background
+        )
+    }
+}
+----
+<1> A presentation must be enclosed inside a `withPresentationState` block.
+<2> The `PresentationKeyHandler` allows to control the presentation. It needs to be inside a `withPresentationState` block.
+--
+====
 
 
 [[theming]]
 == Theming your presentation
 
-//TODO
-> Stay tuned, documentation is coming!
+=== With composition locals
+
+Theming your presentation is exactly like theming any Compose application.
+
+The `Presentation` composable allows you to customize how the slides will be displayed:
+
+[source, kotlin]
+----
+Presentation(
+    slides = presentationSlides,
+    configuration = {
+        speakerMode()
+        laser()
+    },
+    backgroundColor = Color.DarkGray //<1>
+) { slidesContent ->
+    CompositionLocalProvider( //<2>
+        LocalContentColor provides Color.White,
+        LocalTextStyle provides TextStyle(
+            fontFamily = LCTPiconRegular
+        )
+    ) {
+        slidesContent()
+    }
+}
+----
+<1> The background of the presentation, NOT of the slides, which is transparent.
+<2> Sets default content color and text style in the slides.
 
 
-[[grouping]]
-== Grouping slides
+=== With MaterialTheme
 
-//TODO
-> Stay tuned, documentation is coming!
+MaterialTheme can be used in CuP, which makes all composable that depends upon it compatible with CuP.
+
+There's one catch: font sizes.
+Because the default Typography is intended at applications, the amplitude (and size) of headers in MaterialTheme makes it incompatible with a presentation.
+You therefore need to scale down typography sizes in order to use MaterialTheme in CuP:
+
+[source, kotlin]
+----
+MaterialTheme(
+    colors = darkColors(),
+    typography = MaterialTheme.typography.cupScaleDown() //<1>
+) {
+    Presentation(
+        slides = presentationSlides,
+        configuration = {
+            speakerMode()
+            laser()
+        },
+        backgroundColor = MaterialTheme.colors.background //<2>
+    ) { slidesContent ->
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colors.onBackground //<3>
+        ) {
+            slidesContent()
+        }
+    }
+}
+----
+<1> Scales down the typography to adapt it to CuP.
+<2> Sets the background defined in the theme.
+<3> Sets the content color in the slides according to the presentation background.
+
+
+[[decorating]]
+== Decorating your presentation
+
+The composable lambda passed to `Presentation` runs on a `BoxScope`.
+You can add images and other composables behind and around the slides:
+
+[source, kotlin]
+----
+Presentation(
+    slides = presentationSlides,
+) { slidesContent ->
+    Image(
+        painter = painterResource(Res.drawable.logo),
+        contentDescription = "Logo",
+        alignment = Alignment.CenterEnd,
+        modifier = Modifier.alpha(0.4f).fillMaxSize().offset(x = (-16).dp, y = 64.dp)
+    )
+    slidesContent()
+}
+----
+
+
+=== Updating the decoration according to the state
+
+The `LocalPresentationState` composition locals allows you to access a `https://github.com/KodeinKoders/CuP/blob/main/Compose-Ur-Pres/cup/src/commonMain/kotlin/net/kodein/cup/PresentationState.kt[PresentationState]`, which can be used to modify the decoration according to the presentation state (Slide index & State).
+
+Have a look at the demo's `https://github.com/KodeinKoders/CuP/blob/main/Demo/src/commonMain/kotlin/utils/PresentationProgressBar.kt[PresentationProgressBar]` which displays a progress bar filled according to the presentation progress.
+
+
+[[user-data]]
+=== Getting custom values from the current slide
+
+The decoration can react to ** xref:slide.adoc#user-data[user data attached to the slide] being currently displayed.
+
+To continue xref:slide.adoc#user-data[the slide's example] of text banner, you can retrieve the slide's user data and react upon it:
+
+[source, kotlin]
+----
+Presentation(
+    slides = presentationSlides,
+) { slidesContent ->
+    val presentationState = LocalPresentationState.current
+    val bannerText = presentationState.currentSlide.user[Banner]?.text
+    if (bannerText != null) {
+        TextBanner(bannerText)
+    }
+
+    slidesContent()
+}
+----
 
 
 [[configuring]]
 == Configuring the default Slide ratio & transitions
 
-//TODO
-> Stay tuned, documentation is coming!
+As each slide can xref:slide.adoc#configuring[configure its own ratio & transitions] you can define default for these values:
+
+[source, kotlin]
+----
+Presentation(
+    slides = presentationSlides,
+    configuration = {
+        speakerMode()
+        laser()
+        defaultSlideSpecs = SlideSpecs(
+            size = SLIDE_SIZE_16_9, // defaults to SLIDE_SIZE_4_3
+            startTransitions = TransitionSet.fade, // default to TransitionSet.moveHorizontal()
+            endTransitions = TransitionSet.fade, // default to TransitionSet.moveHorizontal()
+        )
+    }
+)
+----
+
+NOTE: Creating custom transitions is explained xref:slide.adoc#transition[here].
+
+
+[[grouping]]
+== Grouping slides
+
+Instead of listing all your slides when declaring your presentation, you can create groups of slides:
+
+[source, kotlin]
+----
+val presentationContentSlides = Slides(
+    slide1,
+    slide2
+)
+
+val presentationSlides = Slides(
+    intro,
+    presentationContentSlides,
+    outro
+)
+----
+
+You can customize the slide transitions that apply inside a `SlideGroup`.
+For example, all slides in this group transition vertically:
+
+[source, kotlin]
+----
+val modes = Slides(
+    slide1,
+    slide2,
+    slide3,
+    specs = {
+        copyWithInsideTransitions(
+            config = it,
+            startTransitions = TransitionSet.moveVertical,
+            endTransitions = TransitionSet.moveVertical
+        )
+    }
+)
+----
+
+NOTE: In this example, both the `startTransitions` of `slide1` and the `endTransitions` of `slide3` are left unmodified.
+Only the transitions that apply between two slides of the same group are modified by `copyWithInsideTransitions`.

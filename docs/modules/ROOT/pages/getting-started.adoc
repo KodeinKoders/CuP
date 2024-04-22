@@ -23,12 +23,12 @@ rootProject.name = "How-to-CuP"
 --
 +
 .Example: `build.gradle.kts`
-[source, kotlin]
+[source, kotlin, subs="attributes,verbatim"]
 ----
 plugins {
-    kotlin("multiplatform") version "1.9.23"
-    id("org.jetbrains.compose") version "1.6.1"
-    id("org.kodein.pres.cup") version "0.1.0"
+    kotlin("multiplatform") version "{kotlin}"
+    id("org.jetbrains.compose") version "{compose}"
+    id("org.kodein.pres.cup") version "{version}"
 }
 
 cup {
@@ -39,9 +39,9 @@ cup {
 kotlin {
     sourceSets.commonMain {
         dependencies {
-            implementation(cup.speakerMode)
-            implementation(cup.laser)
-            implementation(cup.imageExport)
+            implementation(cup.sourceCode) //<1>
+            implementation(cup.plugin.speakerMode) //<2>
+            implementation(cup.plugin.laser) //<3>
 
             implementation(compose.material)
             implementation("org.kodein.emoji:emoji-compose-m2:1.3.0")
@@ -49,6 +49,9 @@ kotlin {
     }
 }
 ----
+<1> xref:core:source-code.adoc[Displaying & Animating Source Code]
+<2> xref:plugins:speaker-mode.adoc[Plugin: Speaker Window]
+<3> xref:plugins:laser.adoc[Plugin: Laser]
 
 . Edit `src/commonMain/kotlin/main.kt`:
 +

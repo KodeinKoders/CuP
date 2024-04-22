@@ -12,8 +12,8 @@ cup {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(cup.sourceCode)
-        implementation(cup.plugins.laser)
-        implementation(cup.plugins.speakerWindow)
+        implementation(cup.plugin.laser)
+        implementation(cup.plugin.speakerWindow)
 
         implementation(compose.material)
         implementation(compose.materialIconsExtended)

@@ -5,6 +5,7 @@
 ** xref:slide.adoc#configuring[Configuring a Slide ratio & transitions]
 ** xref:slide.adoc#previewing[Previewing a Slide content]
 ** xref:slide.adoc#preloading[Preloading some Slide content]
+** xref:slide.adoc#user-data[Attaching user data to a slide]
 
 * xref:source-code.adoc[Displaying & Animating Source Code]
 ** xref:source-code.adoc#static[Displaying static source code]
@@ -15,6 +16,7 @@
 * xref:presentation.adoc[Creating a Presentation]
 ** xref:presentation.adoc#creating[Creating a CuP application]
 ** xref:presentation.adoc#theming[Theming your presentation]
+** xref:presentation.adoc#decorating[Decorating your presentation]
 ** xref:presentation.adoc#grouping[Grouping slides]
 ** xref:presentation.adoc#configuring[Configuring the default Slide ratio & transitions]
 

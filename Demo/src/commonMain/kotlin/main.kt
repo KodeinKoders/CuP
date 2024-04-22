@@ -1,19 +1,13 @@
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -23,8 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cup_demo.generated.resources.Res
 import cup_demo.generated.resources.logo
 import net.kodein.cup.*
@@ -35,6 +32,7 @@ import net.kodein.cup.speaker.speakerMode
 import net.kodein.cup.utils.DataMap
 import net.kodein.cup.utils.DataMapElement
 import org.kodein.emoji.compose.EmojiService
+import utils.PresentationProgressBar
 
 
 @Composable
@@ -47,36 +45,16 @@ fun KodeinPresentationPreview(
     }
 }
 
-data class KodeinPresentationBackground(
+data class KodeinBackground(
     val color: Color,
-) : DataMapElement<KodeinPresentationBackground>(Key) {
-
-    companion object Key : DataMap.Key<KodeinPresentationBackground>
+) : DataMapElement<KodeinBackground>(Key) {
+    companion object Key : DataMap.Key<KodeinBackground>
 }
 
-@Composable
-private fun BoxScope.ProgressBar(presentationState: PresentationState) {
-    val totalStepCount = presentationState.slides.sumOf { it.stepCount }
-    val currentStepCount = presentationState.slides.subList(0, presentationState.currentSlideIndex)
-        .sumOf { it.stepCount } + presentationState.currentStep
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(4.dp)
-            .align(Alignment.BottomCenter)
-    ) {
-        val fraction by animateFloatAsState(
-            targetValue = currentStepCount.toFloat() / (totalStepCount - 1).toFloat(),
-            animationSpec = tween(300, easing = LinearOutSlowInEasing)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(fraction = fraction)
-                .align(Alignment.CenterStart)
-                .background(KodeinTheme.Color.Dark)
-        )
-    }
+data class KodeinBanner(
+    val visible: Boolean,
+) : DataMapElement<KodeinBanner>(Key) {
+    companion object Key : DataMap.Key<KodeinBanner>
 }
 
 @OptIn(ExperimentalResourceApi::class)
@@ -84,6 +62,7 @@ private fun BoxScope.ProgressBar(presentationState: PresentationState) {
 fun KodeinPresentation(
     slides: SlideGroup
 ) {
+
     Presentation(
         slides = slides,
         configuration = {
@@ -91,7 +70,7 @@ fun KodeinPresentation(
             laser()
         },
         backgroundColor = KodeinTheme.Color.background
-    ) {
+    ) { slidesContent ->
         val presentationState = LocalPresentationState.current
         Image(
             painter = painterResource(Res.drawable.logo),
@@ -104,9 +83,36 @@ fun KodeinPresentation(
                 .offset(x = (-16).dp, y = 64.dp)
         )
         val background by animateColorAsState(
-            targetValue = presentationState.currentSlide.user[KodeinPresentationBackground]?.color ?: Color.Transparent,
+            targetValue = presentationState.currentSlide.user[KodeinBackground]?.color ?: Color.Transparent,
             animationSpec = tween(1_500)
         )
+        val density = LocalDensity.current
+        val bannerAlpha by animateFloatAsState(
+            targetValue = if (presentationState.currentSlide.user[KodeinBanner]?.visible == true) 1f else 0f,
+            animationSpec = tween(1_000)
+        )
+        if (bannerAlpha > 0f) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .graphicsLayer(
+                        rotationZ = 45f,
+                        translationY = with(density) { (-16 + 64).dp.toPx() },
+                        translationX = with(density) { (160 - 64).dp.toPx() },
+                        alpha = 0.5f * bannerAlpha
+                    )
+                    .size(width = 320.dp, height = 32.dp)
+                    .background(KodeinTheme.Color.Orange)
+                    .align(Alignment.TopEnd)
+            ) {
+                Text(
+                    text = "Amazing!",
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                )
+            }
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -122,11 +128,16 @@ fun KodeinPresentation(
                         fontFamily = KodeinTheme.Fonts.LCTPicon.Regular
                     )
                 ) {
-                    this@Presentation.Slides()
+                    slidesContent()
                 }
             }
 
-            ProgressBar(presentationState)
+            PresentationProgressBar(
+                Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .align(Alignment.BottomCenter)
+            )
         }
     }
 }
