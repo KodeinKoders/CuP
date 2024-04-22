@@ -15,6 +15,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.*
+import net.kodein.cup.config.CupConfiguration
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupPlugin
 import net.kodein.cup.utils.Empty
@@ -209,7 +210,7 @@ internal val LocalSlideContents: ProvidableCompositionLocal<List<SlideContent>> 
 @Composable
 public fun Presentation(
     slides: SlideGroup,
-    configuration: CupConfigurationBuilder.() -> Unit = {},
+    configuration: CupConfiguration = {},
     backgroundColor: Color = Color.LightGray,
     presentation: PresentationContent = { it() },
 ) {

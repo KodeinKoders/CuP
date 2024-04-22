@@ -19,3 +19,5 @@ public class CupConfigurationBuilder internal constructor() {
 
     public var defaultSlideSpecs: SlideSpecs? = null
 }
+
+public typealias CupConfiguration = CupConfigurationBuilder.() -> Unit

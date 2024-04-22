@@ -1,4 +1,163 @@
 = Externalising your theme
 
-//TODO
-> Stay tuned, documentation is coming!
+The extensible nature of CuP and its integration with Compose makes it easy to create re-usable themes in the form of composables.
+
+This allows you and/or your team to create multiple presentations with a common theme and CuP configuration.
+
+
+[[setup]]
+== Setting up a theme project
+
+Create a Gradle project, and add the following `build.gradle.kts` file:
+
+.build.gradle.kts
+[source, kotlin, subs="attributes,verbatim"]
+----
+plugins {
+    kotlin("multiplatform") version "{kotlin}"
+    id("org.jetbrains.compose") version "{compose}"
+    `maven-publish`
+}
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+kotlin {
+    jvm()
+    wasmJs {
+        browser()
+    }
+
+    sourceSets.commonMain.dependencies {
+        implementation(compose.runtime)
+        implementation(compose.foundation)
+        implementation(compose.material) // or material3
+
+        val cupVersion = "{version}"
+        implementation("net.kodein.cup:cup:$cupVersion")
+        // Optional: source code animation composables. <1>
+        implementation("net.kodein.cup:cup-source-code:$cupVersion")
+        // Optional: secondary window with preview & speaker notes. <2>
+        implementation("net.kodein.cup:cup-speaker-window:$cupVersion")
+        // Optional: tool to draw over the presentation. <3>
+        implementation("net.kodein.cup:cup-laser:$cupVersion")
+    }
+}
+----
+<1> xref:source-code.adoc[Displaying & Animating Source Code]
+<2> xref:plugins:speaker-mode.adoc[Plugin: Speaker Window]
+<3> xref:plugins:laser.adoc[Plugin: Laser]
+
+
+[[creating]]
+== Creating a themed Presentation
+
+A themed presentation is a composable that wraps the `Presentation` composable.
+
+Here's an example of a very simple themed presentation:
+
+[source, kotlin]
+----
+@Composable
+fun MyThemedPresentation(slides: SlideGroup) {
+    MaterialTheme(
+        colors = darkColors(),
+        typography = MaterialTheme.typography.cupScaleDown()
+    ) {
+        Presentation(
+            slides = slides,
+            configuration = {
+                speakerMode()
+                laser()
+            },
+            backgroundColor = MaterialTheme.colors.background
+        ) {
+            CompositionLocalProvider(
+                LocalContentColor provides MaterialTheme.colors.onBackground
+            ) {
+                slidesContent()
+            }
+        }
+    }
+}
+----
+
+In a presentation wrapping composable, you can:
+
+* Provide a xref:presentation.adoc#theming[presentation theme]
+* Provide some xref:presentation.adoc#decorating[presentation decoration]
+* Provide a standard xref:presentation.adoc#configuring[presentation configuration]
++
+Although you don't have to, you can forward the configuration:
++
+[source, kotlin]
+----
+@Composable
+fun MyThemedPresentation(
+    slides: SlideGroup,
+    configuration: CupConfiguration = {}
+) {
+    //...
+}
+----
+
+[[publishing]]
+== Publishing a theme
+
+To use your theme, it needs to be published to a repository.
+
+* You can publish it to your local maven repository (private to your computer), in which case you need to execute the `publishToMavenLocal` Gradle task:
++
+[tabs]
+====
+Linux / Mac::
++
+[source, shell]
+----
+./gradlew publishToMavenLocal
+----
+Windows::
++
+[source, shell]
+----
+gradlew.bat publishToMavenLocal
+----
+====
+* Or you can publish it to a remote repository, in which case you will need to https://docs.gradle.org/current/userguide/publishing_maven.html[configure Gradle for publishing].
+The exact configuration heavily depends on the remote repository.
+
+
+[[using]]
+== Using a theme
+
+[CAUTION]
+====
+Remember to add the repository where you published your theme!
+
+If you did not publish your theme to a remote repository (and used `publishToMavenLocal`), you still have to add the `mavenLocal` repository:
+
+.build.gradle.kts
+[source, kotlin]
+----
+repositories {
+    mavenLocal()
+    mavenCentral()
+    google()
+}
+----
+====
+
+To create a presentation with your newly created theme, simply use your composable instead of `Presentation`:
+
+[source, kotlin]
+----
+fun main() = cupApplication(
+    title = "Presentation Title!",
+) {
+    MyThemedPresentation(
+        slides = presentationSlides,
+    )
+}
+----
