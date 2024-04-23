@@ -130,7 +130,7 @@ fun Title() {
 === Bullet Points
 
 Bullet points are a standard way of presenting a list of items in presentations.
-Cup Provides a `BulletPoints` composable function that animates each item as it appears:
+CuP provides a `BulletPoints` composable function that animates each item as it appears:
 
 [source, kotlin]
 ----
@@ -253,7 +253,7 @@ val contentDemo by PreparedSlide(
         Text("Some amazing content:", fontSize = 24.sp)
 
         AnimatedVisibility(visible = step >= 1) {
-            if (content == null) Text("Locading...")
+            if (content == null) Text("Loading...")
             else ContentDisplay(content)
         }
     }

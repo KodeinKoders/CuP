@@ -4,7 +4,7 @@
 [[creating]]
 == Creating a CuP application
 
-To create a CuP project, the easiest way is to use the *Cup template project*.
+To create a CuP project, the easiest way is to use the *CuP template project*.
 
 If you need to add a presentation module to a larger Gradle project, you can do so either:
 
@@ -336,7 +336,7 @@ Have a look at the demo's `https://github.com/KodeinKoders/CuP/blob/main/Demo/sr
 [[user-data]]
 === Getting custom values from the current slide
 
-The decoration can react to ** xref:slide.adoc#user-data[user data attached to the slide] being currently displayed.
+The decoration can react to xref:slide.adoc#user-data[user data attached to the slide] being currently displayed.
 
 To continue xref:slide.adoc#user-data[the slide's example] of text banner, you can retrieve the slide's user data and react upon it:
 

@@ -250,7 +250,7 @@ val sourceCode = rememberSourceCode(language = "text") {
 
 In addition to visibility (with `hidden` and `onlyShown`) and highlighting (with `highlighted`), CuP Source Code Animations supports additional styling with `SAStyle`.
 
-CuP provides the `SAStyle.Line` function that creates an `SAStyle` that draws a line of a given color:
+CuP provides the `SAStyle.Line` function that creates a `SAStyle` that draws a line of a given color:
 
 * Either under the text, behind it (underline), or over the text crossing it (line-through).
 * Either straight, or squiggled.
