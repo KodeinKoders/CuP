@@ -36,7 +36,7 @@ gradlePlugin {
         id = project.group.toString()
         implementationClass = "${project.group}.gradle.CupPlugin"
         displayName = "CuP"
-        description = "Compose Ur Pres"
+        description = "Compose ur Pres"
         @Suppress("UnstableApiUsage")
         tags.set(listOf("kotlin", "presentation"))
     }

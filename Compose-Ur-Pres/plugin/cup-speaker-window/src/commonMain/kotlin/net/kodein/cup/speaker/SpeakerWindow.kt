@@ -21,4 +21,4 @@ public class SpeakerNotesMD(
 ) : ASpeakerNotes()
 
 @CupConfigurationDsl
-public expect fun CupConfigurationBuilder.speakerMode()
+public expect fun CupConfigurationBuilder.speakerWindow()

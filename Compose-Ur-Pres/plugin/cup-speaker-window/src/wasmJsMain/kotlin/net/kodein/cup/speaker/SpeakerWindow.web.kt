@@ -5,4 +5,4 @@ import net.kodein.cup.config.CupConfigurationDsl
 
 
 @CupConfigurationDsl
-public actual fun CupConfigurationBuilder.speakerMode() {}
+public actual fun CupConfigurationBuilder.speakerWindow() {}

@@ -1,4 +1,0 @@
-= Create your own plugin
-
-//TODO
-> Stay tuned, documentation is coming!

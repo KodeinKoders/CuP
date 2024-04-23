@@ -56,7 +56,7 @@ val speakerWindow by Slide(
             - You can use markdown in speaker notes
             - Or you can use regular compose if you prefer
             
-            Isn't that cool !
+            Isn't that cool!
     """)
 ) {
     Title {

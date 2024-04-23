@@ -8,6 +8,7 @@ tasks.register<Exec>("npmInstall") {
 tasks.register<Exec>("generateDocumentation") {
     group = "documentation"
     dependsOn("npmInstall")
+    inputs.file("antora-playbook.yml")
     inputs.dir("docs")
     outputs.dir("build/site")
     commandLine("npx", "antora", "antora-playbook.yml")

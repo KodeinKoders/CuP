@@ -56,6 +56,6 @@ internal class SpeakerNotesPlugin : CupPlugin {
 }
 
 @CupConfigurationDsl
-public actual fun CupConfigurationBuilder.speakerMode() {
+public actual fun CupConfigurationBuilder.speakerWindow() {
     plugin(SpeakerNotesPlugin())
 }

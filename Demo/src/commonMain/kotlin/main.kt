@@ -1,4 +1,3 @@
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -25,10 +24,10 @@ import androidx.compose.ui.unit.sp
 import cup_demo.generated.resources.Res
 import cup_demo.generated.resources.logo
 import net.kodein.cup.*
+import net.kodein.cup.laser.laser
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import net.kodein.cup.laser.laser
-import net.kodein.cup.speaker.speakerMode
+import net.kodein.cup.speaker.speakerWindow
 import net.kodein.cup.utils.DataMap
 import net.kodein.cup.utils.DataMapElement
 import org.kodein.emoji.compose.EmojiService
@@ -66,7 +65,7 @@ fun KodeinPresentation(
     Presentation(
         slides = slides,
         configuration = {
-            speakerMode()
+            speakerWindow()
             laser()
         },
         backgroundColor = KodeinTheme.Color.background

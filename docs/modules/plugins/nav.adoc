@@ -1,11 +1,9 @@
-* xref:speaker-mode.adoc[Plugin: Speaker Window]
-** xref:speaker-mode.adoc#install[Installing]
-** xref:speaker-mode.adoc#usage[Using to present]
-** xref:speaker-mode.adoc#notes[Writing speaker notes]
-** xref:speaker-mode.adoc#highlight[Highlighting]
+* xref:speaker-window.adoc[Plugin: Speaker Window]
+** xref:speaker-window.adoc#install[Installing]
+** xref:speaker-window.adoc#usage[Using to present]
+** xref:speaker-window.adoc#notes[Writing speaker notes]
+** xref:speaker-window.adoc#highlight[Drawing & Highlighting]
 
 * xref:laser.adoc[Plugin: Laser]
 ** xref:laser.adoc#install[Installing]
 ** xref:laser.adoc#usage[Using while presenting]
-
-* xref:create.adoc[Create your own plugin]

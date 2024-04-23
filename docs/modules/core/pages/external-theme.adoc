@@ -47,7 +47,7 @@ kotlin {
 }
 ----
 <1> xref:source-code.adoc[Displaying & Animating Source Code]
-<2> xref:plugins:speaker-mode.adoc[Plugin: Speaker Window]
+<2> xref:plugins:speaker-window.adoc[Plugin: Speaker Window]
 <3> xref:plugins:laser.adoc[Plugin: Laser]
 
 
@@ -69,7 +69,7 @@ fun MyThemedPresentation(slides: SlideGroup) {
         Presentation(
             slides = slides,
             configuration = {
-                speakerMode()
+                speakerWindow()
                 laser()
             },
             backgroundColor = MaterialTheme.colors.background

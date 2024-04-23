@@ -40,7 +40,7 @@ kotlin {
     sourceSets.commonMain {
         dependencies {
             implementation(cup.sourceCode) //<1>
-            implementation(cup.plugin.speakerMode) //<2>
+            implementation(cup.plugin.speakerWindow) //<2>
             implementation(cup.plugin.laser) //<3>
 
             implementation(compose.material)
@@ -50,7 +50,7 @@ kotlin {
 }
 ----
 <1> xref:core:source-code.adoc[Displaying & Animating Source Code]
-<2> xref:plugins:speaker-mode.adoc[Plugin: Speaker Window]
+<2> xref:plugins:speaker-window.adoc[Plugin: Speaker Window]
 <3> xref:plugins:laser.adoc[Plugin: Laser]
 
 . Edit `src/commonMain/kotlin/main.kt`:
@@ -68,7 +68,7 @@ fun main() = cupApplication(title = "How to create a CuP!") {
     Presentation(
         slides = slides,
         configuration = {
-            speakerMode()
+            speakerWindow()
             laser()
             imageExport()
         }

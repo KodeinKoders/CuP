@@ -1,15 +1,68 @@
 = Plugin: Laser
+:experimental:
+
+The laser tools allow you to:
+
+* draw over a slide.
++
+image:laser-pointer.png[width=600]
+
+* highlight a portion of a slide.
++
+image:laser-highlight.png[width=600]
 
 
 [[install]]
 == Installing
 
-//TODO
-> Stay tuned, documentation is coming!
+First, add the plugin dependency to your project:
+
+[tabs]
+====
+CuP Plugin::
++
+.build.gradle.kts
+[source, kotlin]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation(cup.plugin.laser)
+    }
+}
+----
+
+Regular Gradle::
++
+.build.gradle.kts
+[source, kotlin, subs="attributes"]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation("net.kodein.cup:cup-laser:{version}")
+    }
+}
+----
+====
+
+Then, in your presentation configuration, add the Laser plugin:
+
+[source, kotlin]
+----
+Presentation(
+    slides = presentationSlides,
+    configuration = {
+        laser()
+    }
+)
+----
 
 
 [[usage]]
 == Using while presenting
 
-//TODO
-> Stay tuned, documentation is coming!
+In the top left icon bar:
+
+* The image:icon/draw.svg[] tool (or kbd:[P]) allows you to display a red pointer to the screen, and to free draw in bright red over your slide.
+* The image:icon/rectangle.svg[] tool (or kbd:[H]) allows you to isolate, and therefore highlight, portions of your screens.
+
+To stop using these tools, once you have selected one, click on the image:icon/close.svg[] button that appears in their place, or press kbd:[esc].

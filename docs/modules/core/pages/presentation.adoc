@@ -67,7 +67,7 @@ kotlin {
 }
 ----
 <1> xref:source-code.adoc[Displaying & Animating Source Code]
-<2> xref:plugins:speaker-mode.adoc[Plugin: Speaker Window]
+<2> xref:plugins:speaker-window.adoc[Plugin: Speaker Window]
 <3> xref:plugins:laser.adoc[Plugin: Laser]
 
 Finally, add a `main.kt` file with your presentation:
@@ -84,7 +84,7 @@ fun main() = cupApplication(
     Presentation(
         slides = presentationSlides,
         configuration = { //<1>
-            speakerMode()
+            speakerWindow()
             laser()
         }
     )
@@ -162,7 +162,7 @@ kotlin {
 }
 ----
 <1> xref:source-code.adoc[Displaying & Animating Source Code]
-<2> xref:plugins:speaker-mode.adoc[Plugin: Speaker Window]
+<2> xref:plugins:speaker-window.adoc[Plugin: Speaker Window]
 <3> xref:plugins:laser.adoc[Plugin: Laser]
 
 If you want to deploy your presentation to the web, you'll need to:
@@ -222,7 +222,7 @@ withPresentationState { //<1>
         Presentation(
             slides = presentationSlides,
             configuration = {
-                speakerMode()
+                speakerWindow()
                 laser()
             },
             backgroundColor = KodeinTheme.Color.background
@@ -250,7 +250,7 @@ The `Presentation` composable allows you to customize how the slides will be dis
 Presentation(
     slides = presentationSlides,
     configuration = {
-        speakerMode()
+        speakerWindow()
         laser()
     },
     backgroundColor = Color.DarkGray //<1>
@@ -286,7 +286,7 @@ MaterialTheme(
     Presentation(
         slides = presentationSlides,
         configuration = {
-            speakerMode()
+            speakerWindow()
             laser()
         },
         backgroundColor = MaterialTheme.colors.background //<2>
@@ -366,7 +366,7 @@ As each slide can xref:slide.adoc#configuring[configure its own ratio & transiti
 Presentation(
     slides = presentationSlides,
     configuration = {
-        speakerMode()
+        speakerWindow()
         laser()
         defaultSlideSpecs = SlideSpecs(
             size = SLIDE_SIZE_16_9, // defaults to SLIDE_SIZE_4_3

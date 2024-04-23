@@ -3,7 +3,6 @@
 Compose-Ur-Pres provides additional utilities to display and animate source code.
 To access them, you need to add the following dependency in your presentation's `build.gradle.kts`:
 
-.build.gradle.kts
 [tabs]
 ====
 CuP Plugin::

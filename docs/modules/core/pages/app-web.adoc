@@ -39,6 +39,8 @@ gradlew.bat wasmJsBrowserRun
 ----
 ====
 
+You can control the navigation with the xref:app-desktop.adoc#navigation[same keys as with the desktop app].
+
 To generate the web application, execute the `wasmJsBrowserDistribution` Gradle task:
 
 [tabs]

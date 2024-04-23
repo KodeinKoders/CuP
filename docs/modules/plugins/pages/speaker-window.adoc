@@ -1,0 +1,113 @@
+= Plugin: Speaker Window
+:experimental:
+
+image:speaker-window.png[]
+
+The speaker window allows you to control the presentation and:
+
+* See the current slide & step being displayed (big left slide).
+* See the next slide & step that will be displayed next step forward (small right slide).
+* See previously prepared speaker notes.
+* Draw over the slide or highlight a portion of it.
+* See a timer to ensure you're on time.
+
+
+[[install]]
+== Installing
+
+First, add the plugin dependency to your project:
+
+[tabs]
+====
+CuP Plugin::
++
+.build.gradle.kts
+[source, kotlin]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation(cup.plugin.speakerWindow)
+    }
+}
+----
+
+Regular Gradle::
++
+.build.gradle.kts
+[source, kotlin, subs="attributes"]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation("net.kodein.cup:cup-speaker-window:{version}")
+    }
+}
+----
+====
+
+Then, in your presentation configuration, add the Speaker Window plugin:
+
+[source, kotlin]
+----
+Presentation(
+    slides = presentationSlides,
+    configuration = {
+        speakerWindow()
+    }
+)
+----
+
+
+[[usage]]
+== Using to present
+
+To open the speaker window: tap kbd:[S] or click on the image:icon/speaker_notes.svg[] icon in the top left overlay bar of your presentation.
+
+Within this speaker window, you can control the navigation of your presentation with the xref:core:app-desktop.adoc#navigation[same keys as with the desktop app].
+
+
+[[notes]]
+== Writing speaker notes
+
+To attach speaker notes to a slide, add it its xref:core:slide.adoc#user-data[user data]:
+
+[source, kotlin]
+----
+val mySlide by Slide(
+    user = SpeakerNotes {
+        Text("Some speaker notes")
+    }
+) {
+    /* slide content */
+}
+----
+
+For ease of writing, CuP provides the ability to write speaker notes in MarkDown with `SpeakerNotesMD`:
+
+[source, kotlin]
+----
+val mySlide by Slide(
+    user = SpeakerNotesMD("""
+        This slides has some **speaker notes** that you can see here!
+
+        - You can use markdown in speaker notes
+        - Or you can use regular compose if you prefer
+
+        Isn't that cool!
+    """)
+) {
+    /* slide content */
+}
+----
+
+
+[[highlight]]
+== Drawing & Highlighting
+
+CuP provides two tools that are visible when the mouse hovers the big current slide in the speaker window:
+
+image:speaker-window-with-tools.png[]
+
+* The image:icon/draw.svg[] tool allows you to display a red pointer to the screen, and to free draw in bright red over your slide.
+* The image:icon/rectangle.svg[] tool allows you to isolate, and therefore highlight, portions of your screens.
+
+To stop using these tools, once you have selected one, click on the image:icon/close.svg[] button that appears in their place.

@@ -35,26 +35,32 @@ internal class LaserPlugin : CupPlugin {
         }
     }
 
-    override fun overlay(): List<CupAdditionalOverlay> = listOf(
-        CupAdditionalOverlay(
-            text = "Laser: Pointer & free draw",
-            keys = if (laser is Laser.Pointer) "Esc" else "P",
-            onClick = {
-                laser = if (laser == null) Laser.Pointer() else null
-            },
-            icon = if (laser is Laser.Pointer) Icons.Rounded.EditOff else Icons.Rounded.Gesture,
-            enabled = laser == null || laser is Laser.Pointer
-        ),
-        CupAdditionalOverlay(
-            text = "Laser: Highlight rectangle",
-            keys = if (laser is Laser.Highlight) "Esc" else "H",
-            onClick = {
-                laser = if (laser == null) Laser.Highlight() else null
-            },
-            icon = if (laser is Laser.Highlight) Icons.Rounded.EditOff else Icons.Rounded.Rectangle,
-            enabled = laser == null || laser is Laser.Highlight
-        ),
-    )
+    override fun overlay(): List<CupAdditionalOverlay> {
+        if (laser != null) {
+            return listOf(
+                CupAdditionalOverlay(
+                    text = "Close laser",
+                    keys = "Esc",
+                    onClick = { laser = null },
+                    icon = Icons.Rounded.Close
+                )
+            )
+        }
+        return listOf(
+            CupAdditionalOverlay(
+                text = "Laser: Pointer & free draw",
+                keys = "P",
+                onClick = { laser = Laser.Pointer() },
+                icon = Icons.Rounded.Draw
+            ),
+            CupAdditionalOverlay(
+                text = "Laser: Highlight rectangle",
+                keys = "H",
+                onClick = { laser = Laser.Highlight() },
+                icon = Icons.Rounded.Rectangle
+            ),
+        )
+    }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false

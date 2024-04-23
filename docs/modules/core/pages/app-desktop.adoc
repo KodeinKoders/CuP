@@ -1,4 +1,5 @@
 = Presenting with the desktop app
+:experimental:
 
 [[running]]
 == Running & distributing the app
@@ -60,12 +61,16 @@ To facilitate development and testing, the application maintains a hidden `.cup`
 * Position and size the presentation window to its last known position and size (so you don't have to move the window each time the app starts).
 ====
 
+
+[[navigation]]
+=== Keyboard navigation
+
 The following key stokes allow to navigate through your presentation:
 
-* [Arrow Right], [Arrow Down], [Space], [Enter]: Move forward one *step*.
-* [Shift + Arrow Right], [Shift + Arrow Down], [Shift + Space], [Shift + Enter]: Move forward one *slide* (ignoring the current slide's step).
-* [Arrow Left], [Arrow Up], [Backspace]: Move backward one *step*.
-* [Shift + Arrow Left], [Shift + Arrow Up], [Shift + Backspace]: Move backward one *slide* (going directly to its step 0).
+* kbd:[image:icon/arrow_forward.svg[width=14\]] , kbd:[image:icon/arrow_downward.svg[width=14\]] , kbd:[image:icon/space_bar.svg[width=14\]] , kbd:[image:icon/keyboard_return.svg[width=14\] enter] : Move forward one *step*.
+* kbd:[image:icon/shift.svg[width=14\] shift + image:icon/arrow_forward.svg[width=14\]] , kbd:[image:icon/shift.svg[width=14\] shift + image:icon/arrow_downward.svg[width=14\]] , kbd:[image:icon/shift.svg[width=14\] shift + image:icon/space_bar.svg[width=14\]] , kbd:[image:icon/shift.svg[width=14\] shift + image:icon/keyboard_return.svg[width=12\] enter] : Move forward one *slide* (ignoring the current slide's step).
+* kbd:[image:icon/arrow_back.svg[width=14\]] , kbd:[image:icon/arrow_upward.svg[width=14\]] , kbd:[image:icon/backspace.svg[width=14\] delete] : Move backward one *step*.
+* kbd:[image:icon/shift.svg[width=14\] shift + image:icon/arrow_back.svg[width=14\]] , kbd:[image:icon/shift.svg[width=14\] shift + image:icon/arrow_upward.svg[width=14\]] , kbd:[image:icon/shift.svg[width=14\] shift + image:icon/backspace.svg[width=14\] delete] : Move backward one *slide* (going directly to its step 0).
 
 
 [[overlay]]
@@ -73,30 +78,34 @@ The following key stokes allow to navigate through your presentation:
 
 When moving the cursor over the presentation window, an overlay is displayed.
 
+image:overlay.png[]
+
 
 === Navigation
 
-You can navigate with the image:navigate_before.svg[] and image:navigate_next.svg[] buttons in the bottom right of the screen.
+You can navigate with the image:icon/navigate_before.svg[] and image:icon/navigate_next.svg[] buttons in the bottom right of the screen.
 
 
 === Full Screen
 
-You can toggle full screen with the image:fullscreen.svg[] button in the bar in the top left of the screen.
-You can also press [F] to toggle fullscreen.
+You can toggle full screen with the image:icon/fullscreen.svg[] button in the bar in the top left of the screen.
+You can also press kbd:[F] to toggle fullscreen.
 
 
 === Slides list
 
-You can show the slides and their steps by clicking on the image:filter_list.svg[] button in the top right of the screen.
+You can show the slides and their steps by clicking on the image:icon/filter_list.svg[] button in the top right of the screen.
 
 
 === Slides Overview
 
-You can toggle the overview by clicking on the image:zoom_out.svg[] button in the bar in the top left of the screen.
-You can also press [Escape] to toggle the overview.
+You can toggle the overview by clicking on the image:icon/zoom_out.svg[] button in the bar in the top left of the screen.
+You can also press kbd:[esc] to toggle the overview.
 
 The overview shows each slide (horizontally), and each of their steps (vertically).
 
-Once in the overview, you can navigate with the keyboard arrows, or the mouse ([Shift + Scroll] will scroll horizontally).
-Pressing [Enter] will exit the overview and display the selected slide and step.
+image:overview.png[]
+
+Once in the overview, you can navigate with the keyboard arrows, or the mouse (kbd:[image:icon/shift.svg[width=14\] shift] + scroll will scroll horizontally).
+Pressing kbd:[image:icon/keyboard_return.svg[width=14\] enter] will exit the overview and display the selected slide and step.
 You can also click on representation to exit the overview to the clicked slide and step.

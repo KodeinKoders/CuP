@@ -35,5 +35,3 @@
 ** xref:external-theme.adoc#creating[Creating a themed Presentation]
 ** xref:external-theme.adoc#publishing[Publishing a theme]
 ** xref:external-theme.adoc#using[Using a theme]
-
-* xref:good-practices.adoc[Good practice when preparing a presentation]
