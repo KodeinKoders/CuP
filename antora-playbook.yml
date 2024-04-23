@@ -1,6 +1,6 @@
 site:
   title: Compose ur Pres Documentation
-  url: https://kosi-libs.github.io/CuP
+  url: https://KodeinKoders.github.io/CuP
   start_page: CuP::index.adoc
   robots: allow
 content:
