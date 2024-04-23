@@ -13,7 +13,7 @@ asciidoc:
     - '@asciidoctor/tabs'
 ui:
   bundle:
-    url: https://github.com/kosi-libs/documentation-ui/raw/cup/build/ui-bundle-v1.2.1.zip
+    url: https://github.com/kosi-libs/documentation-ui/raw/cup/build/ui-bundle-v1.2.2.zip
   supplemental_files:
     - path: ui.yml
       contents: |
