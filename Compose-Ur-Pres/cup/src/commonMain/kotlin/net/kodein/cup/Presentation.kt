@@ -126,8 +126,8 @@ public fun PresentationMainView() {
 
                     AnimatedVisibility(
                         visible = visible,
-                        enter = if (state.forward) specs.startTransitions.enterForward else specs.endTransitions.enterBackward,
-                        exit = if (state.forward) specs.endTransitions.exitForward else specs.startTransitions.exitBackward,
+                        enter = if (state.forward) specs.startTransitions.enter(true) else specs.endTransitions.enter(false),
+                        exit = if (state.forward) specs.endTransitions.exit(true) else specs.startTransitions.exit(false),
                     ) {
                         val (transitions, type) = when {
                             visible && state.forward -> specs.startTransitions to TransitionSet.Type.EnterForward

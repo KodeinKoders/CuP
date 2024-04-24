@@ -24,10 +24,8 @@ import androidx.compose.ui.unit.LayoutDirection
  *                  current transition.
  */
 public class TransitionSet(
-    public val enterForward: EnterTransition,
-    public val enterBackward: EnterTransition,
-    public val exitForward: ExitTransition,
-    public val exitBackward: ExitTransition,
+    public val enter: (Boolean) -> EnterTransition,
+    public val exit: (Boolean) -> ExitTransition,
     public val modifier: @Composable AnimatedVisibilityScope.(Type) -> Modifier = { Modifier }
 ) {
 
@@ -63,25 +61,39 @@ public class TransitionSet(
                 LayoutDirection.Rtl -> -1
             }
             return TransitionSet(
-                enterForward = fadeIn(defaultSpec()) + slideIn(defaultSpec()) { IntOffset((it.width * 0.3).toInt() * dir, 0) },
-                enterBackward = fadeIn(defaultSpec()) + slideIn(defaultSpec()) { IntOffset(-(it.width * 0.3).toInt() * dir, 0) },
-                exitForward = fadeOut(defaultSpec()) + slideOut(defaultSpec()) { IntOffset(-(it.width * 0.3).toInt() * dir, 0) },
-                exitBackward = fadeOut(defaultSpec()) + slideOut(defaultSpec()) { IntOffset((it.width * 0.3).toInt() * dir, 0) },
+                enter = { isForward ->
+                    fadeIn(defaultSpec()) + slideIn(defaultSpec()) {
+                        if (isForward) IntOffset((it.width * 0.3).toInt() * dir, 0)
+                        else IntOffset(-(it.width * 0.35).toInt() * dir, 0)
+                    }
+                },
+                exit = { isForward ->
+                    fadeOut(defaultSpec()) + slideOut(defaultSpec()) {
+                        if (isForward) IntOffset(-(it.width * 0.3).toInt() * dir, 0)
+                        else IntOffset((it.width * 0.3).toInt() * dir, 0)
+                    }
+                }
             )
         }
 
         public val moveVertical: TransitionSet = TransitionSet(
-            enterForward = fadeIn(defaultSpec()) + slideIn(defaultSpec()) { IntOffset(0, (it.height * 0.3).toInt()) },
-            enterBackward = fadeIn(defaultSpec()) + slideIn(defaultSpec()) { IntOffset(0, -(it.height * 0.3).toInt()) },
-            exitForward = fadeOut(defaultSpec()) + slideOut(defaultSpec()) { IntOffset(0, -(it.height * 0.3).toInt()) },
-            exitBackward = fadeOut(defaultSpec()) + slideOut(defaultSpec()) { IntOffset(0, (it.height * 0.3).toInt()) },
+            enter = { isForward ->
+                fadeIn(defaultSpec()) + slideIn(defaultSpec()) {
+                    if (isForward) IntOffset(0, (it.height * 0.3).toInt())
+                    else IntOffset(0, -(it.height * 0.3).toInt())
+                }
+            },
+            exit = { isForward ->
+                fadeOut(defaultSpec()) + slideOut(defaultSpec()) {
+                    if (isForward) IntOffset(0, -(it.height * 0.3).toInt())
+                    else IntOffset(0, (it.height * 0.3).toInt())
+                }
+            }
         )
 
         public val fade: TransitionSet = TransitionSet(
-            enterForward = fadeIn(),
-            enterBackward = fadeIn(),
-            exitForward = fadeOut(),
-            exitBackward = fadeOut(),
+            enter = { fadeIn() },
+            exit = { fadeOut() }
         )
     }
 }
