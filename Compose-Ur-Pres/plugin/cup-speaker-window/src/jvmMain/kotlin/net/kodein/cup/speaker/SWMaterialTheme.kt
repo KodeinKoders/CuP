@@ -2,6 +2,7 @@ package net.kodein.cup.speaker
 
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
@@ -11,7 +12,7 @@ internal fun SWMaterialTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colors = MaterialTheme.colors.copy(
+        colors = lightColors().copy(
             primary = Color.DarkGray,
             onPrimary = Color.White,
         )

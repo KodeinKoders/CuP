@@ -88,21 +88,6 @@ SourceCode(
 ----
 
 
-[TIP]
-====
-These two parameters can be defined at the application level with their respective composition locals:
-
-[source, kotlin]
-----
-CompositionLocalProvider(
-    LocalDefaultSourceCodeTextStyle provides TextStyle(fontFamily = JetBrainsMono),
-    LocalDefaultSourceCodeTheme provides SourceCodeThemes.darcula
-) {
-    Presentation(slides)
-}
-----
-====
-
 [[animation]]
 == Animating sections
 
@@ -235,7 +220,7 @@ However, if the last step of your animation is defined nowhere, then it needs to
 val sourceCode = rememberSourceCode(language = "text") {
     val bad by marker(onlyShown(0))
     val good by marker(hidden(0))
-    emptyStep(1) //<1>
+    ensureStep(1) //<1>
 
     """
         This is ${bad}freaking${X}${good}really${X} amazing!

@@ -262,7 +262,3 @@ public object SourceCodeThemes {
         }
     }
 }
-
-public val LocalDefaultSourceCodeTheme: ProvidableCompositionLocal<(String) -> SpanStyle?> = compositionLocalOf { SourceCodeThemes.intelliJLight }
-
-public val LocalDefaultSourceCodeTextStyle: ProvidableCompositionLocal<TextStyle> = compositionLocalOf { TextStyle(fontFamily = FontFamily.Monospace) }

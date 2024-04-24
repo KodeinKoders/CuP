@@ -30,15 +30,9 @@ fun y3DRotation(layoutDirection: LayoutDirection) = TransitionSet(
         val rotation by transition.animateFloat(
             transitionSpec = { y3DRSpec }
         ) {
-            val max = when (type) {
-                TransitionSet.Type.EnterForward -> 180f * dir
-                TransitionSet.Type.EnterBackward -> -180f * dir
-                TransitionSet.Type.ExitForward -> -180f * dir
-                TransitionSet.Type.ExitBackward -> 180f * dir
-            }
             when (it) {
-                EnterExitState.PreEnter -> max
-                EnterExitState.PostExit -> max
+                EnterExitState.PreEnter -> if (type.isForward) (180f * dir) else (-180f * dir)
+                EnterExitState.PostExit -> if (type.isForward) (-180f * dir) else (180f * dir)
                 EnterExitState.Visible -> 0f
             }
         }

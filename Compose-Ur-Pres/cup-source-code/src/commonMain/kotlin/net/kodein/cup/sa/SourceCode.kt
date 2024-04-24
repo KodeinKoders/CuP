@@ -2,10 +2,8 @@ package net.kodein.cup.sa
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -19,7 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import net.kodein.cup.sa.utils.*
@@ -34,6 +34,7 @@ private data class TextPartNode(
     val content: String,
     val children: List<TextPartNode>
 ) : Comparable<TextPartNode> {
+    val contentRange: TextRange get() = TextRange(range.start, range.start + content.length)
     enum class Type { MultipleLines, OneLine, Text }
     override fun compareTo(other: TextPartNode): Int = this.range.compareTo(other.range)
 }
@@ -117,6 +118,16 @@ private fun SourceCodePart(
 
     Box(
         Modifier
+//            .padding(1.dp)
+//            .border(
+//                width = 1.dp,
+//                color = when (part.type) {
+//                    TextPartNode.Type.OneLine -> Color.Red
+//                    TextPartNode.Type.MultipleLines -> Color.Magenta
+//                    TextPartNode.Type.Text -> Color.Green
+//                }
+//            )
+//            .padding(1.dp)
             .scaleWithSize(scaleX, scaleY)
             .alpha(visibility)
             .scale(1f + 0.4f * highlight)
@@ -135,7 +146,7 @@ private fun SourceCodePart(
             var partStyle: Pair<SpanStyle, List<StyleSection>> by remember { mutableStateOf(textStyle.toSpanStyle() to emptyList()) }
             LaunchedEffect(codeStyle, isHidden, partOverStyles) {
                 if (!isHidden) {
-                    var sections = codeStyle.offset(part.range)
+                    var sections = codeStyle.offset(part.contentRange)
                     var fullStyle = textStyle.toSpanStyle()
                     partOverStyles.entries.sortedBy { it.key }.forEach { (_, pair) ->
                         val (style, fraction) = pair
@@ -155,6 +166,7 @@ private fun SourceCodePart(
                     addStyles(partStyle.second)
                 },
                 style = textStyle,
+                maxLines = 1,
                 modifier = Modifier
                     .alpha(1f - dim * 0.85f)
             )
@@ -189,6 +201,7 @@ private fun SourceCodeContent(
     step: Int,
     style: TextStyle,
     theme: SourceCodeTheme,
+    modifier: Modifier = Modifier
 ) {
     val partFractions = sourceCode.data.steps.mapIndexed { index, _ ->
         animateFloatAsState(
@@ -197,7 +210,7 @@ private fun SourceCodeContent(
         )
     }
 
-    Box {
+    Box(modifier) {
         var codeSize by remember { mutableStateOf(IntSize.Zero) }
         SelectionContainer(
             modifier = Modifier.size(with (LocalDensity.current) { codeSize.toSize().toDpSize() })
@@ -237,8 +250,9 @@ public class SourceCode internal constructor(
 public fun SourceCode(
     sourceCode: SourceCode,
     step: Int = 0,
-    style: TextStyle = LocalDefaultSourceCodeTextStyle.current,
-    theme: SourceCodeTheme = LocalDefaultSourceCodeTheme.current,
+    style: TextStyle = TextStyle(fontFamily = FontFamily.Monospace),
+    theme: SourceCodeTheme = SourceCodeThemes.intelliJLight,
+    modifier: Modifier = Modifier
 ) {
     remember(sourceCode.data.steps.size, step) {
         if (step > sourceCode.data.steps.lastIndex) {
@@ -280,6 +294,7 @@ public fun SourceCode(
             if (defaultTheme != null) style.merge(defaultTheme)
             else style
         },
-        theme = theme
+        theme = theme,
+        modifier = modifier
     )
 }

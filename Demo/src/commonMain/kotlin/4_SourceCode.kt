@@ -47,17 +47,14 @@ val sourceCode by PreparedSlide(
         Title {
             Text("You can animate source code!")
         }
-        Box(
-            Modifier
+        SourceCode(
+            sourceCode = sourceCode,
+            step = step,
+            style = TextStyle(fontFamily = KodeinTheme.Fonts.JetBrainsMono),
+            theme = KodeinTheme.SourceCodeTheme,
+            modifier = Modifier
                 .background(Color.DarkGray, RoundedCornerShape(4.dp))
                 .padding(8.dp)
-        ) {
-            SourceCode(
-                sourceCode = sourceCode,
-                step = step,
-                style = TextStyle(fontFamily = KodeinTheme.Fonts.JetBrainsMono),
-                theme = KodeinTheme.SourceCodeTheme
-            )
-        }
+        )
     }
 }

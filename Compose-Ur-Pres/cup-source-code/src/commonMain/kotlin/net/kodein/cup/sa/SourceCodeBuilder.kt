@@ -41,7 +41,8 @@ public class SourceCodeBuilder internal constructor() {
                 visibilities = visibilities.toList()
             ).also { markers += it }
         }
-    public fun emptyStep(step: Int) {
+
+    public fun ensureStep(step: Int) {
         lastEmptyStep = max(step, lastEmptyStep)
     }
 
@@ -79,7 +80,7 @@ private fun prepareSourceCode(
     scope: CoroutineScope
 ): SourceCode {
     val builder = SourceCodeBuilder()
-    val text = create(builder)
+    val text = create(builder).trimIndent()
     val markers = builder.markers
 
     var cleanText = text
