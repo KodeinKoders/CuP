@@ -144,7 +144,8 @@ private fun SourceCodePart(
                 animationSpec = tween(600)
             )
             var partStyle: Pair<SpanStyle, List<StyleSection>> by remember { mutableStateOf(textStyle.toSpanStyle() to emptyList()) }
-            LaunchedEffect(codeStyle, isHidden, partOverStyles) {
+
+            LaunchedEffect(textStyle, codeStyle, isHidden, partOverStyles) {
                 if (!isHidden) {
                     var sections = codeStyle.offset(part.contentRange)
                     var fullStyle = textStyle.toSpanStyle()
