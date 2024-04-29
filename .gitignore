@@ -16,3 +16,6 @@ cup-export/
 
 ### Js ###
 node_modules/
+
+### Test ###
+test-release.sh

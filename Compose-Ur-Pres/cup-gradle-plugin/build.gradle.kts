@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.buildConfig)
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish)
+    alias(libs.plugins.gradle.pluginPublish)
 }
 
 dependencies {
@@ -32,7 +33,10 @@ buildConfig {
     }
 }
 
+@Suppress("UnstableApiUsage")
 gradlePlugin {
+    website.set("https://github.com/KodeinKoders/CuP")
+    vcsUrl.set("https://github.com/KodeinKoders/CuP.git")
     plugins.register("cup") {
         id = project.group.toString()
         implementationClass = "${project.group}.gradle.CupPlugin"
@@ -45,12 +49,6 @@ gradlePlugin {
 
 System.getenv("GRADLE_PUBLISH_KEY")?.let { extra["gradle.publish.key"] = it }
 System.getenv("GRADLE_PUBLISH_SECRET")?.let { extra["gradle.publish.secret"] = it }
-
-@Suppress("UnstableApiUsage")
-gradlePlugin {
-    website.set("https://github.com/KodeinKoders/CuP")
-    vcsUrl.set("https://github.com/KodeinKoders/CuP.git")
-}
 
 mavenPublishing {
     pom {
