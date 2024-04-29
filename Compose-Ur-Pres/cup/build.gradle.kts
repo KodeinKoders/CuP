@@ -3,7 +3,8 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
-    `maven-publish`
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.mavenPublish)
 }
 
 kotlin {
@@ -34,5 +35,12 @@ kotlin {
             languageSettings.optIn("net.kodein.cup.PluginCupAPI")
             languageSettings.optIn("net.kodein.cup.InternalCupAPI")
         }
+    }
+}
+
+mavenPublishing {
+    pom {
+        name.set("Compose ur Pres")
+        description.set("A framework to program a presentation slide deck with Compose multiplatform.")
     }
 }

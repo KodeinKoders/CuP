@@ -3,7 +3,8 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
-    `maven-publish`
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.mavenPublish)
 }
 
 kotlin {
@@ -34,5 +35,12 @@ kotlin {
         all {
             languageSettings.optIn("net.kodein.cup.PluginCupAPI")
         }
+    }
+}
+
+mavenPublishing {
+    pom {
+        name.set("CuP Speaker Window plugin")
+        description.set("A CuP plugin that allows the presenter to control their presentation from a dedicated window.")
     }
 }

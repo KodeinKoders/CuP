@@ -1,8 +1,6 @@
 package net.kodein.cup
 
-import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +9,7 @@ import net.kodein.cup.desktop.withCupSavedPresentationState
 import org.kodein.emoji.compose.EmojiUrl
 import org.kodein.emoji.compose.ProvideEmojiDownloader
 import org.kodein.emoji.compose.simpleDownloadBytes
-import org.kodein.pres.desktop.withCupSavedWindowState
+import net.kodein.cup.desktop.withCupSavedWindowState
 import kotlin.io.path.*
 
 

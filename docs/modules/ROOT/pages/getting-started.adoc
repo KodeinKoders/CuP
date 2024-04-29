@@ -28,7 +28,7 @@ rootProject.name = "How-to-CuP"
 plugins {
     kotlin("multiplatform") version "{kotlin}"
     id("org.jetbrains.compose") version "{compose}"
-    id("org.kodein.pres.cup") version "{version}"
+    id("net.kodein.cup") version "{version}"
 }
 
 cup {

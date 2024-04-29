@@ -3,7 +3,8 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
-    `maven-publish`
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.mavenPublish)
 }
 
 kotlin {
@@ -29,5 +30,12 @@ kotlin {
         all {
             languageSettings.optIn("net.kodein.cup.PluginCupAPI")
         }
+    }
+}
+
+mavenPublishing {
+    pom {
+        name.set("CuP Laser plugin")
+        description.set("A CuP plugin that allows to draw over the presentation.")
     }
 }

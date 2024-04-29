@@ -1,4 +1,4 @@
-package org.kodein.pres.desktop
+package net.kodein.cup.desktop
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.DpOffset

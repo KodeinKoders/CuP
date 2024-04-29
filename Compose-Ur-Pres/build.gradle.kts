@@ -1,8 +1,9 @@
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.compose) apply false
+    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.mavenPublish) apply false
 }
 
 allprojects {
@@ -16,16 +17,24 @@ allprojects {
      "publish" task that depends on the "publish" tasks of all subprojects, to emulate typical Gradle
      behavior.
     */
+    apply { plugin("org.gradle.lifecycle-base") }
     afterEvaluate {
         listOf(
-            "publish" to "publishing",
             "publishToMavenLocal" to "publishing",
+            "publishToMavenCentral" to "release",
+            "publishAndReleaseToMavenCentral" to "release",
         ).forEach { (taskName, taskGroup) ->
             if (taskName !in project.tasks.names) {
-                tasks.register(taskName) {
+                project.tasks.register(taskName) {
                     group = taskGroup
                     dependsOn(subprojects.map { ":${it.path}:$taskName" })
                 }
+            }
+        }
+
+        listOf("build", "clean", "assemble").forEach { taskName ->
+            tasks.named(taskName) {
+                dependsOn(subprojects.map { ":${it.path}:$taskName" })
             }
         }
     }

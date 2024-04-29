@@ -1,11 +1,14 @@
 [versions]
 buildConfig = "3.1.0"
 compose = "1.6.2"
+dokka = "1.9.20"
 emoji = "1.2.0"
 graalvm-js = "23.0.2"
+gradle-pluginPublish = "1.2.1"
 kotlin = "1.9.23"
 kxSerialization = "1.6.2"
 markdown = "0.13.0"
+mavenPublish = "0.28.0"
 npm-ismobilejs = "1.1.1"
 npm-highlightjs = "11.9.0"
 serialization-plugin = "1.9.21"
@@ -13,8 +16,11 @@ serialization-plugin = "1.9.21"
 [plugins]
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+gradle-pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-pluginPublish" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization-plugin" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 
 [libraries]
 emojiCompose = { module = "org.kodein.emoji:emoji-compose", version.ref = "emoji" }

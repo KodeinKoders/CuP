@@ -8,6 +8,7 @@ rootProject.name = "Compose-Ur-Pres"
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
+        google()
     }
 }
 

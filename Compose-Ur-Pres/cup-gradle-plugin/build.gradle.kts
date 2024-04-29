@@ -1,7 +1,8 @@
 plugins {
     `kotlin-dsl`
     alias(libs.plugins.buildConfig)
-    `maven-publish`
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.mavenPublish)
 }
 
 dependencies {
@@ -39,5 +40,21 @@ gradlePlugin {
         description = "Compose ur Pres"
         @Suppress("UnstableApiUsage")
         tags.set(listOf("kotlin", "presentation"))
+    }
+}
+
+System.getenv("GRADLE_PUBLISH_KEY")?.let { extra["gradle.publish.key"] = it }
+System.getenv("GRADLE_PUBLISH_SECRET")?.let { extra["gradle.publish.secret"] = it }
+
+@Suppress("UnstableApiUsage")
+gradlePlugin {
+    website.set("https://github.com/KodeinKoders/CuP")
+    vcsUrl.set("https://github.com/KodeinKoders/CuP.git")
+}
+
+mavenPublishing {
+    pom {
+        name.set("CuP Gradle plugin")
+        description.set("A Gradle plugin that configures a project for CuP.")
     }
 }
