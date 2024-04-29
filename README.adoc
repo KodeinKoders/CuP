@@ -10,7 +10,5 @@ A pure Kotlin Compose Multiplatform presentation system for developer presenters
 == Other resources
 
 * https://github.com/KodeinKoders/CuP-Presentation-Template/tree/main?tab=readme-ov-file[Presentation project template] (to get started).
-* Demo presentation:
-** Web view (TODO)
-** https://github.com/KodeinKoders/CuP/tree/main/Demo[Source code]
+
 * Curated list of cool presentation that use CuP (TODO)
