@@ -35,13 +35,13 @@ buildConfig {
 
 @Suppress("UnstableApiUsage")
 gradlePlugin {
-    website.set("https://github.com/KodeinKoders/CuP")
-    vcsUrl.set("https://github.com/KodeinKoders/CuP.git")
+    website.set("https://kodeinkoders.github.io/CuP")
+    vcsUrl.set("https://github.com/KodeinKoders/CuP")
     plugins.register("cup") {
         id = project.group.toString()
         implementationClass = "${project.group}.gradle.CupPlugin"
-        displayName = "CuP"
-        description = "Compose ur Pres"
+        displayName = "Compose ur Pres"
+        description = "Configures a Kotlin/Multiplatform project for a Compose-ur-Pres presentation."
         @Suppress("UnstableApiUsage")
         tags.set(listOf("kotlin", "presentation"))
     }
