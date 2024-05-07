@@ -132,6 +132,11 @@ fun Title() {
 Bullet points are a standard way of presenting a list of items in presentations.
 CuP provides a `BulletPoints` composable function that animates each item as it appears:
 
+Currently, bullet points *are not* part of the core of *CuP*.
+They are part of different artefacts, because they depend on the Compose `material` and `material3` libraries.
+
+So, whether you are using `material` or `material3` you need to import the proper dependency, like in the following snippet:
+
 [source, kotlin]
 ----
 BulletPoints {

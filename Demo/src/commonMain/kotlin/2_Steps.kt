@@ -9,16 +9,16 @@ import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
+import net.kodein.cup.Slide
+import net.kodein.cup.widget.material.BulletPoints
 import org.kodein.emoji.Emoji
-import org.kodein.emoji.compose.EmojiService
 import org.kodein.emoji.smileys_emotion.emotion.Collision
 import org.kodein.emoji.smileys_emotion.face_smiling.Wink
-import net.kodein.cup.Slide
-import net.kodein.cup.ui.BulletPoints
 import utils.TextWithAnimatedEmoji
 import utils.TextWithEmoji
 import utils.Title
 import utils.y3DRotation
+import net.kodein.cup.widget.material3.BulletPoints as M3BulletPoints
 
 
 val steps by Slide(
@@ -32,11 +32,22 @@ val steps by Slide(
     BulletPoints(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 32.dp, horizontal = 64.dp),
+            .padding(top = 32.dp)
+            .padding(horizontal = 64.dp)
     ) {
         BulletPoint(step >= 1) { Text("This slide has 5 steps!") }
         BulletPoint(step >= 2) { Text("You can use states to animate a lot of things and make your presentation more engaging!") }
-        BulletPoint(step >= 3) { TextWithEmoji("...such as progressively revealing a list ${Emoji.Wink}") }
+    }
+
+    M3BulletPoints(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 64.dp)
+            .padding(bottom = 32.dp)
+    ) {
+        BulletPoint(step >= 3) {
+            TextWithEmoji("...such as progressively revealing a list ${Emoji.Wink}")
+        }
     }
 
     AnimatedVisibility(

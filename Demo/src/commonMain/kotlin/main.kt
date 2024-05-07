@@ -4,9 +4,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material.LocalContentColor as LocalContentColor
+import androidx.compose.material3.LocalContentColor as M3LocalContentColor
+import androidx.compose.material.LocalTextStyle as LocalTextStyle
+import androidx.compose.material3.LocalTextStyle as M3LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -124,6 +126,10 @@ fun KodeinPresentation(
                 CompositionLocalProvider(
                     LocalContentColor provides KodeinTheme.Color.Light,
                     LocalTextStyle provides TextStyle(
+                        fontFamily = KodeinTheme.Fonts.LCTPicon.Regular
+                    ),
+                    M3LocalContentColor provides KodeinTheme.Color.Light,
+                    M3LocalTextStyle provides TextStyle(
                         fontFamily = KodeinTheme.Fonts.LCTPicon.Regular
                     )
                 ) {

@@ -20,4 +20,6 @@ include(
     ":cup-source-code",
     ":plugin:cup-laser",
     ":plugin:cup-speaker-window",
+    ":widgets:cup-widget-material",
+    ":widgets:cup-widget-material3",
 )

@@ -2,6 +2,8 @@ name: Publish documentation to Github Pages
 
 on:
   push:
+    branches:
+      - 'main'
     paths:
       - 'docs/**.adoc'
   # Allows you to run this workflow manually from the Actions tab

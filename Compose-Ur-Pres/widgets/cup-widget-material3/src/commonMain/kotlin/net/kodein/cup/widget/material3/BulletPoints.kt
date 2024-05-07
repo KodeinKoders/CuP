@@ -1,25 +1,25 @@
-package net.kodein.cup.ui
+package net.kodein.cup.widget.material3
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-@Deprecated(
-    message = """BulletPointsBuilder has been moved to specific artefacts 
-    |depending on material's version used.
-    |
-    |You can import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.
-    |"""
-)
 public class BulletPointsBuilder internal constructor() {
     internal val contents = ArrayList<Pair<Boolean, @Composable () -> Unit>>()
 
@@ -31,17 +31,10 @@ public class BulletPointsBuilder internal constructor() {
 private enum class BulletPointsSlotsEnum { Main, Dependent }
 
 @Composable
-@Deprecated(
-    message = """BulletPointsContent has been moved to specific artefacts 
-    |depending on material's version used.
-    |
-    |You can import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.
-    |"""
-)
 private fun BulletPointsContent(
     contents: List<Pair<Boolean, @Composable () -> Unit>>,
     horizontalAlignment: Alignment.Horizontal,
-    spacedBy: Dp
+    spacedBy: Dp,
 ) {
     Column(
         horizontalAlignment = horizontalAlignment,
@@ -60,19 +53,12 @@ private fun BulletPointsContent(
     }
 }
 
-
 @Composable
-@Deprecated(
-    message = """
-        `BulletPoints` has been moved to specific artefacts depending on material's version used.
-            You can import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.""",
-    level = DeprecationLevel.ERROR
-)
 public fun BulletPoints(
     modifier: Modifier = Modifier,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     spacedBy: Dp = 8.dp,
-    builder: BulletPointsBuilder.() -> Unit
+    builder: BulletPointsBuilder.() -> Unit,
 ) {
     val contents = BulletPointsBuilder().apply(builder).contents
     SubcomposeLayout(modifier) { constraints ->
