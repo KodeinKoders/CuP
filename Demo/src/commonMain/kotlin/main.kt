@@ -125,7 +125,7 @@ fun KodeinPresentation(
                     LocalContentColor provides KodeinTheme.Color.Light,
                     LocalTextStyle provides TextStyle(
                         fontFamily = KodeinTheme.Fonts.LCTPicon.Regular
-                    )
+                    ),
                 ) {
                     slidesContent()
                 }

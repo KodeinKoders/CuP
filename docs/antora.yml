@@ -1,15 +1,16 @@
 name: CuP
 title: Compose ur Pres
 version: '1.0'
-display_version: '1.0.0-Beta-01'
+display_version: '1.0.0-Beta-02'
 nav:
   - modules/ROOT/nav.adoc
   - modules/core/nav.adoc
   - modules/plugins/nav.adoc
+  - modules/widgets/nav.adoc
 asciidoc:
   attributes:
     branch: 'main'
-    version: '1.0.0-Beta-01'
+    version: '1.0.0-Beta-02'
     kotlin: '1.9.23'
     compose: '1.6.2'
     jdk: '1.8'

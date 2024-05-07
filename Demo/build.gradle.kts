@@ -14,6 +14,8 @@ kotlin {
         implementation(cup.sourceCode)
         implementation(cup.plugin.laser)
         implementation(cup.plugin.speakerWindow)
+        implementation(cup.widgets.material)
+
 
         implementation(compose.material)
         implementation(compose.materialIconsExtended)

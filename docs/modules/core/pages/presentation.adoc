@@ -299,10 +299,18 @@ MaterialTheme(
     }
 }
 ----
-<1> Scales down the typography to adapt it to CuP.
+<1> xref:widgets:widgets.adoc#typography[Scales down] the typography to adapt it to CuP.
 <2> Sets the background defined in the theme.
 <3> Sets the content color in the slides according to the presentation background.
 
+[CAUTION]
+====
+If you are using any material library (`material`, or `material3`),
+and you need to create your own `MaterialTheme` you should consider downsizing your typography.
+
+Note that `cupScaleDown()` has different implementation depending on the material library you are using.
+See xref:widgets:widgets.adoc#typography[Typography downsizing] for more information on this topic.
+====
 
 [[decorating]]
 == Decorating your presentation

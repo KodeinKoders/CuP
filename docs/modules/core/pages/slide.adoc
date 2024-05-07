@@ -144,6 +144,13 @@ BulletPoints {
 }
 ----
 
+[CAUTION]
+====
+Bullet points *are not* part of the core of *CuP*.
+They are part of different artefacts, because they depend on the Compose `material` or `material3` libraries.
+
+So, whether you are using `material` or `material3` you would need to import the proper dependency. See xref:widgets:widgets.adoc#bullet-points[Widgets: Material section].
+====
 
 [[configuring]]
 == Configuring a Slide ratio & transitions

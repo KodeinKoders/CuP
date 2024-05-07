@@ -1,0 +1,84 @@
+= Widget: Compose Material
+
+This section exposes custom UI widgets we've already developed, so you don't have to reinvent the wheel.
+
+When using Compose, you are probably using Material to handle your theme.
+The downside is that there are two material libraries.
+
+- Material (2): `compose.material`
+- Material 3: `compose.material3`
+
+[[install]]
+== Installing
+
+[tabs]
+====
+CuP Plugin::
++
+.build.gradle.kts
+[source, kotlin]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation(cup.widgets.material)
+        // or implementation(cup.widget.material3)
+    }
+}
+----
+
+Regular Gradle::
++
+.build.gradle.kts
+[source, kotlin, subs="attributes"]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation("net.kodein.cup:cup-widgets-material:{version}")
+        // or implementation("net.kodein.cup:cup-widget-material3:{version}")
+    }
+}
+----
+====
+
+[CAUTION]
+====
+Beware that APIs are very much the same, they only differ from their packages, which are:
+- `net.kodein.cup.widgets.material`
+- `net.kodein.cup.widgets.material3`
+====
+
+[[bullet-points]]
+== Bullet points
+
+Bullet points are a standard way of presenting a list of items in presentations.
+CuP provides a `BulletPoints` composable function that animates each item as it appears:
+
+[source, kotlin]
+----
+BulletPoints {
+    BulletPoint(visible = step >= 1) {
+        Text("The first item.")
+    }
+    BulletPoint(visible = step >= 2) {
+        Text("The second item.")
+    }
+}
+----
+
+[[typography]]
+== Typography downsizing
+
+As CuP modifies the density to adapt the content of your slides to the presentation screen, the default Material typographies are not adapted to a "scaled up" content and would present big texts (such as `h1` or `displayLarge`) way too large when scaled for your presentation.
+
+To avoid this, CuP provides the `cupScaleDown` helper function (for both Material libraries) which properly scales your typography to be adapted to a CuP presentation.
+
+[source, kotlin]
+----
+
+MaterialTheme(
+    typography = MaterialTheme.typography.cupScaleDown() //<1>
+) {
+    // ...
+}
+----
+<1> Scales down the typography to adapt it to CuP.

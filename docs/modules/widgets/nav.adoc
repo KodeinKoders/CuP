@@ -1,0 +1,4 @@
+* xref:widgets.adoc[Widget: Compose Material]
+** xref:widgets.adoc#install[Installing]
+** xref:widgets.adoc#bullet-points[Bullet points]
+** xref:widgets.adoc#typography[Typography downsizing]

@@ -103,6 +103,21 @@ fun MyThemedPresentation(
 }
 ----
 
+[CAUTION]
+====
+Noticed the `typography` parameter of `MaterialTheme` function call?
+
+[source, kotlin]
+----
+MaterialTheme(
+    typography = MaterialTheme.typography.cupScaleDown()
+) { /* ... */ }
+----
+
+Be aware that typography can be oversized.
+You might consider looking at this topic: xref:widgets:widgets.adoc#typography[Widgets: Material].
+====
+
 [[publishing]]
 == Publishing a theme
 
