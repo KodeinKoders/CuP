@@ -13,11 +13,9 @@ public fun TextStyle.cupScaleDown(): TextStyle = copy(
 )
 
 @Deprecated(
-    message = """Typography.cupScaleDown() has been moved to specific artefacts 
-    |depending on material's version used.
-    |
-    |You can import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.
-    |""",
+    message = """
+        `BulletPoints` has been moved to specific artefacts depending on material's version used.
+            You should import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.""",
     level = DeprecationLevel.ERROR
 )
 public fun Typography.cupScaleDown(): Typography = copy(

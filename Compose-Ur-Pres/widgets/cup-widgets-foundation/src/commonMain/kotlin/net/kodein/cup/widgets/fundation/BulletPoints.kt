@@ -1,26 +1,18 @@
-package net.kodein.cup.widget.material3
+package net.kodein.cup.widgets.fundation
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.layout.AlignmentLine
-import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-public class BulletPointsBuilder internal constructor() {
+public class BulletPointsBuilder {
     internal val contents = ArrayList<Pair<Boolean, @Composable () -> Unit>>()
 
     public fun BulletPoint(visible: Boolean = true, content: @Composable () -> Unit) {
@@ -32,9 +24,10 @@ private enum class BulletPointsSlotsEnum { Main, Dependent }
 
 @Composable
 private fun BulletPointsContent(
+    bulletPoint: @Composable () -> Unit,
     contents: List<Pair<Boolean, @Composable () -> Unit>>,
     horizontalAlignment: Alignment.Horizontal,
-    spacedBy: Dp,
+    spacedBy: Dp
 ) {
     Column(
         horizontalAlignment = horizontalAlignment,
@@ -44,7 +37,7 @@ private fun BulletPointsContent(
                 Column {
                     if (index != 0) Spacer(Modifier.height(spacedBy))
                     Row {
-                        Text("• ")
+                        bulletPoint()
                         content()
                     }
                 }
@@ -54,20 +47,21 @@ private fun BulletPointsContent(
 }
 
 @Composable
-public fun BulletPoints(
+public fun BasicBulletPoints(
+    bulletPoint: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     spacedBy: Dp = 8.dp,
-    builder: BulletPointsBuilder.() -> Unit,
+    builder: BulletPointsBuilder.() -> Unit
 ) {
     val contents = BulletPointsBuilder().apply(builder).contents
     SubcomposeLayout(modifier) { constraints ->
         val mainPlaceable = subcompose(BulletPointsSlotsEnum.Main) {
-            BulletPointsContent(contents.map { true to it.second }, horizontalAlignment, spacedBy)
+            BulletPointsContent(bulletPoint, contents.map { true to it.second }, horizontalAlignment, spacedBy)
         }.first().measure(constraints)
 
         val sizedPlaceable = subcompose(BulletPointsSlotsEnum.Dependent) {
-            BulletPointsContent(contents, horizontalAlignment, spacedBy)
+            BulletPointsContent(bulletPoint, contents, horizontalAlignment, spacedBy)
         }.first().measure(constraints)
 
         layout(mainPlaceable.width, sizedPlaceable.height) {

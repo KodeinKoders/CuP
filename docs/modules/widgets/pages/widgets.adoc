@@ -1,17 +1,15 @@
 = Widget: Compose Material
 
-This section exposes the custom UI Widget we've already developed so you don't have to reinvent the wheel.
+This section exposes custom UI widgets we've already developed, so you don't have to reinvent the wheel.
 
 When using Compose, you are probably using Material to handle your theme.
 The downside is that there are two material libraries.
 
-- Material (default 2): `compose.material`
-- Material 3 : `compose.material3`
+- Material (2): `compose.material`
+- Material 3: `compose.material3`
 
 [[install]]
 == Installing
-
-If you are using `material` and/or `material3`, you can add one or both dependency:
 
 [tabs]
 ====
@@ -22,8 +20,8 @@ CuP Plugin::
 ----
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation(cup.widget.material)
-        // and/or implementation(cup.widget.material3)
+        implementation(cup.widgets.material)
+        // or implementation(cup.widget.material3)
     }
 }
 ----
@@ -35,7 +33,7 @@ Regular Gradle::
 ----
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation("net.kodein.cup:cup-widget-material:{version}")
+        implementation("net.kodein.cup:cup-widgets-material:{version}")
         // or implementation("net.kodein.cup:cup-widget-material3:{version}")
     }
 }
@@ -45,8 +43,8 @@ kotlin {
 [CAUTION]
 ====
 Beware that APIs are very much the same, they only differ from their packages, which are:
-- `net.kodein.cup.widget.material`
-- `net.kodein.cup.widget.material3`
+- `net.kodein.cup.widgets.material`
+- `net.kodein.cup.widgets.material3`
 ====
 
 [[bullet-points]]
@@ -70,12 +68,9 @@ BulletPoints {
 [[typography]]
 == Typography downsizing
 
-As we are modifying the density, through CompositionLocals,
-to adapt the content of the presentation Material's typography
-could be oversized in some cases.
+As CuP modifies the density to adapt the content of your slides to the presentation screen, the default Material typographies are not adapted to a "scaled up" content and would present big texts (such as `h1` or `displayLarge`) way too large when scaled for your presentation.
 
-To avoid any trouble, we provide a helper function for each Material library,
-thus you can apply a scaling computation to your typography, so they behave properly on your presentation.
+To avoid this, CuP provides the `cupScaleDown` helper function (for both Material libraries) which properly scales your typography to be adapted to a CuP presentation.
 
 [source, kotlin]
 ----

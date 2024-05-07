@@ -14,11 +14,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Deprecated(
-    message = """BulletPointsBuilder has been moved to specific artefacts 
-    |depending on material's version used.
-    |
-    |You can import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.
-    |"""
+    message = """
+        `BulletPoints` has been moved to specific artefacts depending on material's version used.
+            You should import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.""",
 )
 public class BulletPointsBuilder internal constructor() {
     internal val contents = ArrayList<Pair<Boolean, @Composable () -> Unit>>()
@@ -32,11 +30,9 @@ private enum class BulletPointsSlotsEnum { Main, Dependent }
 
 @Composable
 @Deprecated(
-    message = """BulletPointsContent has been moved to specific artefacts 
-    |depending on material's version used.
-    |
-    |You can import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.
-    |"""
+    message = """
+        `BulletPoints` has been moved to specific artefacts depending on material's version used.
+            You should import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.""",
 )
 private fun BulletPointsContent(
     contents: List<Pair<Boolean, @Composable () -> Unit>>,
@@ -65,7 +61,7 @@ private fun BulletPointsContent(
 @Deprecated(
     message = """
         `BulletPoints` has been moved to specific artefacts depending on material's version used.
-            You can import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.""",
+            You should import either `net.kodein.cup:cup-widget-material` or `net.kodein.cup:cup-widget-material3`.""",
     level = DeprecationLevel.ERROR
 )
 public fun BulletPoints(

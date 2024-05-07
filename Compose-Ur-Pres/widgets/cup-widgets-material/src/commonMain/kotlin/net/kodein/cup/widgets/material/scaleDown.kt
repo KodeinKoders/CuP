@@ -1,4 +1,4 @@
-package net.kodein.cup.widget.material
+package net.kodein.cup.widgets.material
 
 import androidx.compose.material.Typography
 import net.kodein.cup.ui.cupScaleDown

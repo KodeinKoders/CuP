@@ -19,8 +19,9 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(projects.cup)
+            api(projects.widgets.cupWidgetsFoundation)
         }
 
         explicitApi()
@@ -29,7 +30,7 @@ kotlin {
 
 mavenPublishing {
     pom {
-        name.set("Compose ur Pres UI with Material")
-        description.set("A subset of Composable UI components using Material Design 2.")
+        name.set("Compose ur Pres UI widgets with Material 3")
+        description.set("A subset of Composable UI components using Material Design 3.")
     }
 }
