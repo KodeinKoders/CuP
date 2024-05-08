@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
@@ -14,23 +15,23 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import net.kodein.cup.sa.utils.*
-import kotlin.math.max
-import kotlin.math.min
 
 
 private data class TextPartNode(
     val range: TextRange,
     val type: Type,
-    val blockId: SABlock.ID,
+    val block: SABlock?,
     val content: String,
     val children: List<TextPartNode>
 ) : Comparable<TextPartNode> {
@@ -42,7 +43,7 @@ private data class TextPartNode(
 private fun buildTextPartNode(
     range: TextRange,
     fullText: String,
-    blockId: SABlock.ID = SABlock.ID.None,
+    block: SABlock? = null,
     children: List<TextPartNode> = emptyList(),
 ): TextPartNode {
     val originalContent = fullText.substring(range)
@@ -56,11 +57,24 @@ private fun buildTextPartNode(
             val endsInNewLine = range.max == fullText.length || fullText[range.max - 1] == '\n'
             if (startsNewLine && endsInNewLine) TextPartNode.Type.OneLine else TextPartNode.Type.Text
         },
-        blockId = blockId,
+        block = block,
         content = content,
         children = children
     )
 }
+
+public data class SourceCodeDebugColors(
+    val multipleLines: Color = Color.Magenta,
+    val oneLine: Color = Color.Red,
+    val text: Color = Color.Green
+)
+
+private fun SourceCodeDebugColors.colorFor(type: TextPartNode.Type) =
+    when (type) {
+        TextPartNode.Type.MultipleLines -> multipleLines
+        TextPartNode.Type.OneLine -> oneLine
+        TextPartNode.Type.Text -> text
+    }
 
 @Composable
 private fun SourceCodePart(
@@ -72,10 +86,12 @@ private fun SourceCodePart(
     isParentHidden: Boolean,
     isParentHighlighted: Boolean,
     partFractions: List<State<Float>>,
-    overSpanStyles: Map<Int, Pair<SpanStyle, Float>>
+    overSpanStyles: Map<Int, Pair<SpanStyle, Float>>,
+    debug: SourceCodeDebugColors?
 ) {
+    val blockId = part.block?.id ?: SABlock.ID.None
     val currentStep = steps[step]
-    val isThisHidden = SAData.State.Hidden in currentStep[part.blockId]
+    val isThisHidden = SAData.State.Hidden in currentStep[blockId]
     val visibility by animateFloatAsState(
         targetValue = if (isThisHidden) 0f else 1f,
         animationSpec = tween(600)
@@ -85,7 +101,7 @@ private fun SourceCodePart(
         TextPartNode.Type.Text -> visibility to 1f
     }
     val hasHighlight = currentStep.any { SAData.State.Highlighted in it.value }
-    val isHighlighted = SAData.State.Highlighted in currentStep[part.blockId]
+    val isHighlighted = SAData.State.Highlighted in currentStep[blockId]
     val highlight by animateFloatAsState(
         targetValue = if (hasHighlight && isHighlighted) 1f else 0f,
         animationSpec = tween(600)
@@ -95,7 +111,7 @@ private fun SourceCodePart(
 
     val partStyles = remember(steps) {
         steps.map {
-            it[part.blockId]?.filterIsInstance<SAData.State.Styled>()?.map { it.style }
+            it[blockId]?.filterIsInstance<SAData.State.Styled>()?.map { it.style }
         }
     }
 
@@ -118,20 +134,41 @@ private fun SourceCodePart(
 
     Box(
         Modifier
-//            .padding(1.dp)
-//            .border(
-//                width = 1.dp,
-//                color = when (part.type) {
-//                    TextPartNode.Type.OneLine -> Color.Red
-//                    TextPartNode.Type.MultipleLines -> Color.Magenta
-//                    TextPartNode.Type.Text -> Color.Green
-//                }
-//            )
-//            .padding(1.dp)
-            .scaleWithSize(scaleX, scaleY)
-            .alpha(visibility)
-            .scale(1f + 0.4f * highlight)
             .zIndex(if (highlight != 0f) 2f else 1f)
+            .scale(1f + 0.4f * highlight)
+            .then(
+                if (debug != null && part.block != null && part.block.id != SABlock.ID.None) {
+                    val textMeasurer = rememberTextMeasurer()
+                    val dim by animateFloatAsState(
+                        targetValue = if (hasHighlight && !isHighlighted && !isParentHighlighted) 1f else 0f,
+                        animationSpec = tween(600)
+                    )
+                    Modifier
+                        .padding(0.5.dp)
+                        .drawWithContent {
+                            drawContent()
+                            drawText(
+                                textMeasurer = textMeasurer,
+                                text = part.block.debugName,
+                                maxLines = 1,
+                                style = TextStyle(
+                                    color = Color.White.copy(alpha = 1f - dim),
+                                    fontSize = 4.sp,
+                                    lineHeight = 4.sp,
+                                    background = lerp(debug.colorFor(part.type), Color.Black, 0.5f).copy(alpha = 1f - dim),
+                                )
+                            )
+                        }
+                        .border(
+                            width = 1.dp,
+                            color = debug.colorFor(part.type).copy(alpha = 1f - dim * 0.85f)
+                        )
+                        .padding(1.dp)
+                        .padding(top = (3 * visibility).dp)
+                } else Modifier
+            )
+            .alpha(visibility)
+            .scaleWithSize(scaleX, scaleY)
             .drawWithContent {
                 forEachStyle { _, style, fraction -> with(style) { drawBehind(Rect(Offset.Zero, size), fraction) } }
                 drawContent()
@@ -174,7 +211,7 @@ private fun SourceCodePart(
         } else {
             val container: @Composable (@Composable () -> Unit) -> Unit = when (part.type) {
                 TextPartNode.Type.MultipleLines -> ({ Column { it() } })
-                TextPartNode.Type.OneLine, TextPartNode.Type.Text -> ({ Row { it() } })
+                TextPartNode.Type.OneLine, TextPartNode.Type.Text -> ({ Row(verticalAlignment = Alignment.CenterVertically) { it() } })
             }
             container {
                 part.children.forEach {
@@ -188,6 +225,7 @@ private fun SourceCodePart(
                         isParentHighlighted = isHighlighted || isParentHighlighted,
                         partFractions = partFractions,
                         overSpanStyles = partOverStyles,
+                        debug = debug
                     )
                 }
             }
@@ -202,6 +240,7 @@ private fun SourceCodeContent(
     step: Int,
     style: TextStyle,
     theme: SourceCodeTheme,
+    debug: SourceCodeDebugColors?,
     modifier: Modifier = Modifier
 ) {
     val partFractions = sourceCode.data.steps.mapIndexed { index, _ ->
@@ -235,7 +274,8 @@ private fun SourceCodeContent(
                     isParentHidden = false,
                     isParentHighlighted = false,
                     partFractions = partFractions,
-                    overSpanStyles = emptyMap()
+                    overSpanStyles = emptyMap(),
+                    debug = debug
                 )
             }
         }
@@ -251,9 +291,10 @@ public class SourceCode internal constructor(
 public fun SourceCode(
     sourceCode: SourceCode,
     step: Int = 0,
+    modifier: Modifier = Modifier,
     style: TextStyle = TextStyle(fontFamily = FontFamily.Monospace),
     theme: SourceCodeTheme = SourceCodeThemes.intelliJLight,
-    modifier: Modifier = Modifier
+    debug: SourceCodeDebugColors? = null
 ) {
     remember(sourceCode.data.steps.size, step) {
         if (step > sourceCode.data.steps.lastIndex) {
@@ -266,13 +307,13 @@ public fun SourceCode(
         parts = remember(sourceCode.data) {
             val lines = sourceCode.data.fullText.lineRanges()
                 .filterNot { line -> sourceCode.data.blocks.any { it.range == line } }
-                .map { SABlock(SABlock.ID.None, SABlock.Type.Lines, it) }
+                .map { SABlock(SABlock.ID.None, SABlock.Type.Lines, it, "") }
 
             (lines + sourceCode.data.blocks).asTree(
                 range = SABlock::range,
                 node = newNode@ { block, children ->
                     if (children.isEmpty()) {
-                        return@newNode buildTextPartNode(block.range, sourceCode.data.fullText, block.id, emptyList())
+                        return@newNode buildTextPartNode(block.range, sourceCode.data.fullText, block, emptyList())
                     }
                     val addedChildren = ArrayList<TextPartNode>()
                     var lastEnd = block.range.min
@@ -285,17 +326,18 @@ public fun SourceCode(
                     if (lastEnd != block.range.max) {
                         addedChildren += buildTextPartNode(TextRange(lastEnd, block.range.max), sourceCode.data.fullText)
                     }
-                    buildTextPartNode(block.range, sourceCode.data.fullText, block.id, (children + addedChildren).sorted())
+                    buildTextPartNode(block.range, sourceCode.data.fullText, block, (children + addedChildren).sorted())
                 }
             )
         },
-        step = min(max(0, step), sourceCode.data.steps.lastIndex),
+        step = step.coerceIn(0..sourceCode.data.steps.lastIndex),
         style = remember(style, theme) {
             val defaultTheme = theme("default")
             if (defaultTheme != null) style.merge(defaultTheme)
             else style
         },
         theme = theme,
-        modifier = modifier
+        modifier = modifier,
+        debug = debug
     )
 }

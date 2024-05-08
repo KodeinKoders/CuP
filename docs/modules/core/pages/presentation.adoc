@@ -326,8 +326,11 @@ Presentation(
     Image(
         painter = painterResource(Res.drawable.logo),
         contentDescription = "Logo",
-        alignment = Alignment.CenterEnd,
-        modifier = Modifier.alpha(0.4f).fillMaxSize().offset(x = (-16).dp, y = 64.dp)
+        modifier = Modifier
+            .alignment(Alignment.CenterEnd),
+            .alpha(0.4f)
+            .fillMaxSize()
+            .offset(x = (-16).dp, y = 64.dp)
     )
     slidesContent()
 }

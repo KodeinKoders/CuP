@@ -17,7 +17,6 @@ public class SourceCodeBuilder internal constructor() {
 
     private var markerCounter = 0
     internal val markers = ArrayList<Marker>()
-    internal var lastEmptyStep: Int = 0
 
     public data class Marker internal constructor(
         internal val id: Int,
@@ -42,9 +41,8 @@ public class SourceCodeBuilder internal constructor() {
             ).also { markers += it }
         }
 
-    public fun ensureStep(step: Int) {
-        lastEmptyStep = max(step, lastEmptyStep)
-    }
+    @Deprecated("This is not needed anymore and can be safely removed", replaceWith = ReplaceWith(""), level = DeprecationLevel.ERROR)
+    public fun ensureStep(step: Int) {}
 
     internal companion object {
         const val START_OPEN  = "\u2062«\u2064"
@@ -95,13 +93,13 @@ private fun prepareSourceCode(
             startMatch != null && (endPos == -1 || startMatch.range.start < endPos) -> {
                 cleanText = cleanText.replaceRange(startMatch.range, "")
                 val id = startMatch.groupValues[1].toInt()
-                val marker = markers.firstOrNull { it.id == id } ?: error("Use of a marker that is not created on this InlineSourceCode")
+                val marker = markers.firstOrNull { it.id == id } ?: error("Use of a marker that is not created in this SourceCode")
                 stack.add(marker to startMatch.range.start)
                 continue
             }
             endPos >= 0 && (startMatch == null || endPos < startMatch.range.start) -> {
                 cleanText = cleanText.replaceRange(endPos..<(endPos + SourceCodeBuilder.END.length), "")
-                require(stack.isNotEmpty()) { "At $endPos: Empty stack: close marker does not corresponds to any opened segment." }
+                require(stack.isNotEmpty()) { "At $endPos: close marker does not corresponds to any opened section in this SourceCode." }
                 val (marker, startPos) = stack.removeLast()
                 ranges.add(marker to TextRange(startPos, endPos))
                 continue
@@ -113,17 +111,20 @@ private fun prepareSourceCode(
     var nextBlockId = SABlock.ID(0)
     val correspondence = HashMap<Int, ArrayList<SABlock.ID>>()
     val blocks = ranges.map { (marker, range) ->
-        val block = SABlock(nextBlockId, cleanText, range)
+        val block = SABlock(nextBlockId, cleanText, range, marker.name)
         nextBlockId = SABlock.ID(nextBlockId.id + 1)
-        check(block != null) { "Invalid block ${marker.name}: a block must either be inside a line (it must not contain new line) or it must contain the entirety of one or multiple line(s)." }
+        check(block != null) {
+            """
+                Invalid SourceCode section defined by marker '${marker.name}'.
+                A block must either be inside a line (it must not contain line breaks) or it must contain the entirety of one or multiple line(s).
+                A classic mistake is to forget to include the indentation of the first line of a multi-line section.
+                For more details, see https://kodeinkoders.github.io/CuP/CuP/1.0/core/source-code.html#_sections_constraints .
+            """.trimIndent() }
         correspondence.getOrPut(marker.id) { ArrayList() }.add(block.id)
         block
     }
 
-    val max = max(
-        markers.flatMap { it.visibilities }.flatMap { it.steps }.maxOfOrNull { it.last } ?: 1,
-        builder.lastEmptyStep + 1
-    )
+    val max = (markers.flatMap { it.visibilities }.flatMap { it.steps }.maxOfOrNull { it.last } ?: 0) + 1
 
     val steps = (0..max).map { stepNumber ->
         val map = HashMap<SABlock.ID, ArrayList<SAData.State>>()
