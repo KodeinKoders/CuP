@@ -7,9 +7,10 @@ import kotlin.jvm.JvmInline
 
 
 public data class SABlock(
-    val id: ID = ID.None,
+    val id: ID,
     val type: Type,
     val range: TextRange,
+    val debugName: String,
 ) : Comparable<SABlock> {
     override fun compareTo(other: SABlock): Int = range.compareTo(other.range)
 
@@ -34,6 +35,7 @@ public fun SABlock(
     id: SABlock.ID,
     text: String,
     selection: TextRange,
+    debugName: String,
 ): SABlock? {
     if (selection.collapsed) return null
 
@@ -44,12 +46,12 @@ public fun SABlock(
     val isLine = startOfLine && endOfLine
 
     if ('\n' !in selected && !isLine) {
-        return SABlock(id, SABlock.Type.Inline, selection)
+        return SABlock(id, SABlock.Type.Inline, selection, debugName)
     }
 
     if (isLine) {
         val end = if (selection.max == text.length || text[selection.max - 1] == '\n') selection.max else selection.max + 1
-        return SABlock(id, SABlock.Type.Lines, TextRange(selection.min, end))
+        return SABlock(id, SABlock.Type.Lines, TextRange(selection.min, end), debugName)
     }
 
     return null

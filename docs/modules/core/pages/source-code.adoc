@@ -131,6 +131,20 @@ val m by marker(hidden(0), highlighted(2))
 ----
 
 
+=== Debuging your sections
+
+You can display your source code with all of your sections visually framed, which will allow you to visually understand how your sections are defined.
+Give a `SourceCodeDebugColors` to the `debug` parameter of the `SourceCode` function:
+
+[source, kotlin]
+----
+SourceCode(
+    sourceCode = sourceCode,
+    debug = SourceCodeDebugColors(),
+)
+----
+
+
 === Display
 
 You then need to pass the current `step` to `SourceCode`:
@@ -195,39 +209,6 @@ Here are the same sections, but *CORRECT*:
 * Sections that are inside a line appear and disappear horizontally (inside the line, between the previous and next characters).
 * Sections that contain the totality of one or more lines appear and disappear vertically (between the previous and next lines).
 ====
-
-
-=== Implicit & explicit steps
-
-Using your defined markers, CuP counts the number of steps that your source code will be colored and animated.
-For example, considering the following markers:
-
-[source, kotlin]
-----
-val a by marker(onlyShown(0))
-val b by marker(hidden(0))
-val c by marker(hidden(0..1))
-val d by marker(highlighted(3))
-----
-
-Here, CuP will infer that your animation contains 4 steps (numbered 0 to 3).
-Even though step 2 is never defined, because marker `d` defines a step 3, then step 2 must exist!
-
-However, if the last step of your animation is defined nowhere, then it needs to be explicitely defined:
-
-[source, kotlin]
-----
-val sourceCode = rememberSourceCode(language = "text") {
-    val bad by marker(onlyShown(0))
-    val good by marker(hidden(0))
-    ensureStep(1) //<1>
-
-    """
-        This is ${bad}freaking${X}${good}really${X} amazing!
-    """.trimIndent()
-}
-----
-<1> Because step 1 is defined nowhere, and it is the last step, it needs to be explicitly defined.
 
 
 [[style]]
