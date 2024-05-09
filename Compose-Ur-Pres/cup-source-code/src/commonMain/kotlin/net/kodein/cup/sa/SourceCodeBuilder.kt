@@ -42,7 +42,7 @@ public class SourceCodeBuilder internal constructor() {
         }
 
     @Deprecated("This is not needed anymore and can be safely removed", replaceWith = ReplaceWith(""), level = DeprecationLevel.ERROR)
-    public fun ensureStep(step: Int) {}
+    public fun ensureStep(@Suppress("UNUSED_PARAMETER") step: Int) {}
 
     internal companion object {
         const val START_OPEN  = "\u2062«\u2064"

@@ -57,6 +57,7 @@ private fun BulletPointsContent(
 }
 
 
+@Suppress("DEPRECATION")
 @Composable
 @Deprecated(
     message = """
