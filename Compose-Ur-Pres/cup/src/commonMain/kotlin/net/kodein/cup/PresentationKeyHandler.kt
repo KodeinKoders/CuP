@@ -6,12 +6,24 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import kotlin.jvm.JvmInline
+
+
+@JvmInline
+public value class CupKeyEvent internal constructor(internal val nativeKeyEvent: Any)
+
+public expect val CupKeyEvent.key: Key
+public expect val CupKeyEvent.isCtrlPressed: Boolean
+public expect val CupKeyEvent.isAltPressed: Boolean
+public expect val CupKeyEvent.isShiftPressed: Boolean
+public expect val CupKeyEvent.isMetaPressed: Boolean
+public expect val CupKeyEvent.type: KeyEventType
 
 
 @Composable
 public fun PresentationKeyHandler(
     getState: () -> PresentationState?,
-): (KeyEvent) -> Boolean {
+): (CupKeyEvent) -> Boolean {
     val fullScreenToggle by rememberUpdatedState(LocalFullScreenState.current?.second ?: {})
     val ltr by rememberUpdatedState(LocalLayoutDirection.current == LayoutDirection.Ltr)
 
@@ -75,7 +87,7 @@ public fun PresentationKeyHandler(
 }
 
 @Composable
-public fun PresentationKeyHandler(): (KeyEvent) -> Boolean {
+public fun PresentationKeyHandler(): (CupKeyEvent) -> Boolean {
     val state = LocalPresentationState.current
     return PresentationKeyHandler { state }
 }

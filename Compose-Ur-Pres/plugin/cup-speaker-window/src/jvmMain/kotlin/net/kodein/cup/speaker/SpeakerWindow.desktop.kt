@@ -5,13 +5,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.SpeakerNotes
 import androidx.compose.material.icons.rounded.SpeakerNotesOff
 import androidx.compose.runtime.*
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import net.kodein.cup.CupKeyEvent
 import net.kodein.cup.config.CupAdditionalOverlay
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupConfigurationDsl
 import net.kodein.cup.config.CupPlugin
+import net.kodein.cup.key
 import net.kodein.cup.laser.Laser
 import net.kodein.cup.laser.LaserDisplay
+import net.kodein.cup.type
 
 
 internal class SpeakerNotesPlugin : CupPlugin {
@@ -45,7 +49,7 @@ internal class SpeakerNotesPlugin : CupPlugin {
         )
     )
 
-    override fun onKeyEvent(event: KeyEvent): Boolean {
+    override fun onKeyEvent(event: CupKeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false
         if (event.key == Key.S) {
             isOpen = !isOpen

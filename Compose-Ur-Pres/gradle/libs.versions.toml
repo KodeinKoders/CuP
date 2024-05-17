@@ -1,11 +1,11 @@
 [versions]
 buildConfig = "3.1.0"
-compose = "1.6.2"
+compose = "1.6.10-rc01"
 dokka = "1.9.20"
 emoji = "1.2.0"
 graalvm-js = "23.0.2"
 gradle-pluginPublish = "1.2.1"
-kotlin = "1.9.23"
+kotlin = "2.0.0-RC3"
 kxSerialization = "1.6.2"
 markdown = "0.13.0"
 mavenPublish = "0.28.0"
@@ -19,7 +19,7 @@ compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 gradle-pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-pluginPublish" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization-plugin" }
+kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 
 [libraries]

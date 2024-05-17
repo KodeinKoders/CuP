@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
+    alias(libs.plugins.kotlin.plugin.compose)
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish)
 }

@@ -32,7 +32,6 @@ public class CupPlugin : Plugin<Project> {
         if (composeDeps !is ComposePlugin.Dependencies) error("invalid kotlin.compose extension")
 
         repositories {
-            mavenLocal()
             mavenCentral()
             google()
         }
