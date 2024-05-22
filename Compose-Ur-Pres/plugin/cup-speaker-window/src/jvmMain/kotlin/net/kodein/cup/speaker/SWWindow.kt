@@ -9,9 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -42,7 +40,7 @@ internal fun SWWindow(
     val presentationSize = LocalPresentationSize.current
     val ratio = presentationSize.width / presentationSize.height
 
-    val isInDrawMode by rememberUpdatedState(laser != null)
+    val updatedLaser by rememberUpdatedState(laser)
 
     CompositionLocalProvider(LocalPresentationState provides swState) {
         Window(
@@ -50,8 +48,8 @@ internal fun SWWindow(
             title = "Speaker Notes",
             onCloseRequest = onCloseRequest,
             onKeyEvent = SWKeyHandler(
-                isInDrawMode = { isInDrawMode },
-                escapeDrawMode = { setLaser(null) }
+                laser = { updatedLaser },
+                setLaser = setLaser
             ),
         ) {
             Column(
@@ -95,17 +93,36 @@ internal fun SWWindow(
 
 @Composable
 private fun SWKeyHandler(
-    isInDrawMode: () -> Boolean,
-    escapeDrawMode: () -> Unit
+    laser: () -> Laser?,
+    setLaser: (Laser?) -> Unit
 ): (KeyEvent) -> Boolean {
     val state by rememberUpdatedState(LocalPresentationState.current)
-    val fallback = PresentationKeyHandler { state }
-    return { event ->
+    val fallback = PresentationKeyHandler { state }.asComposeKeyHandler()
+    return handler@ { event ->
+        if (event.type != KeyEventType.KeyDown) {
+            return@handler fallback(event)
+        }
         when (event.key) {
             Key.S -> true
+            Key.P -> {
+                when (laser()) {
+                    null -> setLaser(Laser.Pointer())
+                    is Laser.Pointer -> setLaser(null)
+                    else -> {}
+                }
+                true
+            }
+            Key.H -> {
+                when (laser()) {
+                    null -> setLaser(Laser.Highlight())
+                    is Laser.Highlight -> setLaser(null)
+                    else -> {}
+                }
+                true
+            }
             Key.Escape -> {
-                if (isInDrawMode()) {
-                    escapeDrawMode()
+                if (laser() != null) {
+                    setLaser(null)
                     true
                 }
                 else fallback(event)

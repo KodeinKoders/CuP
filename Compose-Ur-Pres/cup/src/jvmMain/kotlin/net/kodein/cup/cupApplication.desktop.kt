@@ -36,7 +36,7 @@ public actual fun cupApplication(
                     onCloseRequest = ::exitApplication,
                     state = windowState,
                     visible = visible,
-                    onKeyEvent = PresentationKeyHandler { presentationState }
+                    onKeyEvent = PresentationKeyHandler { presentationState }.asComposeKeyHandler()
                 ) {
                     if (presentationState != null) {
                         content()

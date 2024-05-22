@@ -3,15 +3,21 @@ package net.kodein.cup.laser
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Draw
+import androidx.compose.material.icons.rounded.Rectangle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import net.kodein.cup.CupKeyEvent
 import net.kodein.cup.LocalPresentationState
 import net.kodein.cup.config.CupAdditionalOverlay
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupConfigurationDsl
 import net.kodein.cup.config.CupPlugin
+import net.kodein.cup.key
+import net.kodein.cup.type
 
 
 internal class LaserPlugin : CupPlugin {
@@ -62,7 +68,7 @@ internal class LaserPlugin : CupPlugin {
         )
     }
 
-    override fun onKeyEvent(event: KeyEvent): Boolean {
+    override fun onKeyEvent(event: CupKeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false
         laser = when {
             event.key == Key.Escape && laser != null -> null

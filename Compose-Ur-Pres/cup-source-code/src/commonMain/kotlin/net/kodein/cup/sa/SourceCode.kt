@@ -151,6 +151,7 @@ private fun SourceCodePart(
                                 textMeasurer = textMeasurer,
                                 text = part.block.debugName,
                                 maxLines = 1,
+                                softWrap = false,
                                 style = TextStyle(
                                     color = Color.White.copy(alpha = 1f - dim),
                                     fontSize = 4.sp,
@@ -205,6 +206,7 @@ private fun SourceCodePart(
                 },
                 style = textStyle,
                 maxLines = 1,
+                softWrap = false,
                 modifier = Modifier
                     .alpha(1f - dim * 0.85f)
             )
