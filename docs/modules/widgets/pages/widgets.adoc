@@ -21,7 +21,7 @@ CuP Plugin::
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(cup.widgets.material)
-        // or implementation(cup.widget.material3)
+        // or implementation(cup.widgets.material3)
     }
 }
 ----
@@ -34,7 +34,7 @@ Regular Gradle::
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation("net.kodein.cup:cup-widgets-material:{version}")
-        // or implementation("net.kodein.cup:cup-widget-material3:{version}")
+        // or implementation("net.kodein.cup:cup-widgets-material3:{version}")
     }
 }
 ----
