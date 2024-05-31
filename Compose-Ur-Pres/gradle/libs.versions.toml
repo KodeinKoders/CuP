@@ -1,17 +1,16 @@
 [versions]
-buildConfig = "3.1.0"
-compose = "1.6.10-rc01"
+buildConfig = "5.3.5"
+compose = "1.6.10"
 dokka = "1.9.20"
-emoji = "1.2.0"
-graalvm-js = "23.0.2"
+emoji = "2.0.0"
+graalvm-js = "23.0.4"
 gradle-pluginPublish = "1.2.1"
-kotlin = "2.0.0-RC3"
-kxSerialization = "1.6.2"
-markdown = "0.13.0"
+kotlin = "2.0.0"
+kxSerialization = "1.7.0-RC"
+markdown = "0.16.0"
 mavenPublish = "0.28.0"
 npm-ismobilejs = "1.1.1"
 npm-highlightjs = "11.9.0"
-serialization-plugin = "1.9.21"
 
 [plugins]
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
