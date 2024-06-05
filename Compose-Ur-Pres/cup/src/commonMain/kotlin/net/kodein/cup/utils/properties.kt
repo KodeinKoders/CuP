@@ -1,6 +1,5 @@
 package net.kodein.cup.utils
 
-import net.kodein.cup.InternalCupAPI
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty

@@ -25,11 +25,10 @@ import cup_demo.generated.resources.Res
 import cup_demo.generated.resources.logo
 import net.kodein.cup.*
 import net.kodein.cup.laser.laser
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 import net.kodein.cup.speaker.speakerWindow
 import net.kodein.cup.utils.DataMap
 import net.kodein.cup.utils.DataMapElement
+import org.jetbrains.compose.resources.painterResource
 import org.kodein.emoji.compose.EmojiService
 import utils.PresentationProgressBar
 
@@ -56,7 +55,6 @@ data class KodeinBanner(
     companion object Key : DataMap.Key<KodeinBanner>
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun KodeinPresentation(
     slides: SlideGroup

@@ -11,10 +11,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import net.kodein.cup.Slide
-import net.kodein.cup.Slides
-import net.kodein.cup.TransitionSet
-import net.kodein.cup.copyWithInsideTransitions
+import net.kodein.cup.*
 import net.kodein.cup.speaker.SpeakerNotesMD
 import utils.InlineIcon
 import utils.Title
@@ -95,11 +92,8 @@ val modes = Slides(
     overview,
     speakerWindow,
     groups,
-    specs = {
-        copyWithInsideTransitions(
-            config = it,
-            startTransitions = TransitionSet.moveVertical,
-            endTransitions = TransitionSet.moveVertical
-        )
-    }
+    specs = insideTransitionSpecs(
+        startTransitions = TransitionSet.moveVertical,
+        endTransitions = TransitionSet.moveVertical
+    )
 )

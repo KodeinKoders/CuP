@@ -14,7 +14,10 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.toSize
 import net.kodein.cup.config.CupConfiguration
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupPlugin
@@ -120,7 +123,7 @@ public fun PresentationMainView() {
 
             state.slides.forEachIndexed { slideIndex, slide ->
                 key(slide.name) {
-                    val specs = config.slideSpecs(slide, slideIndex, state.slides.lastIndex)
+                    val specs = remember { config.slideSpecs(slide) }
 
                     val visible = slideIndex == state.currentSlideIndex
 
@@ -191,15 +194,17 @@ public class PresentationConfig(
     public val defaultSpecs: SlideSpecs,
     public val plugins: List<CupPlugin>,
 ) {
+    public fun slideSpecs(slide: Slide): SlideSpecs =
+        if (slide.specs != null) defaultSpecs.merge(slide.specs) else defaultSpecs
+
+    @Deprecated(
+        message = "Specs are no longer dependent on position (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).",
+        replaceWith = ReplaceWith("remember { slideSpecs(slide) }", "androidx.compose.runtime.remember"),
+        level = DeprecationLevel.ERROR
+    )
     @Composable
     public fun slideSpecs(slide: Slide, indexInGroup: Int, lastGroupIndex: Int): SlideSpecs =
-        slide.specs(
-            defaultSpecs,
-            Slide.Configuration(
-                indexInGroup = indexInGroup,
-                lastGroupIndex = lastGroupIndex
-            )
-        )
+        remember { slideSpecs(slide) }
 }
 
 @PluginCupAPI
@@ -230,7 +235,7 @@ public fun Presentation(
 
     var presentationSize: IntSize? by remember { mutableStateOf(null) }
 
-    val slideContents = state.slides.map { it.content() }
+    val slideContents = state.slides.map { it.contentBuilder() }
 
     CompositionLocalProvider(
         LocalSlideContents provides slideContents,

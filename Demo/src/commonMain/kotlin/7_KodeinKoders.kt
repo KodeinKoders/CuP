@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -20,15 +19,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cup_demo.generated.resources.Res
 import cup_demo.generated.resources.logo
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 import net.kodein.cup.SLIDE_SIZE_16_9
 import net.kodein.cup.Slide
+import net.kodein.cup.SlideSpecs
+import org.jetbrains.compose.resources.painterResource
 
 
-@OptIn(ExperimentalResourceApi::class)
 val kodeinKoders by Slide(
-    specs = { copy(size = SLIDE_SIZE_16_9) },
+    specs = SlideSpecs(size = SLIDE_SIZE_16_9),
     user = KodeinBanner(visible = true)
 ) {
     Text(

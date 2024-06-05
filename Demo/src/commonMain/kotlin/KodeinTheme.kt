@@ -6,7 +6,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import cup_demo.generated.resources.*
 import net.kodein.cup.sa.SourceCodeTheme
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.Font
 
 object KodeinTheme {
@@ -20,7 +19,6 @@ object KodeinTheme {
         val Link = Color(0xFF_EC755B)
     }
 
-    @OptIn(ExperimentalResourceApi::class)
     object Fonts {
         val JetBrainsMono @Composable get() = FontFamily(
             Font(resource = Res.font.JetBrainsMono_Thin, weight = FontWeight.Thin, style = FontStyle.Normal),

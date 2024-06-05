@@ -6,10 +6,10 @@ import androidx.compose.ui.window.application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.kodein.cup.desktop.withCupSavedPresentationState
+import net.kodein.cup.desktop.withCupSavedWindowState
 import org.kodein.emoji.compose.EmojiUrl
 import org.kodein.emoji.compose.ProvideEmojiDownloader
 import org.kodein.emoji.compose.simpleDownloadBytes
-import net.kodein.cup.desktop.withCupSavedWindowState
 import kotlin.io.path.*
 
 

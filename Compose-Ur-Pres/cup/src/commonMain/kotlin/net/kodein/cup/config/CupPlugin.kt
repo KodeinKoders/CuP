@@ -3,7 +3,6 @@ package net.kodein.cup.config
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.KeyEvent
 import net.kodein.cup.CupKeyEvent
 import net.kodein.cup.PluginCupAPI
 

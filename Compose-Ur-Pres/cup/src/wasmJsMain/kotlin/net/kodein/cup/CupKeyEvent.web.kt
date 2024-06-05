@@ -2,8 +2,8 @@ package net.kodein.cup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.InternalComposeUiApi
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
 import kotlinx.browser.window
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent

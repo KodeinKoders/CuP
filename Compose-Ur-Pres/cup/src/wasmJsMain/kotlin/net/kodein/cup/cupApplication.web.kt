@@ -8,10 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.window.CanvasBasedWindow
-import kotlinx.browser.window
 import net.kodein.cup.utils.isAnyMobile
-import org.w3c.dom.events.Event
-import org.w3c.dom.events.KeyboardEvent
 
 
 @OptIn(ExperimentalComposeUiApi::class)

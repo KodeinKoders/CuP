@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.LayoutDirection
  *                  current transition.
  */
 public class TransitionSet(
-    public val enter: (Boolean) -> EnterTransition,
-    public val exit: (Boolean) -> ExitTransition,
+    public val enter: @Composable (Boolean) -> EnterTransition,
+    public val exit: @Composable (Boolean) -> ExitTransition,
     public val modifier: @Composable AnimatedVisibilityScope.(Type) -> Modifier = { Modifier }
 ) {
 
@@ -53,6 +53,11 @@ public class TransitionSet(
     }
 
     public companion object {
+        public val Unspecified: TransitionSet = TransitionSet(
+            enter = { error("Unspecified") },
+            exit = { error("Unspecified") }
+        )
+
         private fun <T> defaultSpec(): FiniteAnimationSpec<T> = tween(600)
 
         public fun moveHorizontal(layoutDirection: LayoutDirection): TransitionSet {
@@ -97,3 +102,6 @@ public class TransitionSet(
         )
     }
 }
+
+public val TransitionSet.isUnspecified: Boolean get() = this === TransitionSet.Unspecified
+public val TransitionSet.isSpecified: Boolean get() = this !== TransitionSet.Unspecified

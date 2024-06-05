@@ -2,7 +2,7 @@
 buildConfig = "5.3.5"
 compose = "1.6.10"
 dokka = "1.9.20"
-emoji = "2.0.0"
+emoji = "2.0.1"
 graalvm-js = "23.0.4"
 gradle-pluginPublish = "1.2.1"
 kotlin = "2.0.0"
