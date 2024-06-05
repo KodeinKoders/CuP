@@ -3,10 +3,7 @@ package net.kodein.cup.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.mavenCentral
-import org.gradle.kotlin.dsl.repositories
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.desktop.DesktopExtension
@@ -36,8 +33,8 @@ public class CupPlugin : Plugin<Project> {
             google()
         }
 
-        extensions.add("cup", CupExtension(this, kotlin, compose, composeDeps))
-        kotlin.extensions.add("cup", CupDependencies())
+        extensions.create<CupExtension>("cup", this, kotlin, compose, composeDeps)
+        kotlin.extensions.create<CupDependencies>("cup")
 
         kotlin.apply {
             sourceSets.apply {

@@ -1,7 +1,9 @@
 package net.kodein.cup.gradle
 
+import org.gradle.api.plugins.ExtensionAware
 
-public class CupDependencies internal constructor() {
+
+public abstract class CupDependencies internal constructor() : ExtensionAware {
     public val sourceCode: String = "net.kodein.cup:cup-source-code:${CupBuildInfo.VERSION}"
 
     public val plugin: Plugins = Plugins()
