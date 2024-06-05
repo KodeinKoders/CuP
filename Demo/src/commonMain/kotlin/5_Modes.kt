@@ -92,8 +92,12 @@ val modes = Slides(
     overview,
     speakerWindow,
     groups,
-    specs = insideTransitionSpecs(
-        startTransitions = TransitionSet.moveVertical,
-        endTransitions = TransitionSet.moveVertical
-    )
+    specs = {
+        it.insideTransitionSpecs(
+            startTransitions = TransitionSet.moveVertical,
+            endTransitions = TransitionSet.moveVertical
+        ) + SlideSpecs(
+            size = SLIDE_SIZE_16_9
+        )
+    }
 )

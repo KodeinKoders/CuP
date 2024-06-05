@@ -164,22 +164,22 @@ If you want to have more space, you can configure a Slide to have a wider ratio.
 [source, kotlin]
 ----
 val helloWorld by Slide(
-    specs = { copy(size = SLIDE_SIZE_16_9) } //<1>
+    specs = SlideSpecs(size = SLIDE_SIZE_16_9) //<1>
 ) {
     Text("Hello, World!", fontSize = 24.sp)
 }
 ----
-<1> Use `copy` to make a copy of the default configuration, changing only the slide size.
+<1> Set the size of the slide to the default 16/9 size.
 
 You can also configure the Slide's transitions:
 
 [source, kotlin]
 ----
 val helloWorld by Slide(
-    specs = { copy(
+    specs = SlideSpecs(
         startTransitions = TransitionSet.fade, //<1>
         endTransitions = TransitionSet.fade //<2>
-    ) }
+    )
 ) {
     Text("Hello, World!", fontSize = 24.sp)
 }

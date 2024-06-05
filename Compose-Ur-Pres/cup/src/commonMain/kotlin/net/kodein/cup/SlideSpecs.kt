@@ -41,15 +41,13 @@ public fun SlideSpecs.merge(other: SlideSpecs): SlideSpecs {
 
 public operator fun SlideSpecs.plus(other: SlideSpecs): SlideSpecs = merge(other)
 
-public fun insideTransitionSpecs(
+public fun Slides.Position.insideTransitionSpecs(
     startTransitions: TransitionSet,
-    endTransitions: TransitionSet,
-): (Slides.Position) ->  SlideSpecs = {
-    when {
-        it.isFirst -> SlideSpecs(endTransitions = endTransitions)
-        it.isLast -> SlideSpecs(startTransitions = startTransitions)
-        else -> SlideSpecs(startTransitions = startTransitions, endTransitions = endTransitions)
-    }
+    endTransitions: TransitionSet
+): SlideSpecs = when {
+    isFirst -> SlideSpecs(endTransitions = endTransitions)
+    isLast -> SlideSpecs(startTransitions = startTransitions)
+    else -> SlideSpecs(startTransitions = startTransitions, endTransitions = endTransitions)
 }
 
 @Suppress("DEPRECATION_ERROR", "DeprecatedCallableAddReplaceWith")

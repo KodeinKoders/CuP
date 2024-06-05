@@ -41,9 +41,6 @@ public class SourceCodeBuilder internal constructor() {
             ).also { markers += it }
         }
 
-    @Deprecated("This is not needed anymore and can be safely removed", replaceWith = ReplaceWith(""), level = DeprecationLevel.ERROR)
-    public fun ensureStep(@Suppress("UNUSED_PARAMETER") step: Int) {}
-
     internal companion object {
         const val START_OPEN  = "\u2062«\u2064"
         const val START_CLOSE = "\u2064:\u2062"

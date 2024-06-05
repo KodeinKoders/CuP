@@ -5,10 +5,27 @@ image::docs/modules/ROOT/images/cup.png[width=384]
 [.lead]
 A pure Kotlin Compose Multiplatform presentation system for developer presenters.
 
-== https://kodeinkoders.github.io/CuP[Documentation]
+== Get Started
 
-== Other resources
+=== https://kodeinkoders.github.io/CuP[Documentation]
 
-* https://github.com/KodeinKoders/CuP-Presentation-Template/tree/main?tab=readme-ov-file[Presentation project template] (to get started).
+=== https://github.com/KodeinKoders/CuP-Presentation-Template/tree/main?tab=readme-ov-file[Presentation project template]
 
-* Curated list of cool presentation that use CuP (TODO)
+=== https://slack-chats.kotlinlang.org/c/cup-presentations[Join the community on the #cup-presentations Slack channel!]
+
+== Beta
+
+During the time CuP is offered in Beta, the following statements are true:
+
+* When API changes:
+** Old API raises depreciation errors (we do not use depreciation warnings) for at least one version (we aim for two when possible).
+** We provide a migration path as much as possible (either in the depreciation error message or in the release notes).
+* We do *not* ensure binary compatibility between versions, and try to fail early with understandable exceptions (when possible), for at lease one version (we aim for two when possible).
+
+Of course, once we promote CuP to stable, we will provide binary compatibility between minor versions, and full migration cycles between major versions.
+
+== Cool presentation examples
+
+* Stay tuned!
+
+IMPORTANT: If you created a cool presentation with CuP, contact me (`@salomonbrys`) on the https://slack-chats.kotlinlang.org:[Kotlin Slack], and I'll add your presentation to the list!

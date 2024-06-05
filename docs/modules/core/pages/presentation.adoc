@@ -420,8 +420,7 @@ val modes = Slides(
     slide2,
     slide3,
     specs = {
-        copyWithInsideTransitions(
-            config = it,
+        it.insideTransitionSpecs(
             startTransitions = TransitionSet.moveVertical,
             endTransitions = TransitionSet.moveVertical
         )
@@ -430,4 +429,4 @@ val modes = Slides(
 ----
 
 NOTE: In this example, both the `startTransitions` of `slide1` and the `endTransitions` of `slide3` are left unmodified.
-Only the transitions that apply between two slides of the same group are modified by `copyWithInsideTransitions`.
+Only the transitions that apply between two slides of the same group are modified by `insideTransitionSpecs`.

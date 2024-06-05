@@ -6,7 +6,6 @@ emoji = "2.0.1"
 graalvm-js = "23.0.4"
 gradle-pluginPublish = "1.2.1"
 kotlin = "2.0.0"
-kxSerialization = "1.7.0-RC"
 markdown = "0.16.0"
 mavenPublish = "0.28.0"
 npm-ismobilejs = "1.1.1"
@@ -24,5 +23,4 @@ mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublis
 [libraries]
 emojiCompose = { module = "org.kodein.emoji:emoji-compose", version.ref = "emoji" }
 graalvm-js = { module = "org.graalvm.js:js", version.ref = "graalvm-js" }
-kxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kxSerialization" }
 markdown = { module = "com.mikepenz:multiplatform-markdown-renderer-m2", version.ref = "markdown" }
