@@ -5,9 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="icon" href="icon.png" type="image/png" />
     <title>Presentation</title>
-    <script type="application/javascript" src="presentation.js"></script>
+<!--    <script type="application/javascript" src="presentation.js"></script>-->
 </head>
 <body>
 <canvas id="cup"></canvas>
+<script type="text/javascript">
+    let hasGC = WebAssembly !== undefined && WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 95, 1, 120, 0]));
+    if (hasGC) {
+        let script = document.createElement("script");
+        script.type = "application/javascript";
+        script.src = "presentation.js";
+        document.head.appendChild(script);
+    } else {
+        document.body.innerHTML = `
+            <style>
+                body {
+                    font-family: sans-serif;
+                }
+            </style>
+            <h1>Unsupported browser</h1>
+            <p>Sorry we cannot show you this amazing presentation, as it looks like your browser does not support Web Assembly Garbage Collection.</p>
+            <p>Have a look at the <a href="https://webassembly.org/features/">Wasm extensions implementation table</a> to see which browser support Garbage Collection.</p>
+            <p>Please note:</p>
+            <ul>
+                <li>Safari support is <a href="https://bugs.webkit.org/show_bug.cgi?id=247394">on its way</a>.</li>
+                <li>As all iOS browsers are required to use the Safari engine, no iOS browser is currently supported.</li>
+            </ul>
+            <p>This is a shame, though. This presentation rocks!</p>
+        `
+    }
+</script>
 </body>
 </html>
