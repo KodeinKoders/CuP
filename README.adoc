@@ -1,5 +1,7 @@
 = CuP: Compose ur Pres
 
+https://central.sonatype.com/artifact/net.kodein.cup/cup[image:https://img.shields.io/maven-central/v/net.kodein.cup/cup[Maven Central Version]]
+
 image::docs/modules/ROOT/images/cup.png[width=384]
 
 [.lead]
