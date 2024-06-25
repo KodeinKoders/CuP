@@ -22,6 +22,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.rememberWindowState
 import net.kodein.cup.*
 import net.kodein.cup.laser.Laser
+import net.kodein.cup.utils.CupToolsColors
+import net.kodein.cup.utils.CupToolsMaterialColors
 import net.kodein.cup.utils.IconButtonWithTooltip
 
 @Composable
@@ -55,7 +57,7 @@ internal fun SWWindow(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.LightGray)
+                    .background(CupToolsMaterialColors.surface)
             ) {
                 var slideListVisible by remember { mutableStateOf(false) }
                 SWTopBar(
@@ -138,7 +140,7 @@ private fun SWTopBar(
     slideListVisible: Boolean,
     toggleSlideListVisible: () -> Unit,
 ) {
-    SWMaterialTheme {
+    MaterialTheme(colors = CupToolsMaterialColors) {
         Surface(
             color = MaterialTheme.colors.primarySurface,
             contentColor = MaterialTheme.colors.onPrimary,

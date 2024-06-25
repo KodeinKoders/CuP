@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import net.kodein.cup.CupKeyEvent
+import net.kodein.cup.PresentationState
 import net.kodein.cup.config.CupAdditionalOverlay
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupConfigurationDsl
@@ -40,7 +41,7 @@ internal class SpeakerNotesPlugin : CupPlugin {
         }
     }
 
-    override fun overlay(): List<CupAdditionalOverlay> = listOf(
+    override fun overlay(state: PresentationState): List<CupAdditionalOverlay> = listOf(
         CupAdditionalOverlay(
             text = "Speaker notes",
             keys = "S",

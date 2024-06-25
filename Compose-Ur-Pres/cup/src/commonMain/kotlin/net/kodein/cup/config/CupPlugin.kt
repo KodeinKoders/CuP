@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import net.kodein.cup.CupKeyEvent
 import net.kodein.cup.PluginCupAPI
+import net.kodein.cup.PresentationState
 
 
 @PluginCupAPI
@@ -14,6 +15,7 @@ public data class CupAdditionalOverlay(
     val icon: ImageVector,
     val keys: String? = null,
     val enabled: Boolean = true,
+    val inMenu: Boolean = false
 )
 
 @PluginCupAPI
@@ -23,5 +25,5 @@ public interface CupPlugin {
     @Composable
     public fun BoxScope.Content()
 
-    public fun overlay(): List<CupAdditionalOverlay> = emptyList()
+    public fun overlay(state: PresentationState): List<CupAdditionalOverlay> = emptyList()
 }

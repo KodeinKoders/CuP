@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import net.kodein.cup.utils.CupToolsColors
 
 
 @Composable
@@ -30,7 +31,7 @@ public fun PresentationPreview(
             modifier = Modifier
                 .scale(previewScale)
                 .size(previewSize + DpSize(8.dp, 8.dp))
-                .border(4.dp, Color.Black)
+                .border(4.dp, CupToolsColors.darker)
                 .clipToBounds()
         ) {
             withPresentationState(

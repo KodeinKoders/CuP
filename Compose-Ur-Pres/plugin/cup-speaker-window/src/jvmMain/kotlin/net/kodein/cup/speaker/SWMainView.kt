@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +26,8 @@ import net.kodein.cup.LocalPresentationState
 import net.kodein.cup.PresentationState
 import net.kodein.cup.currentSlide
 import net.kodein.cup.laser.Laser
+import net.kodein.cup.utils.CupToolsColors
+import net.kodein.cup.utils.CupToolsMaterialColors
 
 @Composable
 internal fun SWMainView(
@@ -108,7 +111,7 @@ private fun SWTimer() {
         }
     }
 
-    SWMaterialTheme {
+    MaterialTheme(colors = CupToolsMaterialColors) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -164,9 +167,9 @@ private fun SWStepRow(presentationState: PresentationState) {
                 Modifier
                     .height(16.dp)
                     .weight(1f)
-                    .border(4.dp, Color.DarkGray.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                    .border(4.dp, CupToolsColors.dark.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
                     .then(
-                        if (presentationState.currentStep > it) Modifier.background(Color.DarkGray.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                        if (presentationState.currentStep > it) Modifier.background(CupToolsColors.dark.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
                         else Modifier
                     )
             )
@@ -188,7 +191,7 @@ private fun SWNotes(presentationState: PresentationState) {
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            SWMaterialTheme {
+            MaterialTheme(colors = CupToolsMaterialColors) {
                 CompositionLocalProvider(
                     LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 18.sp)
                 ) {

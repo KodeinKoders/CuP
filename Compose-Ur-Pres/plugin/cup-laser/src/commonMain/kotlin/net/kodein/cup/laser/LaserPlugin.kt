@@ -10,14 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
-import net.kodein.cup.CupKeyEvent
-import net.kodein.cup.LocalPresentationState
+import net.kodein.cup.*
 import net.kodein.cup.config.CupAdditionalOverlay
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupConfigurationDsl
 import net.kodein.cup.config.CupPlugin
-import net.kodein.cup.key
-import net.kodein.cup.type
 
 
 internal class LaserPlugin : CupPlugin {
@@ -41,7 +38,8 @@ internal class LaserPlugin : CupPlugin {
         }
     }
 
-    override fun overlay(): List<CupAdditionalOverlay> {
+    override fun overlay(state: PresentationState): List<CupAdditionalOverlay> {
+        if (state.isInOverview) return emptyList()
         if (laser != null) {
             return listOf(
                 CupAdditionalOverlay(

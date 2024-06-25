@@ -59,7 +59,6 @@ public abstract class CupExtension internal constructor(
             }
             binaries.executable()
         }
-        compose.extensions.getByName<ExperimentalExtension>("experimental").web.application {}
 
         val extractIndexHtml = project.tasks.register<ExtractResources>("extractIndexHtml") {
             inputPaths.set(listOf("html/index.html", "html/icon.png"))

@@ -79,6 +79,7 @@ internal class PresentationStateImpl(
 
     override var forward: Boolean by mutableStateOf(true) ; private set
 
+    @PluginCupAPI
     internal lateinit var config: PresentationConfig ; private set
 
     override var isInOverview: Boolean by mutableStateOf(false)

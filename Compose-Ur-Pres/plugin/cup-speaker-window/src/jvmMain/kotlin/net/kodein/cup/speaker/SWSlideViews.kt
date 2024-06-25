@@ -24,6 +24,7 @@ import net.kodein.cup.PresentationMainView
 import net.kodein.cup.PresentationState
 import net.kodein.cup.laser.Laser
 import net.kodein.cup.laser.LaserDraw
+import net.kodein.cup.utils.CupToolsMaterialColors
 import net.kodein.cup.utils.IconButtonWithTooltip
 import net.kodein.cup.utils.OverlayedBox
 import net.kodein.cup.utils.rememberOverlayState
@@ -81,17 +82,17 @@ internal fun SWCurrentSlideView(
                         .align(Alignment.BottomStart)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color.LightGray)
+                        .background(CupToolsMaterialColors.surface)
                 ) {
                     if (laser == null) {
                         IconButtonWithTooltip(
                             onClick = { setLaser(Laser.Pointer()) },
-                            text = "Pointer & free draw",
+                            text = "Pointer & free draw (P)",
                             icon = Icons.Rounded.Draw
                         )
                         IconButtonWithTooltip(
                             onClick = { setLaser(Laser.Highlight()) },
-                            text = "Highlight rectangle",
+                            text = "Highlight rectangle (H)",
                             icon = Icons.Rounded.Rectangle
                         )
                     } else {

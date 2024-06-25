@@ -22,6 +22,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import net.kodein.cup.utils.CupToolsColors
+import net.kodein.cup.utils.CupToolsMaterialColors
 
 
 private const val shrinkRatio = 4.5f
@@ -54,7 +56,7 @@ private fun OverviewSlideView(
         val alpha by animateFloatAsState(if (state.currentSlideIndex == slideIndex && state.currentStep == step) 1f else 0f)
         Box(
             Modifier
-                .border(24.dp, Color.DarkGray.copy(alpha = alpha), RoundedCornerShape(32.dp))
+                .border(24.dp, CupToolsColors.dark.copy(alpha = alpha), RoundedCornerShape(32.dp))
                 .padding(56.dp)
                 .pointerHoverIcon(PointerIcon.Hand)
                 .clickable {
@@ -103,7 +105,7 @@ public fun Overview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.LightGray)
+            .background(CupToolsMaterialColors.surface)
     ) {
 
         val scrollOffset = -((outerContainerSize.width - (outerContainerSize.width / shrinkRatio)) / 2).toInt()
@@ -140,16 +142,16 @@ public fun Overview() {
                         modifier = Modifier
                             .fillMaxHeight()
                     ) {
-                        item { Spacer(Modifier.height(spacerHeightDp - 24.dp)/*.width(50.dp).background(Color.Red)*/) }
+                        item { Spacer(Modifier.height(spacerHeightDp - 24.dp)) }
                         stickyHeader {
-                            MaterialTheme {
+                            MaterialTheme(colors = CupToolsMaterialColors) {
                                 Text(
                                     text = slide.name,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier
                                         .width(with(density) { (outerContainerSize.width / shrinkRatio).toDp() } + 16.dp)
                                         .height(24.dp)
-                                        .background(Color.LightGray.copy(alpha = 0.8f))
+                                        .background(CupToolsMaterialColors.surface.copy(alpha = 0.8f))
                                 )
                             }
                         }

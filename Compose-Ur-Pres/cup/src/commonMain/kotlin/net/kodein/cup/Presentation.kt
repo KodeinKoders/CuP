@@ -212,6 +212,20 @@ public val LocalPresentationSize: ProvidableCompositionLocal<Size> = composition
 
 internal val LocalSlideContents: ProvidableCompositionLocal<List<SlideContent>> = compositionLocalOf { error("no content") }
 
+@PluginCupAPI
+@Composable
+public fun ProvideSlideContents(
+    state: PresentationState,
+    content: @Composable () -> Unit
+) {
+    val slideContents = state.slides.map { it.contentBuilder() }
+
+    CompositionLocalProvider(
+        value = LocalSlideContents provides slideContents,
+        content = content
+    )
+}
+
 @Composable
 public fun Presentation(
     slides: SlideGroup,
@@ -235,11 +249,7 @@ public fun Presentation(
 
     var presentationSize: IntSize? by remember { mutableStateOf(null) }
 
-    val slideContents = state.slides.map { it.contentBuilder() }
-
-    CompositionLocalProvider(
-        LocalSlideContents provides slideContents,
-    ) {
+    ProvideSlideContents(state) {
         Box(Modifier.fillMaxSize()) {
             WithPresentationOverlay(
                 onContainerSizeChanged = { presentationSize = it }
@@ -251,9 +261,9 @@ public fun Presentation(
                     }
                     else {
                         PresentationMainView()
-                        config.plugins.forEach {
-                            with(it) { Content() }
-                        }
+                    }
+                    config.plugins.forEach {
+                        with(it) { Content() }
                     }
                 }
             }

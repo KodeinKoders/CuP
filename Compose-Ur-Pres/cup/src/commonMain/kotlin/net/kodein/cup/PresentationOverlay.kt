@@ -10,14 +10,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -28,6 +25,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import net.kodein.cup.utils.CupToolsMaterialColors
 import net.kodein.cup.utils.IconButtonWithTooltip
 import net.kodein.cup.utils.OverlayScope
 
@@ -43,14 +41,13 @@ internal fun OverlayScope.PresentationOverlay(
         .overlayComponent()
         .padding(16.dp)
         .clip(RoundedCornerShape(8.dp))
-        .background(Color.LightGray)
 
-    MaterialTheme {
+    MaterialTheme(colors = CupToolsMaterialColors) {
         val state = LocalPresentationState.current
         val config = state.impl().config
 
         if (!state.isInOverview) {
-            Box(
+            Surface(
                 Modifier
                     .align(Alignment.TopCenter)
                     .presentationOverlayComponent()
@@ -68,7 +65,7 @@ internal fun OverlayScope.PresentationOverlay(
         }
 
         if (!state.isInOverview) {
-            Box(
+            Surface(
                 Modifier
                     .align(Alignment.BottomStart)
                     .presentationOverlayComponent()
@@ -84,7 +81,7 @@ internal fun OverlayScope.PresentationOverlay(
         }
 
         if (state.isInOverview) {
-            Box(
+            Surface(
                 Modifier
                     .align(Alignment.BottomStart)
                     .padding(bottom = 16.dp)
@@ -97,39 +94,69 @@ internal fun OverlayScope.PresentationOverlay(
             }
         }
 
-        Column(
+        Surface(
             Modifier
                 .align(Alignment.TopStart)
                 .presentationOverlayComponent()
         ) {
-            val fullScreenState = LocalFullScreenState.current
-            if (fullScreenState != null) {
-                val (isFullScreen, toggleFullScreen) = fullScreenState
+            Column {
+                val fullScreenState = LocalFullScreenState.current
+                if (fullScreenState != null) {
+                    val (isFullScreen, toggleFullScreen) = fullScreenState
+                    IconButtonWithTooltip(
+                        text = "Full Screen",
+                        keys = "F",
+                        onClick = { toggleFullScreen() },
+                        icon = if (isFullScreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen
+                    )
+                }
                 IconButtonWithTooltip(
-                    text = "Full Screen",
-                    keys = "F",
-                    onClick = { toggleFullScreen() },
-                    icon = if (isFullScreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen
+                    text = "Overview",
+                    keys = "Esc",
+                    onClick = { state.isInOverview = !state.isInOverview },
+                    icon = if (state.isInOverview) Icons.Rounded.ZoomIn else Icons.Rounded.ZoomOut
                 )
-            }
-            IconButtonWithTooltip(
-                text = "Overview",
-                keys = "Esc",
-                onClick = { state.isInOverview = !state.isInOverview },
-                icon = if (state.isInOverview) Icons.Rounded.ZoomIn else Icons.Rounded.ZoomOut
-            )
-            config.plugins.flatMap { it.overlay() }.forEach { overlay ->
-                IconButtonWithTooltip(
-                    text = overlay.text,
-                    keys = overlay.keys,
-                    onClick = overlay.onClick,
-                    icon = overlay.icon,
-                    enabled = overlay.enabled
-                )
+                val overlays = config.plugins.flatMap { it.overlay(state) }
+                val mainOverlays = overlays.filter { !it.inMenu }
+                val menuOverlays = overlays.filter { it.inMenu }
+                mainOverlays.forEach { overlay ->
+                    IconButtonWithTooltip(
+                        text = overlay.text,
+                        keys = overlay.keys,
+                        onClick = overlay.onClick,
+                        icon = overlay.icon,
+                        enabled = overlay.enabled
+                    )
+                }
+                if (menuOverlays.isNotEmpty()) {
+                    var showMenu by remember { mutableStateOf(false) }
+                    IconButton(
+                        onClick = { showMenu = !showMenu }
+                    ) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = "Menu")
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        menuOverlays.forEach { overlay ->
+                            DropdownMenuItem(onClick = overlay.onClick) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(overlay.icon, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                                    Text(overlay.text)
+                                    if (overlay.keys != null) {
+                                        Text(" ")
+                                        Text("(${overlay.keys})")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        Box(
+        Surface(
             Modifier
                 .align(Alignment.TopEnd)
                 .presentationOverlayComponent()
@@ -141,24 +168,26 @@ internal fun OverlayScope.PresentationOverlay(
             )
         }
 
-        Row(
+        Surface(
             Modifier
                 .align(Alignment.BottomEnd)
                 .presentationOverlayComponent()
         ) {
-            val ltr = LocalLayoutDirection.current == LayoutDirection.Ltr
-            IconButtonWithTooltip(
-                text = "Previous",
-                keys = "${if (ltr) "←" else "→"} / ↑ / ⌫",
-                onClick = { state.goToPrevious() },
-                icon = if (ltr) Icons.Rounded.ChevronLeft else Icons.Rounded.ChevronRight
-            )
-            IconButtonWithTooltip(
-                text = "Next",
-                keys = "${if (ltr) "→" else "←"} / ↓ / ␣ / ⏎",
-                onClick = { state.goToNext() },
-                icon = if (ltr) Icons.Rounded.ChevronRight else Icons.Rounded.ChevronLeft
-            )
+            Row {
+                val ltr = LocalLayoutDirection.current == LayoutDirection.Ltr
+                IconButtonWithTooltip(
+                    text = "Previous",
+                    keys = "${if (ltr) "←" else "→"} / ↑ / ⌫",
+                    onClick = { state.goToPrevious() },
+                    icon = if (ltr) Icons.Rounded.ChevronLeft else Icons.Rounded.ChevronRight
+                )
+                IconButtonWithTooltip(
+                    text = "Next",
+                    keys = "${if (ltr) "→" else "←"} / ↓ / ␣ / ⏎",
+                    onClick = { state.goToNext() },
+                    icon = if (ltr) Icons.Rounded.ChevronRight else Icons.Rounded.ChevronLeft
+                )
+            }
         }
     }
 }
@@ -173,68 +202,73 @@ public fun SlideList(
         enter = expandIn(expandFrom = Alignment.Center) { IntSize(0, it.height) },
         exit = shrinkOut(shrinkTowards = Alignment.Center) { IntSize(0, it.height) }
     ) {
-        MaterialTheme {
-            Box(
-                modifier = Modifier
+        MaterialTheme(colors = CupToolsMaterialColors) {
+            Surface(
+                Modifier
                     .fillMaxHeight()
                     .width(300.dp)
-                    .padding(vertical = 4.dp)
             ) {
-                val state = LocalPresentationState.current
-                val lazyListState = rememberLazyListState()
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    state = lazyListState
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 4.dp)
                 ) {
-                    state.slides.forEachIndexed { slideIndex, slide ->
-                        item { Spacer(Modifier.height(12.dp)) }
-                        repeat(slide.stepCount) { step ->
-                            item {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { state.goTo(slideIndex, step) }
-                                        .padding(vertical = 6.dp)
-                                        .padding(end = 4.dp)
-                                ) {
-                                    Box(Modifier.size(32.dp)) {
-                                        androidx.compose.animation.AnimatedVisibility(
-                                            visible = state.currentSlideIndex == slideIndex && state.currentStep == step,
-                                            enter = fadeIn() + slideIn { IntOffset(-it.width / 2, 0) },
-                                            exit = fadeOut() + slideOut { IntOffset(-it.width / 2, 0) },
-                                        ) {
-                                            Icon(if (LocalLayoutDirection.current == LayoutDirection.Ltr) Icons.Rounded.ChevronRight else Icons.Rounded.ChevronLeft, "Current", Modifier.fillMaxSize())
-                                        }
-                                    }
-                                    Text(
-                                        text = slide.name,
+                    val state = LocalPresentationState.current
+                    val lazyListState = rememberLazyListState()
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        state = lazyListState
+                    ) {
+                        state.slides.forEachIndexed { slideIndex, slide ->
+                            item { Spacer(Modifier.height(12.dp)) }
+                            repeat(slide.stepCount) { step ->
+                                item {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier
-                                            .padding(start = 4.dp)
-                                            .then(
-                                                if (step != 0) Modifier.alpha(0.2f)
-                                                else Modifier
-                                            )
-                                    )
-                                    if (slide.stepCount > 1) {
+                                            .fillMaxWidth()
+                                            .clickable { state.goTo(slideIndex, step) }
+                                            .padding(vertical = 6.dp)
+                                            .padding(end = 4.dp)
+                                    ) {
+                                        Box(Modifier.size(32.dp)) {
+                                            androidx.compose.animation.AnimatedVisibility(
+                                                visible = state.currentSlideIndex == slideIndex && state.currentStep == step,
+                                                enter = fadeIn() + slideIn { IntOffset(-it.width / 2, 0) },
+                                                exit = fadeOut() + slideOut { IntOffset(-it.width / 2, 0) },
+                                            ) {
+                                                Icon(if (LocalLayoutDirection.current == LayoutDirection.Ltr) Icons.Rounded.ChevronRight else Icons.Rounded.ChevronLeft, "Current", Modifier.fillMaxSize())
+                                            }
+                                        }
                                         Text(
-                                            text = step.toString(),
+                                            text = slide.name,
                                             modifier = Modifier
-                                                .padding(start = 8.dp)
+                                                .padding(start = 4.dp)
+                                                .then(
+                                                    if (step != 0) Modifier.alpha(0.2f)
+                                                    else Modifier
+                                                )
                                         )
+                                        if (slide.stepCount > 1) {
+                                            Text(
+                                                text = step.toString(),
+                                                modifier = Modifier
+                                                    .padding(start = 8.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    VerticalScrollbar(
+                        adapter = rememberScrollbarAdapter(lazyListState),
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .align(Alignment.CenterEnd)
+                    )
                 }
-                VerticalScrollbar(
-                    adapter = rememberScrollbarAdapter(lazyListState),
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .align(Alignment.CenterEnd)
-                )
             }
         }
     }
