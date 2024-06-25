@@ -49,21 +49,3 @@ public fun Slides.Position.insideTransitionSpecs(
     isLast -> SlideSpecs(startTransitions = startTransitions)
     else -> SlideSpecs(startTransitions = startTransitions, endTransitions = endTransitions)
 }
-
-@Suppress("DEPRECATION_ERROR", "DeprecatedCallableAddReplaceWith")
-@Deprecated("Please use the new Slides constructor with the insideTransitionSpecs function (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).", level = DeprecationLevel.ERROR)
-public fun SlideSpecs.copyWithInsideTransitions(
-    config: Slide.Configuration,
-    startTransitions: TransitionSet,
-    endTransitions: TransitionSet,
-): SlideSpecs =
-    error("Please use the new Slides constructor with the insideTransitionSpecs function (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).")
-
-@Suppress("DEPRECATION_ERROR", "DeprecatedCallableAddReplaceWith")
-@Deprecated("Please use the new Slides constructor with the insideTransitionSpecs function (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).", level = DeprecationLevel.ERROR)
-public fun copyWithInsideTransitions(
-    config: Slide.Configuration,
-    startTransitions: TransitionSet,
-    endTransitions: TransitionSet,
-): SlideSpecs =
-    error("Please use the new Slides constructor with the insideTransitionSpecs function (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).")

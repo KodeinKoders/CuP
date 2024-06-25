@@ -57,13 +57,6 @@ public data class Slide internal constructor(
     public val user: DataMap = emptyDataMap(),
     public val contentBuilder: @Composable () -> SlideContent
 ) : SlideGroup {
-
-    @Deprecated("Renamed Slides.Position (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).", replaceWith = ReplaceWith("Slides.Position"), level = DeprecationLevel.ERROR)
-    public data class Configuration(
-        val indexInGroup: Int,
-        val lastGroupIndex: Int,
-    )
-
     public val lastStep: Int get() = stepCount - 1
     override val slideList: List<Slide> get() = listOf(this)
 }
@@ -119,27 +112,3 @@ public fun PreparedSlide(
             contentBuilder = { PreparedSlideScope.prepare() }
         )
     }
-
-
-@Deprecated("SlideSpecs are no longer built by copy (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).", level = DeprecationLevel.ERROR)
-@Suppress("DEPRECATION_ERROR")
-public typealias SlideSpecBuilder = @Composable SlideSpecs.(Slide.Configuration) -> SlideSpecs
-
-@Suppress("DEPRECATION_ERROR", "DeprecatedCallableAddReplaceWith")
-@Deprecated("SlideSpecs are no longer built by copy, and user are now built by slide. Please use the new Slides constructor (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).", level = DeprecationLevel.ERROR)
-public fun Slides(
-    content: List<SlideGroup>,
-    user: DataMap = emptyDataMap(),
-    specs: @Composable SlideSpecs.(Slide.Configuration) -> SlideSpecs
-): SlideGroup =
-    error("SlideSpecs are no longer built by copy, and user are now built by slide. Please use the new Slides constructor (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).")
-
-@Suppress("DEPRECATION_ERROR", "DeprecatedCallableAddReplaceWith")
-@Deprecated("SlideSpecs are no longer built by copy. Please use the new Slide constructor (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).", level = DeprecationLevel.ERROR)
-public fun Slide(
-    stepCount: Int = 1,
-    specs: @Composable SlideSpecs.(Slide.Configuration) -> SlideSpecs,
-    user: DataMap = emptyDataMap(),
-    content: SlideContent
-): EagerProperty<Slide> =
-    error("SlideSpecs are no longer built by copy. Please use the new Slide constructor (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).")

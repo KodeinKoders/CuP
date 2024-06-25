@@ -196,15 +196,6 @@ public class PresentationConfig(
 ) {
     public fun slideSpecs(slide: Slide): SlideSpecs =
         if (slide.specs != null) defaultSpecs.merge(slide.specs) else defaultSpecs
-
-    @Deprecated(
-        message = "Specs are no longer dependent on position (see https://github.com/KodeinKoders/CuP/releases/tag/v1.0.0-Beta-05 ).",
-        replaceWith = ReplaceWith("remember { slideSpecs(slide) }", "androidx.compose.runtime.remember"),
-        level = DeprecationLevel.ERROR
-    )
-    @Composable
-    public fun slideSpecs(slide: Slide, indexInGroup: Int, lastGroupIndex: Int): SlideSpecs =
-        remember { slideSpecs(slide) }
 }
 
 @PluginCupAPI
