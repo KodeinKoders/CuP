@@ -28,6 +28,6 @@ Of course, once we promote CuP to stable, we will provide binary compatibility b
 
 == Cool presentation examples
 
-* Stay tuned!
+* https://www.youtube.com/watch?v=w_mkLrzb_I4[image:https://img.youtube.com/vi/w_mkLrzb_I4/mqdefault.jpg["Using С and native platforms in Kotlin | Salomon Brys",320,180]]
 
 IMPORTANT: If you created a cool presentation with CuP, contact me (`@salomonbrys`) on the https://slack-chats.kotlinlang.org:[Kotlin Slack], and I'll add your presentation to the list!
