@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import net.kodein.cup.*
-import net.kodein.cup.speaker.SpeakerNotesMD
+import net.kodein.cup.speaker.SpeakerNotes
 import utils.InlineIcon
 import utils.Title
 
@@ -47,14 +47,16 @@ val overview by Slide {
 }
 
 val speakerWindow by Slide(
-    user = SpeakerNotesMD("""
-            This slides has some **speaker notes** that you can see here!
-            
-            - You can use markdown in speaker notes
-            - Or you can use regular compose if you prefer
-            
-            Isn't that cool!
-    """)
+    user = SpeakerNotes(
+        """
+                This slides has some **speaker notes** that you can see here!
+                
+                - You can use markdown in speaker notes
+                - Or you can use regular compose if you prefer
+                
+                Isn't that cool!
+        """
+    )
 ) {
     Title {
         Text("Hit S to open the Speaker Window!")

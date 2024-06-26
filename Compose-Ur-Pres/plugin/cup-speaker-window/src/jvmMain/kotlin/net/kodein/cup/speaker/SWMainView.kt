@@ -195,10 +195,9 @@ private fun SWNotes(presentationState: PresentationState) {
                 CompositionLocalProvider(
                     LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 18.sp)
                 ) {
-                    when (val speakerNotes = presentationState.currentSlide.user[ASpeakerNotes]) {
-                        is SpeakerNotes -> speakerNotes.notes.invoke(this)
-                        is SpeakerNotesMD -> Markdown(speakerNotes.notes.trimIndent())
-                        null -> {}
+                    val speakerNotes = presentationState.currentSlide.user[SpeakerNotes]
+                    if (speakerNotes != null) {
+                        Markdown(speakerNotes.md.trimIndent())
                     }
                 }
             }
