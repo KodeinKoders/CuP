@@ -15,12 +15,16 @@ public sealed class ASpeakerNotes : DataMapElement<ASpeakerNotes>(Key) {
 }
 
 public class SpeakerNotes(
-    public val md: String
+    public val notes: List<Pair<IntRange, String>>
 ) : DataMapElement<SpeakerNotes>(Key) {
-    internal companion object Key : DataMap.Key<SpeakerNotes>
+    internal companion object Key : DataMap.Key<SpeakerNotes> {
+        private val allSteps = 0..Int.MAX_VALUE
+    }
+
+    public constructor(md: String): this(listOf(allSteps to md))
 
     @Deprecated("Speaker notes are now forcibly in Markdown, please use SpeakerNotes(markdownText)")
-    public constructor(notes: @Composable ColumnScope.() -> Unit = {}) : this("") {
+    public constructor(notes: @Composable ColumnScope.() -> Unit = {}) : this(emptyList()) {
         error("Speaker notes are now forcibly in Markdown, please use SpeakerNotes(markdownText)")
     }
 }

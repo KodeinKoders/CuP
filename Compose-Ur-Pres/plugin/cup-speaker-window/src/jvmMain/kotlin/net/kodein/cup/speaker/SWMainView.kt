@@ -197,7 +197,8 @@ private fun SWNotes(presentationState: PresentationState) {
                 ) {
                     val speakerNotes = presentationState.currentSlide.user[SpeakerNotes]
                     if (speakerNotes != null) {
-                        Markdown(speakerNotes.md.trimIndent())
+                        val (_, notes) = speakerNotes.notes.first { (range, _) -> presentationState.currentStep in range }
+                        Markdown(notes.trimIndent())
                     }
                 }
             }
