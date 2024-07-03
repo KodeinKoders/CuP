@@ -24,7 +24,7 @@ private suspend fun cupDownloadEmoji(url: EmojiUrl): ByteArray = withContext(Dis
     }
 }
 
-public actual fun cupApplication(
+public actual fun cupPlatformApplication(
     title: String,
     content: @Composable () -> Unit
 ): Unit = application {

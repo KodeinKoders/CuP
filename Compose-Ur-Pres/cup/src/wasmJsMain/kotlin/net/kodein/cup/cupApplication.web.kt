@@ -12,7 +12,7 @@ import net.kodein.cup.utils.isAnyMobile
 
 
 @OptIn(ExperimentalComposeUiApi::class)
-public actual fun cupApplication(
+public actual fun cupPlatformApplication(
     title: String,
     content: @Composable () -> Unit
 ) {
