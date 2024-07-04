@@ -4,15 +4,13 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.List
-import androidx.compose.material.icons.automirrored.rounded.SpeakerNotes
 import androidx.compose.material.icons.rounded.ZoomOut
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import net.kodein.cup.*
-import net.kodein.cup.speaker.SpeakerNotes
+import net.kodein.cup.Slide
+import net.kodein.cup.SlideGroup
 import utils.InlineIcon
 import utils.Title
 
@@ -46,60 +44,4 @@ val overview by Slide {
     )
 }
 
-val speakerWindow by Slide(
-    user = SpeakerNotes(
-        """
-                This slides has some **speaker notes** that you can see here!
-                
-                - You can use markdown in speaker notes
-                - Or you can use regular compose if you prefer
-                
-                Isn't that cool!
-        """
-    )
-) {
-    Title {
-        Text("Hit S to open the Speaker Window!")
-    }
-    Text(
-        text = buildAnnotatedString {
-            append("(Or click on the top left ")
-            appendInlineContent("icon")
-            append(" shown when moving your mouse.)")
-        },
-        inlineContent = mapOf(
-            "icon" to InlineIcon(Icons.AutoMirrored.Rounded.SpeakerNotes, "icon")
-        ),
-        textAlign = TextAlign.Center,
-    )
-    Spacer(Modifier.height(16.dp))
-    Text(
-        text = "Only available on desktop (not web).",
-        fontSize = 0.6.em,
-        textAlign = TextAlign.Center,
-    )
-}
-
-val groups by Slide {
-    Title {
-        Text("You can group slides and apply specifics to all slides in the group")
-    }
-    Text(
-        text = "For example, the last 3 slides are grouped and given a vertical transitions between them!",
-        textAlign = TextAlign.Center,
-    )
-}
-
-val modes = Slides(
-    overview,
-    speakerWindow,
-    groups,
-    specs = {
-        it.insideTransitionSpecs(
-            startTransitions = TransitionSet.moveVertical,
-            endTransitions = TransitionSet.moveVertical
-        ) + SlideSpecs(
-            size = SLIDE_SIZE_16_9
-        )
-    }
-)
+expect val modes: SlideGroup

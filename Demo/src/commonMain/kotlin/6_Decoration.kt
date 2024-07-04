@@ -15,14 +15,13 @@ import utils.Title
 
 
 val decoration by Slide(
-    stepCount = 2,
-    user = KodeinBanner(visible = true)
+    stepCount = 2
 ) { step ->
     Title {
-        Text("You can decorate and theme your presentation")
+        Text("You can decorate and\ntheme your presentation")
     }
     Text(
-        text = "This presentation uses the KODEIN theme that we created for our own presentations!",
+        text = "This presentation uses the KODEIN theme that\nwe created for our own presentations!",
         textAlign = TextAlign.Center,
     )
     Spacer(Modifier.height(32.dp))
@@ -31,7 +30,7 @@ val decoration by Slide(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            TextWithEmoji("For example the ${Emoji.DownArrow} orange bar is not standard and part of our theming.")
+            TextWithEmoji("For example the ${Emoji.DownArrow} light purple bar is not standard and part of our theming.")
             Spacer(Modifier.height(16.dp))
             NotoAnimatedEmoji(Emoji.StarStruck, Modifier.size(64.dp))
         }

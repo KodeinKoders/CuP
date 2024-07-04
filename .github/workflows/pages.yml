@@ -3,9 +3,7 @@ name: Publish documentation to Github Pages
 on:
   push:
     branches:
-      - 'main'
-    paths:
-      - 'docs/**.adoc'
+      - 'release'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -29,14 +27,28 @@ jobs:
         uses: actions/checkout@v4
       - name: Configure Pages
         uses: actions/configure-pages@v3
-      - name: Install Node.js
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
       - name: Install Antora
         run: npm install
-      - name: Generate Site
+      - name: Generate Documentation Site
         run: npx antora antora-playbook.yml
+
+      - name: Set up JDK Temurin 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Generate Demo web export
+        run: ./gradlew :Demo:wasmJsBrowserDistribution
+      - name: Copy Demo web export to site directory
+        run: cp -r Demo/build/dist/wasmJs/productionExecutable build/site/Demo
+
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v2
         with:

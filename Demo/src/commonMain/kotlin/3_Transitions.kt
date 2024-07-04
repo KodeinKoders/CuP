@@ -2,7 +2,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import net.kodein.cup.Slide
 import net.kodein.cup.SlideSpecs
@@ -20,7 +19,7 @@ val transitions by Slide(
     )
 ) { step ->
     Title(Modifier.padding(16.dp)) {
-        Text("There can also be complex slide transition animations !")
+        Text("There can also be complex slide transition transitions !")
     }
     AnimatedVisibility(step >= 1) {
         TextWithEmoji("Have you noticed the background change? 🤔")

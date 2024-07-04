@@ -6,7 +6,6 @@ site:
 content:
   sources:
     - url: ./
-      worktree: true
       start_path: docs
 asciidoc:
   extensions:

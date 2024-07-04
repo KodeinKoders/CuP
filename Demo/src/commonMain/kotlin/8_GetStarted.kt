@@ -15,13 +15,13 @@ val getStarted by Slide {
     }
     val uriHandler = LocalUriHandler.current
     Text(
-        text = "https://github.com/kosi-libs/CuP",
+        text = "https://github.com/KodeinKoders/CuP",
         textAlign = TextAlign.Center,
         color = KodeinTheme.Color.Link,
         modifier = Modifier
             .pointerHoverIcon(PointerIcon.Hand)
             .clickable {
-                uriHandler.openUri("https://github.com/kosi-libs/CuP")
+                uriHandler.openUri("https://github.com/KodeinKoders/CuP")
             }
     )
 }

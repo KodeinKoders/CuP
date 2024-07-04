@@ -103,7 +103,7 @@ fun KodeinPresentation(
                     .align(Alignment.TopEnd)
             ) {
                 Text(
-                    text = "Amazing!",
+                    text = "Desktop only!",
                     fontSize = 20.sp,
                     color = Color.Black,
                 )

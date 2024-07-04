@@ -44,10 +44,12 @@ val steps by Slide(
     AnimatedVisibility(
         visible = step >= 4,
         enter = scaleIn(spring(Spring.DampingRatioHighBouncy, Spring.StiffnessMediumLow)) + expandVertically(clip = false),
-        modifier = Modifier
     ) {
-        Title {
-            TextWithAnimatedEmoji("Or attracting attention! ${Emoji.Collision}")
+        Title(
+            modifier = Modifier
+                .padding(top = 32.dp)
+        ) {
+            TextWithAnimatedEmoji("${Emoji.Collision} Or attracting attention! ${Emoji.Collision}")
         }
     }
 }
