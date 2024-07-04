@@ -25,15 +25,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
+import kotlinx.collections.immutable.*
+import kotlinx.coroutines.Deferred
 import net.kodein.cup.sa.utils.*
 
 
+@Stable
 private data class TextPartNode(
     val range: TextRange,
     val type: Type,
     val block: SABlock?,
     val content: String,
-    val children: List<TextPartNode>
+    val children: ImmutableList<TextPartNode>
 ) : Comparable<TextPartNode> {
     val contentRange: TextRange get() = TextRange(range.start, range.start + content.length)
     enum class Type { MultipleLines, OneLine, Text }
@@ -44,7 +47,7 @@ private fun buildTextPartNode(
     range: TextRange,
     fullText: String,
     block: SABlock? = null,
-    children: List<TextPartNode> = emptyList(),
+    children: ImmutableList<TextPartNode> = persistentListOf(),
 ): TextPartNode {
     val originalContent = fullText.substring(range)
     val content = originalContent.removeSuffix("\n")
@@ -79,14 +82,15 @@ private fun SourceCodeDebugColors.colorFor(type: TextPartNode.Type) =
 @Composable
 private fun SourceCodePart(
     part: TextPartNode,
-    steps: List<SAStep>,
+    steps: ImmutableList<SAStep>,
     step: Int,
     textStyle: TextStyle,
-    codeStyle: List<StyleSection>,
+    codeStyle: ImmutableList<StyleSection>,
     isParentHidden: Boolean,
     isParentHighlighted: Boolean,
-    partFractions: List<State<Float>>,
-    overSpanStyles: Map<Int, Pair<SpanStyle, Float>>,
+//    partFractions: ImmutableList<State<Float>>,
+    partFractions: (Int) -> Float,
+    overSpanStyles: ImmutableMap<Int, Pair<SpanStyle, Float>>,
     debug: SourceCodeDebugColors?
 ) {
     val blockId = part.block?.id ?: SABlock.ID.None
@@ -117,7 +121,7 @@ private fun SourceCodePart(
 
     fun forEachStyle(action: (Int, SAStyle, Float) -> Unit) {
         steps.forEachIndexed { index, _ ->
-            val stepFraction by partFractions[index]
+            val stepFraction = partFractions(index)
             val stepStyles = partStyles[index]
             if (stepFraction > 0 && stepStyles != null) {
                 stepStyles.forEachIndexed { styleStep, style ->
@@ -127,10 +131,11 @@ private fun SourceCodePart(
         }
     }
 
-    val partOverStyles = HashMap(overSpanStyles)
-    forEachStyle { index, saStyle, fraction ->
-        partOverStyles[index] = saStyle.spanStyle() to fraction
-    }
+    val partOverStyles = overSpanStyles.toPersistentMap().builder().apply {
+        forEachStyle { index, saStyle, fraction ->
+            put(index, saStyle.spanStyle() to fraction)
+        }
+    }.build()
 
     Box(
         Modifier
@@ -238,7 +243,7 @@ private fun SourceCodePart(
 @Composable
 private fun SourceCodeContent(
     sourceCode: SourceCode,
-    parts: List<TextPartNode>,
+    parts: ImmutableList<TextPartNode>,
     step: Int,
     style: TextStyle,
     theme: SourceCodeTheme,
@@ -264,7 +269,7 @@ private fun SourceCodeContent(
             )
         }
 
-        val codeStyle by produceState(emptyList<StyleSection>(), step) { value = sourceCode.sections(step).applySourceCodeTheme(theme) }
+        val codeStyle by produceState(persistentListOf(), step) { value = sourceCode.sections(step).await().applySourceCodeTheme(theme).toImmutableList() }
         Column(Modifier.onSizeChanged { codeSize = it }) {
             parts.forEach {
                 SourceCodePart(
@@ -275,8 +280,9 @@ private fun SourceCodeContent(
                     codeStyle = codeStyle,
                     isParentHidden = false,
                     isParentHighlighted = false,
-                    partFractions = partFractions,
-                    overSpanStyles = emptyMap(),
+//                    partFractions = partFractions,
+                    partFractions = { partFractions[it].value },
+                    overSpanStyles = persistentMapOf(),
                     debug = debug
                 )
             }
@@ -286,7 +292,7 @@ private fun SourceCodeContent(
 
 public class SourceCode internal constructor(
     internal val data: SAData,
-    internal val sections: suspend (Int) -> List<ClassesSection>
+    internal val sections: (Int) -> Deferred<List<ClassesSection>>
 )
 
 @Composable
@@ -311,11 +317,11 @@ public fun SourceCode(
                 .filterNot { line -> sourceCode.data.blocks.any { it.range == line } }
                 .map { SABlock(SABlock.ID.None, SABlock.Type.Lines, it, "") }
 
-            (lines + sourceCode.data.blocks).asTree(
+            (lines + sourceCode.data.blocks).asTree<SABlock, TextPartNode>(
                 range = SABlock::range,
                 node = newNode@ { block, children ->
                     if (children.isEmpty()) {
-                        return@newNode buildTextPartNode(block.range, sourceCode.data.fullText, block, emptyList())
+                        return@newNode buildTextPartNode(block.range, sourceCode.data.fullText, block, persistentListOf())
                     }
                     val addedChildren = ArrayList<TextPartNode>()
                     var lastEnd = block.range.min
@@ -328,9 +334,9 @@ public fun SourceCode(
                     if (lastEnd != block.range.max) {
                         addedChildren += buildTextPartNode(TextRange(lastEnd, block.range.max), sourceCode.data.fullText)
                     }
-                    buildTextPartNode(block.range, sourceCode.data.fullText, block, (children + addedChildren).sorted())
+                    buildTextPartNode(block.range, sourceCode.data.fullText, block, (children + addedChildren).sorted().toPersistentList())
                 }
-            )
+            ).toImmutableList()
         },
         step = step.coerceIn(0..sourceCode.data.steps.lastIndex),
         style = remember(style, theme) {

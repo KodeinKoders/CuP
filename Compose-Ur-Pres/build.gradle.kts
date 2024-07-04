@@ -39,3 +39,27 @@ allprojects {
         }
     }
 }
+
+subprojects {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        compilerOptions {
+            val buildDir = project.layout.buildDirectory.asFile.map { it.absolutePath }
+            if (project.findProperty("composeCompilerReports") == "true") {
+                freeCompilerArgs.addAll(provider {
+                    listOf(
+                        "-P",
+                        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${buildDir.get()}/compose_compiler"
+                    )
+                })
+            }
+            if (project.findProperty("composeCompilerMetrics") == "true") {
+                freeCompilerArgs.addAll(provider {
+                    listOf(
+                        "-P",
+                        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${buildDir.get()}/compose_compiler"
+                    )
+                })
+            }
+        }
+    }
+}

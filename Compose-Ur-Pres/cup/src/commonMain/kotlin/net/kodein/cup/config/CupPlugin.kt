@@ -2,6 +2,7 @@ package net.kodein.cup.config
 
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import net.kodein.cup.CupKeyEvent
 import net.kodein.cup.PluginCupAPI
@@ -19,6 +20,7 @@ public data class CupAdditionalOverlay(
 )
 
 @PluginCupAPI
+@Stable
 public interface CupPlugin {
     public fun onKeyEvent(event: CupKeyEvent): Boolean = false
 

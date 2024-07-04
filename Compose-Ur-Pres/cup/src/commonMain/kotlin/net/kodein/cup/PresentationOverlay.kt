@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import net.kodein.cup.utils.CupToolsMaterialColors
 import net.kodein.cup.utils.IconButtonWithTooltip
 import net.kodein.cup.utils.OverlayScope
@@ -37,8 +38,9 @@ internal fun OverlayScope.PresentationOverlay(
     slideListVisible: Boolean,
     toggleSlideListVisible: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
     fun Modifier.presentationOverlayComponent() = this
-        .overlayComponent()
+        .overlayComponent(scope)
         .padding(16.dp)
         .clip(RoundedCornerShape(8.dp))
 

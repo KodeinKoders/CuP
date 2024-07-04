@@ -6,6 +6,7 @@ emoji = "2.0.1"
 graalvm-js = "23.0.4"
 gradle-pluginPublish = "1.2.1"
 kotlin = "2.0.0"
+kotlinx-collectionsImmutable = "0.3.7"
 markdown = "0.16.0"
 mavenPublish = "0.28.0"
 npm-ismobilejs = "1.1.1"
@@ -23,4 +24,5 @@ mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublis
 [libraries]
 emojiCompose = { module = "org.kodein.emoji:emoji-compose", version.ref = "emoji" }
 graalvm-js = { module = "org.graalvm.js:js", version.ref = "graalvm-js" }
+kotlinx-collectionsImmutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collectionsImmutable" }
 markdown = { module = "com.mikepenz:multiplatform-markdown-renderer-m2", version.ref = "markdown" }

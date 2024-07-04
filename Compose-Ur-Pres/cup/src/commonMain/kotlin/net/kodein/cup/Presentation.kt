@@ -18,12 +18,14 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.toSize
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import net.kodein.cup.config.CupConfiguration
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupPlugin
 import net.kodein.cup.utils.Empty
+import net.kodein.cup.utils.OverlayState
 import net.kodein.cup.utils.OverlayedBox
-import net.kodein.cup.utils.rememberOverlayState
 import kotlin.math.min
 
 
@@ -163,7 +165,7 @@ private fun WithPresentationOverlay(
     var slideListVisible by remember { mutableStateOf(false) }
 
     Row {
-        val overlayState = rememberOverlayState()
+        val overlayState = remember { OverlayState() }
         OverlayedBox(
             state = overlayState,
             overlay = {
@@ -192,7 +194,7 @@ public class PresentationConfig(
     public val presentation: PresentationContent,
     public val backgroundColor: Color,
     public val defaultSpecs: SlideSpecs,
-    public val plugins: List<CupPlugin>,
+    public val plugins: ImmutableList<CupPlugin>,
 ) {
     public fun slideSpecs(slide: Slide): SlideSpecs =
         if (slide.specs != null) defaultSpecs.merge(slide.specs) else defaultSpecs
@@ -233,7 +235,7 @@ public fun Presentation(
             presentation = presentation,
             backgroundColor = backgroundColor,
             defaultSpecs = builder.defaultSlideSpecs ?: SlideSpecs.default(layoutDirection),
-            plugins = builder.plugins,
+            plugins = builder.plugins.toImmutableList(),
         )
     }
     remember(slides) { state.impl().connect(slides, config) }

@@ -77,10 +77,12 @@ val sourceCode by PreparedSlide(
         )
         Spacer(Modifier.height(8.dp))
         Row {
+            Text(" ")
             AnimatedVisibility(step >= 1) { Text("You can reveal") }
             AnimatedVisibility(step >= 2) { Text(", highlight") }
             AnimatedVisibility(step >= 4) { Text(", remove, replace") }
             AnimatedVisibility(step >= 5) { Text(" or decorate source code") }
+            Text(" ")
         }
     }
 }

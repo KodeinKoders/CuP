@@ -22,9 +22,8 @@ import kotlin.time.Duration.Companion.seconds
 
 
 @PluginCupAPI
-public class OverlayState(
-    private val coroutineScope: CoroutineScope
-) {
+@Stable
+public class OverlayState {
     public var visible: Boolean by mutableStateOf(false)
 
     private var hideJob: Job? = null
@@ -36,7 +35,7 @@ public class OverlayState(
         hideJob = null
     }
 
-    internal fun startHideTimer() {
+    internal fun startHideTimer(coroutineScope: CoroutineScope) {
         stopHideTimer()
         hideJob = coroutineScope.launch {
             delay(2.seconds)
@@ -46,31 +45,27 @@ public class OverlayState(
     }
 }
 
+@PluginCupAPI
 public class OverlayScope internal constructor(
     boxScope: BoxScope,
     private val state: OverlayState
 ) : BoxScope by boxScope {
 
     @OptIn(ExperimentalComposeUiApi::class)
-    public fun Modifier.overlayComponent(): Modifier = then(
-        Modifier
-            .onPointerEvent(PointerEventType.Enter) {
-                state.inside = true
-                state.stopHideTimer()
-                state.visible = true
-            }
-            .onPointerEvent(PointerEventType.Exit) {
-                state.inside = false
-                state.startHideTimer()
-            }
-    )
-}
-
-@Composable
-@PluginCupAPI
-public fun rememberOverlayState(): OverlayState {
-    val coroutineScope = rememberCoroutineScope()
-    return remember { OverlayState(coroutineScope) }
+    public fun Modifier.overlayComponent(scope: CoroutineScope): Modifier {
+        return then(
+            Modifier
+                .onPointerEvent(PointerEventType.Enter) {
+                    state.inside = true
+                    state.stopHideTimer()
+                    state.visible = true
+                }
+                .onPointerEvent(PointerEventType.Exit) {
+                    state.inside = false
+                    state.startHideTimer(scope)
+                }
+        )
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -80,20 +75,21 @@ public fun OverlayedBox(
     overlay: @Composable OverlayScope.() -> Unit,
     modifier: Modifier = Modifier,
     overlayEnabled: Boolean = true,
-    state: OverlayState = rememberOverlayState(),
+    state: OverlayState = remember { OverlayState() },
     content: @Composable BoxScope.() -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     Box(
         modifier
             .onPointerEvent(PointerEventType.Move) {
                 if (state.inside) return@onPointerEvent
                 state.visible = true
-                state.startHideTimer()
+                state.startHideTimer(scope)
             }
             .onPointerEvent(PointerEventType.Press) {
                 if (state.inside) return@onPointerEvent
                 state.visible = true
-                state.startHideTimer()
+                state.startHideTimer(scope)
             }
     ) {
         content()

@@ -1,6 +1,7 @@
 package net.kodein.cup.sa
 
 import androidx.compose.ui.text.TextRange
+import kotlinx.collections.immutable.toImmutableList
 import net.kodein.cup.PluginCupAPI
 import net.kodein.cup.utils.LRUCache
 
@@ -43,7 +44,7 @@ public class SourceHighlighter {
                     if (result.startsWith("</span>", position)) {
                         val pair = stack.removeLastOrNull() ?: error("Closing span that was not opened at $position:\n${result.substring(position)}")
                         val (start, classes) = pair
-                        sections.add(ClassesSection(TextRange(start, charIndex), classes))
+                        sections.add(ClassesSection(TextRange(start, charIndex), classes.toImmutableList()))
                         position += "</span>".length
                     }
                     else {

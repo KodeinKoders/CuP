@@ -27,6 +27,8 @@ kotlin {
             implementation(kotlin.compose.materialIconsExtended)
 
             implementation(projects.cup)
+
+            implementation(libs.kotlinx.collectionsImmutable)
         }
 
         jvmMain.dependencies {

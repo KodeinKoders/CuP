@@ -1,9 +1,13 @@
 package net.kodein.cup.sa
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.text.TextRange
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import net.kodein.cup.sa.utils.minus
@@ -21,7 +25,7 @@ public class SourceCodeBuilder internal constructor() {
     public data class Marker internal constructor(
         internal val id: Int,
         val name: String,
-        val visibilities: List<State>
+        val visibilities: ImmutableList<State>
     ) {
         override fun toString(): String = "$START_OPEN$id$START_CLOSE"
     }
@@ -37,7 +41,7 @@ public class SourceCodeBuilder internal constructor() {
             Marker(
                 id = markerCounter++,
                 name = prop.name,
-                visibilities = visibilities.toList()
+                visibilities = visibilities.toList().toImmutableList()
             ).also { markers += it }
         }
 
@@ -49,20 +53,20 @@ public class SourceCodeBuilder internal constructor() {
         val openRegex = Regex("$START_OPEN([0-9]+)$START_CLOSE")
     }
 
-    public sealed interface State { public val steps: List<IntRange> }
-    internal data class Hidden(override val steps: List<IntRange>) : State
-    internal data class OnlyShown(override val steps: List<IntRange>) : State
-    internal data class Highlighted(override val steps: List<IntRange>) : State
-    internal data class Styled(override val steps: List<IntRange>, val style: SAStyle) : State
+    @Stable public sealed interface State { public val steps: ImmutableList<IntRange> }
+    @Stable internal data class Hidden(override val steps: ImmutableList<IntRange>) : State
+    @Stable internal data class OnlyShown(override val steps: ImmutableList<IntRange>) : State
+    @Stable internal data class Highlighted(override val steps: ImmutableList<IntRange>) : State
+    @Stable internal data class Styled(override val steps: ImmutableList<IntRange>, val style: SAStyle) : State
 
-    public fun hidden(vararg steps: Int): State = Hidden(steps.map { IntRange(it, it) })
-    public fun hidden(vararg steps: IntRange): State = Hidden(steps.asList())
-    public fun onlyShown(vararg steps: Int): State = OnlyShown(steps.map { IntRange(it, it) })
-    public fun onlyShown(vararg steps: IntRange): State = OnlyShown(steps.asList())
-    public fun highlighted(vararg steps: Int): State = Highlighted(steps.map { IntRange(it, it) })
-    public fun highlighted(vararg steps: IntRange): State = Highlighted(steps.asList())
-    public fun styled(style: SAStyle, vararg steps: Int): State = Styled(steps.map { IntRange(it, it) }, style)
-    public fun styled(style: SAStyle, vararg steps: IntRange): State = Styled(steps.asList(), style)
+    public fun hidden(vararg steps: Int): State = Hidden(steps.map { IntRange(it, it) }.toImmutableList())
+    public fun hidden(vararg steps: IntRange): State = Hidden(steps.asList().toImmutableList())
+    public fun onlyShown(vararg steps: Int): State = OnlyShown(steps.map { IntRange(it, it) }.toImmutableList())
+    public fun onlyShown(vararg steps: IntRange): State = OnlyShown(steps.asList().toImmutableList())
+    public fun highlighted(vararg steps: Int): State = Highlighted(steps.map { IntRange(it, it) }.toImmutableList())
+    public fun highlighted(vararg steps: IntRange): State = Highlighted(steps.asList().toImmutableList())
+    public fun styled(style: SAStyle, vararg steps: Int): State = Styled(steps.map { IntRange(it, it) }.toImmutableList(), style)
+    public fun styled(style: SAStyle, vararg steps: IntRange): State = Styled(steps.asList().toImmutableList(), style)
 }
 
 private val sourceHighlighter by lazy { SourceHighlighter() }
@@ -144,12 +148,14 @@ private fun prepareSourceCode(
             }
         }
         map
+            .mapValues { it.value.toImmutableList() }
+            .toImmutableMap()
     }
 
     val data = SAData(
         fullText = cleanText,
-        blocks = blocks,
-        steps = steps,
+        blocks = blocks.toImmutableList(),
+        steps = steps.toImmutableList(),
     )
 
     val sections = data.steps.indices.map { stepNumber ->
@@ -160,7 +166,7 @@ private fun prepareSourceCode(
 
     return SourceCode(
         data = data,
-        sections = { step -> sections[step].await() }
+        sections = { step -> sections[step] }
     )
 }
 

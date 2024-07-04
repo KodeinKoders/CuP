@@ -24,10 +24,7 @@ import net.kodein.cup.PresentationMainView
 import net.kodein.cup.PresentationState
 import net.kodein.cup.laser.Laser
 import net.kodein.cup.laser.LaserDraw
-import net.kodein.cup.utils.CupToolsMaterialColors
-import net.kodein.cup.utils.IconButtonWithTooltip
-import net.kodein.cup.utils.OverlayedBox
-import net.kodein.cup.utils.rememberOverlayState
+import net.kodein.cup.utils.*
 
 @Composable
 internal fun SWNextSlideView(
@@ -61,7 +58,8 @@ internal fun SWCurrentSlideView(
     laser: Laser?,
     setLaser: (Laser?) -> Unit,
 ) {
-    val overlayState = rememberOverlayState()
+    val scope = rememberCoroutineScope()
+    val overlayState = remember { OverlayState() }
 
     var viewSize: Size? by remember { mutableStateOf(null) }
 
@@ -78,7 +76,7 @@ internal fun SWCurrentSlideView(
             overlay = {
                 Row(
                     Modifier
-                        .overlayComponent()
+                        .overlayComponent(scope)
                         .align(Alignment.BottomStart)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(8.dp))

@@ -2,6 +2,8 @@ package net.kodein.cup
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import net.kodein.cup.utils.*
 
 
@@ -10,7 +12,7 @@ public sealed interface SlideGroup {
 }
 
 public class Slides(
-    private val content: List<SlideGroup>,
+    content: List<SlideGroup>,
     private val user: ((Position) -> DataMap)? = null,
     private val specs: ((Position) -> SlideSpecs)? = null
 ): SlideGroup {
@@ -26,9 +28,9 @@ public class Slides(
         specs: ((Position) -> SlideSpecs)? = null
     ) : this(content.toList(), user, specs)
 
-    override val slideList: List<Slide> by lazy {
+    override val slideList: ImmutableList<Slide> = run {
         val slides = content.flatMap { it.slideList }
-        if (specs == null && user == null) slides
+        if (specs == null && user == null) slides.toImmutableList()
         else slides.mapIndexed { index, slide ->
             val position = Position(index, slides.lastIndex)
             val mergedSpecs = when {
@@ -41,7 +43,7 @@ public class Slides(
                 else -> slide.user
             }
             slide.copy(specs = mergedSpecs, user = mergedUser)
-        }
+        }.toImmutableList()
     }
 }
 

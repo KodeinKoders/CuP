@@ -1,8 +1,10 @@
 package net.kodein.cup
 
 import androidx.compose.runtime.*
+import kotlinx.collections.immutable.*
 
 
+@Stable
 public sealed interface PresentationState {
 
     public val currentSlideIndex: Int
@@ -72,14 +74,17 @@ internal class PresentationStateImpl(
     private val initial: (List<Slide>) -> Pair<Int, Int> = { 0 to 0 }
 ) : PresentationState {
 
-    override var slides: List<Slide> by mutableStateOf(emptyList()) ; private set
+    override var slides: ImmutableList<Slide> by mutableStateOf(persistentListOf()) ; private set
 
     override var currentSlideIndex: Int by mutableStateOf(0) ; private set
     override var currentStep: Int by mutableStateOf(0) ; private set
 
     override var forward: Boolean by mutableStateOf(true) ; private set
 
-    internal lateinit var config: PresentationConfig ; private set
+    private var _config: PresentationConfig? by mutableStateOf(null)
+    internal var config: PresentationConfig
+        get() = _config ?: error("PresentationState has not been connected to a Presentation.")
+        private set(value) { _config = value }
 
     override var isInOverview: Boolean by mutableStateOf(false)
 
@@ -113,7 +118,7 @@ internal class PresentationStateImpl(
         }
 
         this.config = config
-        this.slides = newSlides
+        this.slides = newSlides.toPersistentList()
         this.currentSlideIndex = newSlideIndex
         this.currentStep = newStep
     }

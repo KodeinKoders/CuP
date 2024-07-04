@@ -1,7 +1,10 @@
 package net.kodein.cup.utils
 
+import androidx.compose.runtime.Immutable
+
 
 public sealed interface DataMap {
+    @Immutable
     public interface Key<T : Any>
 
     public operator fun <T : Any> get(key: Key<T>): T?

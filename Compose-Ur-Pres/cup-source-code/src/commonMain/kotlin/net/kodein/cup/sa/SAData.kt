@@ -1,17 +1,21 @@
 package net.kodein.cup.sa
 
 import androidx.compose.ui.text.TextRange
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import net.kodein.cup.InternalCupAPI
 import net.kodein.cup.sa.utils.filterContaining
 
 
-public typealias SAStep = Map<SABlock.ID, List<SAData.State>>
+public typealias SAStep = ImmutableMap<SABlock.ID, ImmutableList<SAData.State>>
 
 @InternalCupAPI
 public data class SAData(
     val fullText: String = "",
-    val blocks: List<SABlock> = emptyList(),
-    val steps: List<SAStep> = listOf(emptyMap()),
+    val blocks: ImmutableList<SABlock> = persistentListOf(),
+    val steps: ImmutableList<SAStep> = persistentListOf(persistentMapOf()),
 ) {
     @InternalCupAPI
     public sealed class State {

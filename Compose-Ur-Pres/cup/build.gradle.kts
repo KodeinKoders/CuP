@@ -25,6 +25,8 @@ kotlin {
             implementation(compose.materialIconsExtended)
 
             api(libs.emojiCompose)
+
+            implementation(libs.kotlinx.collectionsImmutable)
         }
 
         named("wasmJsMain").dependencies {
