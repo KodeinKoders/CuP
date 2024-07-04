@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.toSize
+import kotlinx.collections.immutable.*
 import net.kodein.cup.PluginCupAPI
 
 
@@ -34,7 +35,7 @@ public sealed class Laser {
     @PluginCupAPI
     public data class Pointer(
         override val drawing: Boolean = false,
-        val points: List<List<Offset>> = emptyList(),
+        val points: ImmutableList<ImmutableList<Offset>> = persistentListOf(),
         val pointer: Offset? = null
     ) : Laser()
 }
@@ -117,9 +118,8 @@ public fun LaserDraw(
             is Laser.Pointer -> {
                 setLaser(
                     laser.copy(
-                        points = buildList {
-                            addAll(laser.points)
-                            add(listOf(rp))
+                        points = laser.points.toPersistentList().mutate {
+                            it.add(persistentListOf(rp))
                         },
                         drawing = true
                     )
@@ -155,12 +155,12 @@ public fun LaserDraw(
                 }
             }
             is Laser.Pointer -> {
-                val points = if (laser.drawing) buildList {
-                    addAll(laser.points.subList(0, laser.points.size - 1))
-                    add(laser.points.last() + rp)
-                } else laser.points
                 setLaser(laser.copy(
-                    points = points,
+                    points = if (laser.drawing) {
+                        laser.points.subList(0, laser.points.size - 1).toPersistentList().mutate {
+                            it.add(laser.points.last().toPersistentList().plus(rp))
+                        }
+                    } else laser.points,
                     pointer = rp
                 ))
             }

@@ -28,6 +28,8 @@ kotlin {
 
             implementation(projects.cup)
             implementation(projects.plugin.cupLaser)
+
+            implementation(libs.kotlinx.collectionsImmutable)
         }
 
         jvmMain.dependencies {

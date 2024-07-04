@@ -131,11 +131,11 @@ private fun SourceCodePart(
         }
     }
 
-    val partOverStyles = overSpanStyles.toPersistentMap().builder().apply {
+    val partOverStyles = overSpanStyles.toPersistentMap().mutate {
         forEachStyle { index, saStyle, fraction ->
-            put(index, saStyle.spanStyle() to fraction)
+            it[index] = saStyle.spanStyle() to fraction
         }
-    }.build()
+    }
 
     Box(
         Modifier

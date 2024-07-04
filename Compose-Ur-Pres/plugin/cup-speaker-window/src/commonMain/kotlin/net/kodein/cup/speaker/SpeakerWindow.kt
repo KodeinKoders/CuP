@@ -2,6 +2,9 @@ package net.kodein.cup.speaker
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupConfigurationDsl
 import net.kodein.cup.utils.DataMap
@@ -14,12 +17,15 @@ public sealed class ASpeakerNotes : DataMapElement<ASpeakerNotes>(Key) {
     internal companion object Key : DataMap.Key<ASpeakerNotes>
 }
 
+@Stable
 public class SpeakerNotes(
-    public val notes: List<Pair<IntRange, String>>
+    notes: List<Pair<IntRange, String>>
 ) : DataMapElement<SpeakerNotes>(Key) {
     internal companion object Key : DataMap.Key<SpeakerNotes> {
         private val allSteps = 0..Int.MAX_VALUE
     }
+
+    public val notes: ImmutableList<Pair<IntRange, String>> = notes.toImmutableList()
 
     public constructor(md: String): this(listOf(allSteps to md))
 
