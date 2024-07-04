@@ -7,6 +7,8 @@ image::docs/modules/ROOT/images/cup.png[width=384]
 [.lead]
 A pure Kotlin Compose Multiplatform presentation system for developer presenters.
 
+== https://kodeinkoders.github.io/CuP/Demo/[Web Demonstration]
+
 == Get Started
 
 === https://kodeinkoders.github.io/CuP[Documentation]
