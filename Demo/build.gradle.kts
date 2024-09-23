@@ -1,13 +1,17 @@
 plugins {
-    kotlin("multiplatform") version "2.0.0"
-    id("org.jetbrains.compose") version "1.6.10"
-    kotlin("plugin.compose") version "2.0.0"
+    kotlin("multiplatform") version "2.0.20"
+    id("org.jetbrains.compose") version "1.6.11"
+    kotlin("plugin.compose") version "2.0.20"
     id("net.kodein.cup")
 }
 
 cup {
     targetDesktop()
     targetWeb()
+}
+
+repositories {
+    mavenLocal()
 }
 
 kotlin {

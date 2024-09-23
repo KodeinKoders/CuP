@@ -1,10 +1,12 @@
 package net.kodein.cup.utils
 
+import kotlin.math.min
+
 @Suppress("ReplacePutWithAssignment")
 public class LRUCache<K : Any, V : Any>(
     public val maxCount: Int,
     public val maxSize: Long,
-    initialCount: Int = maxCount / 10
+    initialCount: Int = min(maxCount / 10, 1024)
 ) {
     private class Entry<V>(val value: V, val size: Long)
 
@@ -34,5 +36,13 @@ public class LRUCache<K : Any, V : Any>(
                 totalSize -= removed.value.size
             }
         }
+    }
+
+    public fun remove(key: K): V? {
+        val entry = map.remove(key)
+        if (entry != null) {
+            totalSize -= entry.size
+        }
+        return entry?.value
     }
 }
