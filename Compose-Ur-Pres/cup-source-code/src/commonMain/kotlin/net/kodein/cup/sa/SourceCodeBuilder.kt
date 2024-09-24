@@ -22,6 +22,7 @@ public class SourceCodeBuilder internal constructor() {
     private var markerCounter = 0
     internal val markers = ArrayList<Marker>()
 
+    @ConsistentCopyVisibility
     public data class Marker internal constructor(
         internal val id: Int,
         val name: String,

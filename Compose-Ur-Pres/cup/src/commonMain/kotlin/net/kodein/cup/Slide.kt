@@ -52,6 +52,7 @@ public val Slides.Position.isLast: Boolean get() = indexInGroup == lastGroupInde
 
 public typealias SlideContent = @Composable ColumnScope.(Int) -> Unit
 
+@ExposedCopyVisibility
 public data class Slide internal constructor(
     public val name: String,
     public val stepCount: Int = 1,
