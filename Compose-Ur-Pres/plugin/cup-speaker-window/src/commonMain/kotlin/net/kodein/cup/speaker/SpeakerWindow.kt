@@ -47,3 +47,6 @@ public class SpeakerNotesMD(
 
 @CupConfigurationDsl
 public expect fun CupConfigurationBuilder.speakerWindow()
+
+@Composable
+public expect fun isInSpeakerWindow(): Boolean

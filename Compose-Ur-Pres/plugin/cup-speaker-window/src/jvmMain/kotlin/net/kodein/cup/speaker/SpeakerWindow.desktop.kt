@@ -64,3 +64,8 @@ internal class SpeakerNotesPlugin : CupPlugin {
 public actual fun CupConfigurationBuilder.speakerWindow() {
     plugin(SpeakerNotesPlugin())
 }
+
+internal val LocalIsInSpeakerWindow = compositionLocalOf { false }
+
+@Composable
+public actual fun isInSpeakerWindow(): Boolean = LocalIsInSpeakerWindow.current

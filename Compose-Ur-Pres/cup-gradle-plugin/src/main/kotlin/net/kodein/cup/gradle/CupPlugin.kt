@@ -6,10 +6,7 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
-import org.jetbrains.compose.desktop.DesktopExtension
-import org.jetbrains.compose.experimental.dsl.ExperimentalExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 
 public class CupPlugin : Plugin<Project> {

@@ -44,7 +44,8 @@ internal fun SWNextSlideView(
             val shiftedPresentationState = remember(presentationState) { ShiftedPresentationState(presentationState) }
             CompositionLocalProvider(
                 LocalPresentationState provides shiftedPresentationState,
-                LocalPresentationSize provides viewSize!!
+                LocalPresentationSize provides viewSize!!,
+                LocalIsInSpeakerWindow provides true
             ) {
                 PresentationMainView()
             }
@@ -107,7 +108,10 @@ internal fun SWCurrentSlideView(
             modifier = Modifier.fillMaxSize()
         ) {
             if (viewSize != null) {
-                CompositionLocalProvider(LocalPresentationSize provides viewSize!!) {
+                CompositionLocalProvider(
+                    LocalPresentationSize provides viewSize!!,
+                    LocalIsInSpeakerWindow provides true
+                ) {
                     PresentationMainView()
                 }
             }
