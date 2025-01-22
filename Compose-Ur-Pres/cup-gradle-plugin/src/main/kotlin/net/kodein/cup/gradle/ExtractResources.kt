@@ -21,7 +21,7 @@ public abstract class ExtractResources : DefaultTask() {
     public abstract val outputDirectory: DirectoryProperty
 
     @TaskAction
-    private fun execute() {
+    internal fun execute() {
         val outputDirectory = outputDirectory.get().asFile
 
         inputPaths.get().forEach { inputPath ->
