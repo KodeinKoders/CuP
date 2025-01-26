@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     group = "net.kodein.cup"
-    version = "1.0.0-Beta-10"
+    version = "1.0.0-Beta-11"
 
     /*
      In a composite build, tasks run from the root will not automatically propagate to subprojects (see
