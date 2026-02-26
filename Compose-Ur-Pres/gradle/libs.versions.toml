@@ -1,16 +1,17 @@
 [versions]
 buildConfig = "5.5.0"
-compose = "1.7.3"
+compose = "1.10.1"
 dokka = "1.9.20"
 emoji = "2.2.0"
 graalvm-js = "23.0.5"
 gradle-pluginPublish = "1.3.0"
-kotlin = "2.1.0"
+kotlin = "2.3.10"
 kotlinx-collectionsImmutable = "0.3.8"
 markdown = "0.26.0"
 mavenPublish = "0.29.0"
 npm-ismobilejs = "1.1.1"
 npm-highlightjs = "11.9.0"
+materialIcons = "1.7.3"
 
 [plugins]
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
@@ -22,6 +23,10 @@ kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.re
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 
 [libraries]
+jetbrainsComposeRuntime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
+jetbrainsComposeFoundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
+jetbrainsComposeMaterial = { module = "org.jetbrains.compose.material:material", version.ref = "compose" }
+jetbrainsComposeMaterialIcons = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
 emojiCompose = { module = "org.kodein.emoji:emoji-compose", version.ref = "emoji" }
 graalvm-js = { module = "org.graalvm.js:js", version.ref = "graalvm-js" }
 kotlinx-collectionsImmutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collectionsImmutable" }
