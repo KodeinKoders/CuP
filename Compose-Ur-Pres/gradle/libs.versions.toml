@@ -11,6 +11,7 @@ markdown = "0.26.0"
 mavenPublish = "0.29.0"
 npm-ismobilejs = "1.1.1"
 npm-highlightjs = "11.9.0"
+material3 = "1.10.0-alpha05"
 materialIcons = "1.7.3"
 
 [plugins]
@@ -27,6 +28,7 @@ jetbrainsComposeRuntime = { module = "org.jetbrains.compose.runtime:runtime", ve
 jetbrainsComposeFoundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 jetbrainsComposeMaterial = { module = "org.jetbrains.compose.material:material", version.ref = "compose" }
 jetbrainsComposeMaterialIcons = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
+jetbrainsComposeMaterial3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 emojiCompose = { module = "org.kodein.emoji:emoji-compose", version.ref = "emoji" }
 graalvm-js = { module = "org.graalvm.js:js", version.ref = "graalvm-js" }
 kotlinx-collectionsImmutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collectionsImmutable" }

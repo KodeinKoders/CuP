@@ -21,10 +21,10 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(kotlin.compose.runtime)
-            implementation(kotlin.compose.foundation)
-            implementation(kotlin.compose.material)
-            implementation(kotlin.compose.materialIconsExtended)
+            implementation(libs.jetbrainsComposeRuntime)
+            implementation(libs.jetbrainsComposeFoundation)
+            implementation(libs.jetbrainsComposeMaterial)
+            implementation(libs.jetbrainsComposeMaterialIcons)
 
             implementation(projects.cup)
 

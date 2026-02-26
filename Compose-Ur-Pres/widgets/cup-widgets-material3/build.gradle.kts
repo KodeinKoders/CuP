@@ -19,9 +19,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
+            implementation(libs.jetbrainsComposeRuntime)
+            implementation(libs.jetbrainsComposeFoundation)
+            implementation(libs.jetbrainsComposeMaterial3)
             implementation(projects.cup)
             api(projects.widgets.cupWidgetsFoundation)
         }
