@@ -9,6 +9,14 @@
 </head>
 <body>
 <canvas id="cup"></canvas>
+<style>
+    html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}</style>
 <script type="text/javascript">
     let hasGC = WebAssembly !== undefined && WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 95, 1, 120, 0]));
     if (hasGC) {

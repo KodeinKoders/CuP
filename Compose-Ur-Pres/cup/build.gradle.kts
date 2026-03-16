@@ -10,7 +10,7 @@ plugins {
 
 kotlin {
     jvm()
-    jvmToolchain(17)
+    jvmToolchain(21)
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -19,10 +19,10 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.materialIconsExtended)
+            implementation(libs.jetbrainsComposeRuntime)
+            implementation(libs.jetbrainsComposeFoundation)
+            implementation(libs.jetbrainsComposeMaterial)
+            implementation(libs.jetbrainsComposeMaterialIcons)
 
             api(libs.emojiCompose)
 

@@ -7,7 +7,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.window.CanvasBasedWindow
+import androidx.compose.ui.window.ComposeViewport
+import kotlinx.browser.document
 import net.kodein.cup.utils.isAnyMobile
 
 
@@ -19,10 +20,9 @@ public actual fun cupPlatformApplication(
     val isMobile = isAnyMobile()
 
     val (initialName, initialStep) = initialStateFromHash()
-
-    CanvasBasedWindow(
-        title = title,
-        canvasElementId = "cup"
+    document.title = title
+    ComposeViewport(
+        document.body!!
     ) {
         withPresentationState(
             initial = { slides -> slides.indexOfFirst { it.name == initialName } to initialStep }
