@@ -19,6 +19,7 @@ jobs:
       - name: Setup
         uses: kosi-libs/kodein-internal-github-actions/setup@main
         with:
+          java-version: '21'
           konan: false
       - name: Build
         run: ./gradlew --stacktrace --scan Compose-Ur-Pres:build
