@@ -31,7 +31,7 @@ public fun PresentationKeyHandler(
     return handler@ { event ->
         val state = getState() ?: return@handler false
 
-        state.impl().config.plugins.forEach {
+        state.config.plugins.forEach {
             if (it.onKeyEvent(event)) return@handler true
         }
 

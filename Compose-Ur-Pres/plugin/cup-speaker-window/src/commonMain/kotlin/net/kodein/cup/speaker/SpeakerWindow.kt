@@ -45,7 +45,6 @@ public class SpeakerNotesMD(
     public val notes: String
 ) : ASpeakerNotes()
 
-@CupConfigurationDsl
 public expect fun CupConfigurationBuilder.speakerWindow()
 
 @Composable

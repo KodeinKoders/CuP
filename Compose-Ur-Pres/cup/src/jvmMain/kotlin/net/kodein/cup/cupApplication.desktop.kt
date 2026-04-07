@@ -28,7 +28,6 @@ public actual fun cupPlatformApplication(
     title: String,
     content: @Composable () -> Unit
 ): Unit = application {
-    println("java.vm.name = ${System.getProperty("java.vm.name")}")
     ProvideEmojiDownloader(::cupDownloadEmoji) {
         withCupSavedWindowState { visible, windowState ->
             withCupSavedPresentationState { presentationState ->

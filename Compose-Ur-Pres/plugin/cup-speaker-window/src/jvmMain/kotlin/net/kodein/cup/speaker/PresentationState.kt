@@ -9,16 +9,18 @@ import net.kodein.cup.Slide
 import net.kodein.cup.currentSlide
 
 internal class ShiftedPresentationState(state: PresentationState) : PresentationStateWrapper(state) {
-    override val currentSlideIndex: Int get() = when {
-        originalState.currentSlideIndex == originalState.slides.lastIndex -> originalState.currentSlideIndex
-        originalState.currentStep == originalState.currentSlide.lastStep -> originalState.currentSlideIndex + 1
-        else -> originalState.currentSlideIndex
-    }
-    override val currentStep: Int get() = when {
-        originalState.currentSlideIndex == originalState.slides.lastIndex && originalState.currentStep == originalState.currentSlide.lastStep -> originalState.currentStep
-        originalState.currentStep == originalState.currentSlide.lastStep -> 0
-        else -> originalState.currentStep + 1
-    }
+    override val currentSlideIndex: Int
+        get() = when {
+            originalState.currentPosition.slideIndex == originalState.slides.lastIndex -> originalState.currentPosition.slideIndex
+            originalState.currentPosition.step == originalState.currentSlide.lastStep -> originalState.currentPosition.slideIndex + 1
+            else -> originalState.currentPosition.slideIndex
+        }
+    override val currentStep: Int
+        get() = when {
+            originalState.currentPosition.slideIndex == originalState.slides.lastIndex && originalState.currentPosition.step == originalState.currentSlide.lastStep -> originalState.currentPosition.step
+            originalState.currentPosition.step == originalState.currentSlide.lastStep -> 0
+            else -> originalState.currentPosition.step + 1
+        }
 }
 
 internal class SWPresentationState(state: PresentationState) : PresentationStateWrapper(state) {

@@ -1,15 +1,36 @@
 package net.kodein.cup.speaker
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.ChevronLeft
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.FilterListOff
+import androidx.compose.material.icons.rounded.ZoomIn
+import androidx.compose.material.icons.rounded.ZoomOut
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -20,10 +41,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.rememberWindowState
-import net.kodein.cup.*
+import net.kodein.cup.LocalPresentationSize
+import net.kodein.cup.LocalPresentationState
+import net.kodein.cup.Overview
+import net.kodein.cup.PresentationKeyHandler
+import net.kodein.cup.PresentationState
+import net.kodein.cup.SlideList
+import net.kodein.cup.asComposeKeyHandler
+import net.kodein.cup.currentSlide
+import net.kodein.cup.goToNext
+import net.kodein.cup.goToPrevious
 import net.kodein.cup.laser.Laser
+import net.kodein.cup.totalStepCount
+import net.kodein.cup.totalStepCurrent
 import net.kodein.cup.utils.CupToolsColors
-import net.kodein.cup.utils.CupToolsMaterialColors
 import net.kodein.cup.utils.IconButtonWithTooltip
 
 @Composable
@@ -35,7 +66,7 @@ internal fun SWWindow(
     val presentationState = LocalPresentationState.current
     val swState = remember { SWPresentationState(presentationState) }
 
-    remember(swState.currentSlideIndex) {
+    remember(swState.currentPosition.slideIndex) {
         setLaser(null)
     }
 
@@ -57,7 +88,7 @@ internal fun SWWindow(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(CupToolsMaterialColors.surface)
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 var slideListVisible by remember { mutableStateOf(false) }
                 SWTopBar(
@@ -140,11 +171,10 @@ private fun SWTopBar(
     slideListVisible: Boolean,
     toggleSlideListVisible: () -> Unit,
 ) {
-    MaterialTheme(colors = CupToolsMaterialColors) {
+    MaterialTheme(colorScheme = CupToolsColors.scheme) {
         Surface(
-            color = MaterialTheme.colors.primarySurface,
-            contentColor = MaterialTheme.colors.onPrimary,
-            elevation = AppBarDefaults.TopAppBarElevation,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
@@ -161,7 +191,7 @@ private fun SWTopBar(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.weight(2f)
                 ) {
-                    Text((presentationState.currentSlideIndex + 1).toString())
+                    Text((presentationState.currentPosition.slideIndex + 1).toString())
                     Text(" / ")
                     Text(presentationState.slides.size.toString())
                 }

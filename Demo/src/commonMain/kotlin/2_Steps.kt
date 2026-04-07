@@ -5,13 +5,13 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import net.kodein.cup.Slide
 import net.kodein.cup.SlideSpecs
-import net.kodein.cup.widgets.material.BulletPoints
+import net.kodein.cup.imgexp.Export
+import net.kodein.cup.widgets.material3.BulletPoints
 import org.kodein.emoji.Emoji
 import org.kodein.emoji.smileys_emotion.emotion.Collision
 import org.kodein.emoji.smileys_emotion.face_smiling.Wink
@@ -23,6 +23,7 @@ import utils.y3DRotation
 val steps by Slide(
     stepCount = 5,
     specs = SlideSpecs(endTransitions = y3DRotation),
+    user = Export.ignore(1, 2)
 ) { step ->
     Title {
         Text("A slide may contain multiple steps.")

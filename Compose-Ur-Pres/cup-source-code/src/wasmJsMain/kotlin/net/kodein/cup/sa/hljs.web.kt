@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package net.kodein.cup.sa
 
 private external interface JsHljsResult {

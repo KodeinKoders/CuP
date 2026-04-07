@@ -48,7 +48,7 @@ public fun withCupSavedPresentationState(
                 try {
                     withContext(Dispatchers.IO) {
                         Path(".cup").createDirectories()
-                        snapshotFlow { presentationState.currentSlide.name to presentationState.currentStep }
+                        snapshotFlow { presentationState.currentSlide.name to presentationState.currentPosition.step }
                             .collect { (slideName, step) ->
                                 Path(".cup", "state.properties").writer().use { writer ->
                                     Properties().also {

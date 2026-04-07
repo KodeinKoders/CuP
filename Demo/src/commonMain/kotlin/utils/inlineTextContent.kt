@@ -2,9 +2,8 @@ package utils
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,7 +21,7 @@ fun InlineIcon(
     modifier: Modifier = Modifier,
     width: TextUnit = 20.sp,
     height: TextUnit = 20.sp,
-    tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
+    tint: Color = LocalContentColor.current,
 ) =
     InlineTextContent(Placeholder(width, height, PlaceholderVerticalAlign.TextCenter)) {
         Icon(

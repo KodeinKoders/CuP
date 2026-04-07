@@ -25,20 +25,15 @@ public class CupPlugin : Plugin<Project> {
             ?: error("Please apply the id(\"org.jetbrains.compose\") plugin before applying the CuP plugin")
         if (composeDeps !is ComposePlugin.Dependencies) error("invalid kotlin.compose extension")
 
-        repositories {
-            mavenCentral()
-            google()
-        }
-
         extensions.create<CupExtension>("cup", this, kotlin, compose, composeDeps)
         kotlin.extensions.create<CupDependencies>("cup")
 
         kotlin.apply {
             sourceSets.apply {
                 commonMain.dependencies {
-                    implementation(composeDeps.runtime)
-                    implementation(composeDeps.foundation)
-                    implementation(composeDeps.components.resources)
+                    implementation("org.jetbrains.compose.runtime:runtime:${CupBuildInfo.COMPOSE_VERSION}")
+                    implementation("org.jetbrains.compose.foundation:foundation:${CupBuildInfo.COMPOSE_VERSION}")
+                    implementation("org.jetbrains.compose.components:components-resources:${CupBuildInfo.COMPOSE_VERSION}")
 
                     implementation("net.kodein.cup:cup:${CupBuildInfo.VERSION}")
                 }

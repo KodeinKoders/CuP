@@ -12,7 +12,7 @@ kotlin {
     jvm()
     jvmToolchain(21)
 
-    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
     }
@@ -21,10 +21,10 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.jetbrainsComposeRuntime)
-            implementation(libs.jetbrainsComposeFoundation)
-            implementation(libs.jetbrainsComposeMaterial)
-            implementation(libs.jetbrainsComposeMaterialIcons)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.material.icons)
 
             implementation(projects.cup)
 

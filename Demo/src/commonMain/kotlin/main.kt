@@ -4,9 +4,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -25,6 +25,7 @@ import cup_demo.generated.resources.Res
 import cup_demo.generated.resources.logo
 import net.kodein.cup.*
 import net.kodein.cup.laser.laser
+import net.kodein.cup.imgexp.imageExport
 import net.kodein.cup.speaker.speakerWindow
 import net.kodein.cup.utils.DataMap
 import net.kodein.cup.utils.DataMapElement
@@ -65,6 +66,7 @@ fun KodeinPresentation(
         configuration = {
             speakerWindow()
             laser()
+            imageExport()
         },
         backgroundColor = KodeinTheme.Color.background
     ) { slidesContent ->

@@ -1,17 +1,38 @@
 package net.kodein.cup.speaker
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -27,7 +48,6 @@ import net.kodein.cup.PresentationState
 import net.kodein.cup.currentSlide
 import net.kodein.cup.laser.Laser
 import net.kodein.cup.utils.CupToolsColors
-import net.kodein.cup.utils.CupToolsMaterialColors
 
 @Composable
 internal fun SWMainView(
@@ -111,7 +131,7 @@ private fun SWTimer() {
         }
     }
 
-    MaterialTheme(colors = CupToolsMaterialColors) {
+    MaterialTheme(colorScheme = CupToolsColors.scheme) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -169,7 +189,11 @@ private fun SWStepRow(presentationState: PresentationState) {
                     .weight(1f)
                     .border(4.dp, CupToolsColors.dark.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
                     .then(
-                        if (presentationState.currentStep > it) Modifier.background(CupToolsColors.dark.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                        if (presentationState.currentPosition.step > it) Modifier.background(
+                            CupToolsColors.dark.copy(
+                                alpha = 0.5f
+                            ), RoundedCornerShape(8.dp)
+                        )
                         else Modifier
                     )
             )
@@ -191,13 +215,13 @@ private fun SWNotes(presentationState: PresentationState) {
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            MaterialTheme(colors = CupToolsMaterialColors) {
+            MaterialTheme(colorScheme = CupToolsColors.scheme) {
                 CompositionLocalProvider(
                     LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 18.sp)
                 ) {
                     val speakerNotes = presentationState.currentSlide.user[SpeakerNotes]
                     if (speakerNotes != null) {
-                        val (_, notes) = speakerNotes.notes.first { (range, _) -> presentationState.currentStep in range }
+                        val (_, notes) = speakerNotes.notes.first { (range, _) -> presentationState.currentPosition.step in range }
                         Markdown(notes.trimIndent())
                     }
                 }

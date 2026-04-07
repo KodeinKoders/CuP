@@ -1,5 +1,5 @@
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.SpeakerNotes
 import androidx.compose.ui.text.buildAnnotatedString

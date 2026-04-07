@@ -7,6 +7,7 @@ import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.desktop.DesktopExtension
+import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -35,6 +36,10 @@ public abstract class CupExtension internal constructor(
                     dependsOn(extractIcons)
                 }
             }
+        }
+
+        compose.extensions.configure<ResourcesExtension>("resources") {
+            generateResClass = always
         }
 
         compose.extensions.configure<DesktopExtension>("desktop") {

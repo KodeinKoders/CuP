@@ -19,12 +19,12 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.jetbrainsComposeRuntime)
-            implementation(libs.jetbrainsComposeFoundation)
-            implementation(libs.jetbrainsComposeMaterial)
-            implementation(libs.jetbrainsComposeMaterialIcons)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.material.icons)
 
-            api(libs.emojiCompose)
+            api(libs.emoji.compose)
 
             implementation(libs.kotlinx.collectionsImmutable)
         }

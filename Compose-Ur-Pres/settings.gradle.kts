@@ -19,6 +19,8 @@ include(
     ":cup",
     ":cup-gradle-plugin",
     ":cup-source-code",
+    ":plugin:cup-image-export",
+    ":plugin:cup-key-events",
     ":plugin:cup-laser",
     ":plugin:cup-speaker-window",
     ":widgets:cup-widgets-foundation",

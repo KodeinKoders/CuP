@@ -29,12 +29,12 @@ buildConfig {
     packageName("${project.group}.gradle")
     className("CupBuildInfo")
     buildConfigField("String", "VERSION", "\"${project.version}\"")
+    buildConfigField("String", "COMPOSE_VERSION", "\"${libs.versions.compose.get()}\"")
     useKotlinOutput {
         internalVisibility = true
     }
 }
 
-@Suppress("UnstableApiUsage")
 gradlePlugin {
     website.set("https://kodeinkoders.github.io/CuP")
     vcsUrl.set("https://github.com/KodeinKoders/CuP")
@@ -43,7 +43,6 @@ gradlePlugin {
         implementationClass = "${project.group}.gradle.CupPlugin"
         displayName = "Compose ur Pres"
         description = "Configures a Kotlin/Multiplatform project for a Compose-ur-Pres presentation."
-        @Suppress("UnstableApiUsage")
         tags.set(listOf("kotlin", "presentation"))
     }
 }

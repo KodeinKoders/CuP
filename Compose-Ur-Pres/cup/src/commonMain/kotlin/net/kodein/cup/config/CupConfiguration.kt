@@ -12,7 +12,6 @@ public class CupConfigurationBuilder internal constructor() {
     @PublishedApi
     internal val plugins: MutableList<CupPlugin> = mutableListOf()
 
-    @CupConfigurationDsl
     public fun CupConfigurationBuilder.plugin(plugin: CupPlugin) {
         plugins.add(plugin)
     }

@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,44 +22,41 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import net.kodein.cup.utils.CupToolsColors
-import net.kodein.cup.utils.CupToolsMaterialColors
 
 
 private const val shrinkRatio = 4.5f
 
 private class OverviewPresentationState(
     state: PresentationState,
-    override val currentSlideIndex: Int,
-    override val currentStep: Int
+    override val currentPosition: PresentationPosition,
 ) : PresentationStateWrapper(state) {
-    override fun goTo(slideIndex: Int, step: Int): Unit = error("Cannot move with an OverviewPresentationState")
+    override fun goTo(position: PresentationPosition): Unit = error("Cannot move with an OverviewPresentationState")
 }
 
 @Composable
 private fun OverviewSlideView(
     outerContainerSize: Size,
-    slideIndex: Int,
-    step: Int,
+    position: PresentationPosition,
 ) {
     val density = LocalDensity.current
 
     val state = LocalPresentationState.current
-    val config = state.impl().config
+    val config = state.config
 
-    val slide = state.slides[slideIndex]
+    val slide = state.slides[position.slideIndex]
 
     val slideSize = remember { config.slideSpecs(slide).size }
     val outerContainerDpSize = with(density) { outerContainerSize.toDpSize() }
 
     CompositionLocalProvider(LocalDensity provides Density(density.density / shrinkRatio)) {
-        val alpha by animateFloatAsState(if (state.currentSlideIndex == slideIndex && state.currentStep == step) 1f else 0f)
+        val alpha by animateFloatAsState(if (state.currentPosition == position) 1f else 0f)
         Box(
             Modifier
                 .border(24.dp, CupToolsColors.dark.copy(alpha = alpha), RoundedCornerShape(32.dp))
                 .padding(56.dp)
                 .pointerHoverIcon(PointerIcon.Hand)
                 .clickable {
-                    state.goTo(slideIndex, step)
+                    state.goTo(position)
                     state.isInOverview = false
                 }
         ) {
@@ -74,12 +71,13 @@ private fun OverviewSlideView(
                     PresentationRatioContainer(
                         defaultSlideSize = slideSize,
                     ) {
-                        CompositionLocalProvider(LocalPresentationState provides OverviewPresentationState(state, slideIndex, step)) {
+                        CompositionLocalProvider(LocalPresentationState provides OverviewPresentationState(state, position)) {
                             config.presentation(this) {
                                 SlideContainer(
-                                    content = LocalSlideContents.current[slideIndex],
-                                    step = step,
+                                    slide = slide,
+                                    step = position.step,
                                     slideSize = slideSize,
+                                    content = LocalSlideContents.current[position.slideIndex],
                                 )
                             }
                         }
@@ -104,15 +102,15 @@ public fun Overview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(CupToolsMaterialColors.surface)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
 
         val scrollOffset = -((outerContainerSize.width - (outerContainerSize.width / shrinkRatio)) / 2).toInt()
 
-        val hState = rememberLazyListState(state.currentSlideIndex, scrollOffset)
+        val hState = rememberLazyListState(state.currentPosition.slideIndex, scrollOffset)
 
-        LaunchedEffect(state.currentSlideIndex) {
-            hState.animateScrollToItem(state.currentSlideIndex, scrollOffset)
+        LaunchedEffect(state.currentPosition.slideIndex) {
+            hState.animateScrollToItem(state.currentPosition.slideIndex, scrollOffset)
         }
 
         val spacerHeightDp = with(density) {
@@ -128,10 +126,10 @@ public fun Overview() {
         ) {
             itemsIndexed(state.slides) { slideIndex, slide ->
                 Box {
-                    val vState = rememberLazyListState(if (state.currentSlideIndex == slideIndex) state.currentStep + 2 else 2, -spacerHeightPx)
-                    LaunchedEffect(state.currentSlideIndex, state.currentStep) {
-                        if (state.currentSlideIndex == slideIndex && slide.stepCount > 1) {
-                            vState.animateScrollToItem(state.currentStep + 2, -spacerHeightPx)
+                    val vState = rememberLazyListState(if (state.currentPosition.slideIndex == slideIndex) state.currentPosition.step + 2 else 2, -spacerHeightPx)
+                    LaunchedEffect(state.currentPosition.slideIndex, state.currentPosition.step) {
+                        if (state.currentPosition.slideIndex == slideIndex && slide.stepCount > 1) {
+                            vState.animateScrollToItem(state.currentPosition.step + 2, -spacerHeightPx)
                         }
                     }
                     LazyColumn(
@@ -143,22 +141,21 @@ public fun Overview() {
                     ) {
                         item { Spacer(Modifier.height(spacerHeightDp - 24.dp)) }
                         stickyHeader {
-                            MaterialTheme(colors = CupToolsMaterialColors) {
+                            MaterialTheme(colorScheme = CupToolsColors.scheme) {
                                 Text(
                                     text = slide.name,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier
                                         .width(with(density) { (outerContainerSize.width / shrinkRatio).toDp() } + 16.dp)
                                         .height(24.dp)
-                                        .background(CupToolsMaterialColors.surface.copy(alpha = 0.8f))
+                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                                 )
                             }
                         }
                         items(slide.stepCount) { step ->
                             OverviewSlideView(
                                 outerContainerSize = Size(outerContainerSize.width, outerContainerSize.width / ratio),
-                                slideIndex = slideIndex,
-                                step = step,
+                                position = PresentationPosition(slideIndex, step),
                             )
                         }
                         item { Spacer(Modifier.height(spacerHeightDp)) }

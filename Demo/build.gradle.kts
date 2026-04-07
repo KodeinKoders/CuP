@@ -17,11 +17,13 @@ repositories {
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(cup.sourceCode)
+        implementation(cup.plugin.imageExport)
         implementation(cup.plugin.laser)
         implementation(cup.plugin.speakerWindow)
 
-        implementation(compose.material)
-        implementation(compose.materialIconsExtended)
-        implementation(cup.widgets.material)
+        implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha05")
+        implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+        implementation(cup.widgets.material3)
     }
 }
+

@@ -46,6 +46,7 @@ private fun rememberRatio(
 
 @Composable
 internal fun SlideContainer(
+    slide: Slide,
     step: Int,
     slideSize: DpSize,
     modifier: Modifier = Modifier,
@@ -59,7 +60,8 @@ internal fun SlideContainer(
         modifier = modifier.fillMaxSize()
     ) {
         CompositionLocalProvider(
-            LocalDensity provides Density(originalDensity.density * ratio)
+            LocalDensity provides Density(originalDensity.density * ratio),
+            LocalSlide provides slide
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -85,7 +87,7 @@ internal fun PresentationRatioContainer(
 ) {
     val originalDensity by rememberUpdatedState(LocalDensity.current)
 
-    val config = LocalPresentationState.current.impl().config
+    val config = LocalPresentationState.current.config
     val outerContainerSize = LocalPresentationSize.current
 
     val ratio = rememberRatio(originalDensity, defaultSlideSize)
@@ -115,7 +117,7 @@ internal fun PresentationRatioContainer(
 @Composable
 @PluginCupAPI
 public fun PresentationMainView() {
-    val config = LocalPresentationState.current.impl().config
+    val config = LocalPresentationState.current.config
 
     PresentationRatioContainer(
         defaultSlideSize = config.defaultSpecs.size,
@@ -127,11 +129,13 @@ public fun PresentationMainView() {
                 key(slide.name) {
                     val specs = remember { config.slideSpecs(slide) }
 
-                    val visible = slideIndex == state.currentSlideIndex
+                    val visible = slideIndex == state.currentPosition.slideIndex
 
                     AnimatedVisibility(
                         visible = visible,
-                        enter = if (state.forward) specs.startTransitions.enter(true) else specs.endTransitions.enter(false),
+                        enter = if (state.forward) specs.startTransitions.enter(true) else specs.endTransitions.enter(
+                            false
+                        ),
                         exit = if (state.forward) specs.endTransitions.exit(true) else specs.startTransitions.exit(false),
                     ) {
                         val (transitions, type) = when {
@@ -142,9 +146,10 @@ public fun PresentationMainView() {
                             else -> error("Impossible")
                         }
                         var step by remember { mutableStateOf(0) }
-                        if (visible) step = state.currentStep
+                        if (visible) step = state.currentPosition.step
 
                         SlideContainer(
+                            slide = slide,
                             step = step,
                             slideSize = specs.size,
                             modifier = transitions.modifier(this, type),
@@ -238,7 +243,7 @@ public fun Presentation(
             plugins = builder.plugins.toImmutableList(),
         )
     }
-    remember(slides) { state.impl().connect(slides, config) }
+    remember(slides) { state.connect(slides, config) }
 
     var presentationSize: IntSize? by remember { mutableStateOf(null) }
 

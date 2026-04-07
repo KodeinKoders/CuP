@@ -5,7 +5,6 @@ import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupConfigurationDsl
 
 
-@CupConfigurationDsl
 public actual fun CupConfigurationBuilder.speakerWindow() {}
 
 @Composable

@@ -2,6 +2,8 @@ package net.kodein.cup
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import net.kodein.cup.utils.*
@@ -115,3 +117,5 @@ public fun PreparedSlide(
             contentBuilder = { PreparedSlideScope.prepare() }
         )
     }
+
+public val LocalSlide: ProvidableCompositionLocal<Slide?> = compositionLocalOf { null }

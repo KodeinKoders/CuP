@@ -5,13 +5,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import net.kodein.cup.PreparedSlide
+import net.kodein.cup.imgexp.Export
 import net.kodein.cup.sa.SAStyle
 import net.kodein.cup.sa.SourceCode
 import net.kodein.cup.sa.line
@@ -22,7 +23,8 @@ import utils.Title
 
 
 val sourceCode by PreparedSlide(
-    stepCount = 9
+    stepCount = 9,
+    user = Export.only(1, 3, 8)
 ) {
     @Suppress("LocalVariableName", "RemoveCurlyBracesFromTemplate")
     val sourceCode = rememberSourceCode("kotlin") {

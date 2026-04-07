@@ -10,6 +10,8 @@ public abstract class CupDependencies internal constructor() : ExtensionAware {
     public class Plugins internal constructor() {
         public val laser: String = "net.kodein.cup:cup-laser:${CupBuildInfo.VERSION}"
         public val speakerWindow: String = "net.kodein.cup:cup-speaker-window:${CupBuildInfo.VERSION}"
+        public val imageExport: String = "net.kodein.cup:cup-image-export:${CupBuildInfo.VERSION}"
+        public val keyEvents: String = "net.kodein.cup:cup-key-events:${CupBuildInfo.VERSION}"
     }
 
     public val widgets: Widgets = Widgets()

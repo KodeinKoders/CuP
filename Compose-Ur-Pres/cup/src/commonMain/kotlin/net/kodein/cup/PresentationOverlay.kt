@@ -1,32 +1,65 @@
 package net.kodein.cup
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.ChevronLeft
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.FilterListOff
+import androidx.compose.material.icons.rounded.Fullscreen
+import androidx.compose.material.icons.rounded.FullscreenExit
+import androidx.compose.material.icons.rounded.ZoomIn
+import androidx.compose.material.icons.rounded.ZoomOut
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import net.kodein.cup.utils.CupToolsMaterialColors
+import net.kodein.cup.utils.CupToolsColors
 import net.kodein.cup.utils.IconButtonWithTooltip
 import net.kodein.cup.utils.OverlayScope
 
@@ -44,9 +77,9 @@ internal fun OverlayScope.PresentationOverlay(
         .padding(16.dp)
         .clip(RoundedCornerShape(8.dp))
 
-    MaterialTheme(colors = CupToolsMaterialColors) {
+    MaterialTheme(colorScheme = CupToolsColors.scheme) {
         val state = LocalPresentationState.current
-        val config = state.impl().config
+        val config = state.config
 
         if (!state.isInOverview) {
             Surface(
@@ -59,7 +92,7 @@ internal fun OverlayScope.PresentationOverlay(
                         Text(state.currentSlide.name)
                         if (state.currentSlide.stepCount > 1) {
                             Text(" ")
-                            Text("(${state.currentStep})")
+                            Text("(${state.currentPosition.step})")
                         }
                     }
                 }
@@ -74,7 +107,7 @@ internal fun OverlayScope.PresentationOverlay(
             ) {
                 SelectionContainer {
                     Row(Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
-                        Text((state.currentSlideIndex + 1).toString())
+                        Text((state.currentPosition.slideIndex + 1).toString())
                         Text(" / ")
                         Text(state.slides.size.toString())
                     }
@@ -142,16 +175,19 @@ internal fun OverlayScope.PresentationOverlay(
                         onDismissRequest = { showMenu = false }
                     ) {
                         menuOverlays.forEach { overlay ->
-                            DropdownMenuItem(onClick = overlay.onClick) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(overlay.icon, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                                    Text(overlay.text)
-                                    if (overlay.keys != null) {
-                                        Text(" ")
-                                        Text("(${overlay.keys})")
+                            DropdownMenuItem(
+                                text = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(overlay.icon, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                                        Text(overlay.text)
+                                        if (overlay.keys != null) {
+                                            Text(" ")
+                                            Text("(${overlay.keys})")
+                                        }
                                     }
-                                }
-                            }
+                                },
+                                onClick = overlay.onClick,
+                            )
                         }
                     }
                 }
@@ -204,7 +240,7 @@ public fun SlideList(
         enter = expandIn(expandFrom = Alignment.Center) { IntSize(0, it.height) },
         exit = shrinkOut(shrinkTowards = Alignment.Center) { IntSize(0, it.height) }
     ) {
-        MaterialTheme(colors = CupToolsMaterialColors) {
+        MaterialTheme(colorScheme = CupToolsColors.scheme) {
             Surface(
                 Modifier
                     .fillMaxHeight()
@@ -236,7 +272,7 @@ public fun SlideList(
                                     ) {
                                         Box(Modifier.size(32.dp)) {
                                             androidx.compose.animation.AnimatedVisibility(
-                                                visible = state.currentSlideIndex == slideIndex && state.currentStep == step,
+                                                visible = state.currentPosition.slideIndex == slideIndex && state.currentPosition.step == step,
                                                 enter = fadeIn() + slideIn { IntOffset(-it.width / 2, 0) },
                                                 exit = fadeOut() + slideOut { IntOffset(-it.width / 2, 0) },
                                             ) {

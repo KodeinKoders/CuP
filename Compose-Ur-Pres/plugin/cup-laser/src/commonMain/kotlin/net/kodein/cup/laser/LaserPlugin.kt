@@ -25,7 +25,7 @@ internal class LaserPlugin : CupPlugin {
     override fun BoxScope.Content() {
         val state = LocalPresentationState.current
 
-        remember(state.currentSlideIndex) {
+        remember(state.currentPosition.slideIndex) {
             laser = null
         }
 
@@ -80,7 +80,6 @@ internal class LaserPlugin : CupPlugin {
     }
 }
 
-@CupConfigurationDsl
 public fun CupConfigurationBuilder.laser() {
     plugin(LaserPlugin())
 }

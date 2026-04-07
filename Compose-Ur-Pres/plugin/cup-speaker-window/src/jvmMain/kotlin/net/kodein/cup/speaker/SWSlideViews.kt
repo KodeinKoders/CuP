@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Draw
 import androidx.compose.material.icons.rounded.Rectangle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,7 +82,7 @@ internal fun SWCurrentSlideView(
                         .align(Alignment.BottomStart)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(CupToolsMaterialColors.surface)
+                        .background(MaterialTheme.colorScheme.surface)
                 ) {
                     if (laser == null) {
                         IconButtonWithTooltip(

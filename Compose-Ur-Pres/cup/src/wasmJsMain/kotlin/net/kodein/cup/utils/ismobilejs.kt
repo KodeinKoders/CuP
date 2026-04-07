@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package net.kodein.cup.utils
 
 import kotlinx.browser.window
