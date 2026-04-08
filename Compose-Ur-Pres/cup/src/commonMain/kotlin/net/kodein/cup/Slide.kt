@@ -64,6 +64,10 @@ public data class Slide internal constructor(
 ) : SlideGroup {
     public val lastStep: Int get() = stepCount - 1
     override val slideList: List<Slide> get() = listOf(this)
+    @PluginCupAPI
+    public interface CacheKey
+    @PluginCupAPI
+    public var cache: HashMap<CacheKey, Any> = HashMap()
 }
 
 public fun Slide(

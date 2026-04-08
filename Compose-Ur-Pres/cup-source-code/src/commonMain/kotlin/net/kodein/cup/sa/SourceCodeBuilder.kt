@@ -10,6 +10,8 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import net.kodein.cup.LocalSlide
+import net.kodein.cup.Slide
 import net.kodein.cup.sa.utils.minus
 import net.kodein.cup.sa.utils.offset
 import net.kodein.cup.utils.EagerProperty
@@ -171,6 +173,8 @@ private fun prepareSourceCode(
     )
 }
 
+internal data class SourceCodeCacheKey(val create: SourceCodeBuilder.() -> String) : Slide.CacheKey
+
 @Composable
 public fun rememberSourceCode(
     language: String,
@@ -178,7 +182,11 @@ public fun rememberSourceCode(
     create: SourceCodeBuilder.() -> String,
 ): SourceCode {
     val scope = rememberCoroutineScope()
+    val slide = LocalSlide.current
     return remember(key) {
-        prepareSourceCode(language, create, scope)
+        val cacheKey = SourceCodeCacheKey(create)
+        slide?.cache?.get(cacheKey) as? SourceCode
+            ?: prepareSourceCode(language, create, scope)
+                .also { slide?.cache?.put(cacheKey, it) }
     }
 }

@@ -216,7 +216,15 @@ public fun ProvideSlideContents(
     state: PresentationState,
     content: @Composable () -> Unit
 ) {
-    val slideContents = state.slides.map { it.contentBuilder() }
+    val slideContents = state.slides.map {
+        lateinit var  content: SlideContent
+        CompositionLocalProvider(
+            LocalSlide provides it
+        ) {
+            content = it.contentBuilder()
+        }
+        content
+    }
 
     CompositionLocalProvider(
         value = LocalSlideContents provides slideContents,
