@@ -43,10 +43,13 @@ internal fun SWNextSlideView(
     ) {
         if (viewSize != null) {
             val shiftedPresentationState = remember(presentationState) { ShiftedPresentationState(presentationState) }
+            LaunchedEffect(presentationState.currentPosition, shiftedPresentationState.currentPosition) {
+                println("${presentationState.currentPosition} - ${shiftedPresentationState.currentPosition}")
+            }
             CompositionLocalProvider(
                 LocalPresentationState provides shiftedPresentationState,
                 LocalPresentationSize provides viewSize!!,
-                LocalIsInSpeakerWindow provides true
+                LocalIsInSpeakerWindow provides true,
             ) {
                 PresentationMainView()
             }

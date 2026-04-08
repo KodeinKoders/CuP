@@ -10,10 +10,6 @@ cup {
     targetWeb()
 }
 
-repositories {
-    mavenLocal()
-}
-
 kotlin {
     sourceSets.commonMain.dependencies {
         implementation(cup.sourceCode)

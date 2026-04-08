@@ -8,5 +8,15 @@ pluginManagement {
     repositories {
         mavenLocal()
         gradlePluginPortal()
+        google()
+    }
+}
+
+@Suppress("UnstableApiUsage")
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
     }
 }
