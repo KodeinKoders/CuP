@@ -17,6 +17,8 @@ kotlin {
         browser()
     }
 
+    explicitApi()
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -24,29 +26,25 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.material.icons)
 
-            implementation(libs.bundles.compose)
-
-            api(libs.emoji.compose)
+            implementation(projects.cup)
+            implementation(projects.plugin.cupPluginLaser)
 
             implementation(libs.kotlinx.collectionsImmutable)
         }
 
-        named("wasmJsMain").dependencies {
-            implementation(npm("ismobilejs", libs.versions.npm.ismobilejs.get()))
+        jvmMain.dependencies {
+            implementation(libs.markdown)
         }
-
-        explicitApi()
 
         all {
             languageSettings.optIn("net.kodein.cup.PluginCupAPI")
-            languageSettings.optIn("net.kodein.cup.InternalCupAPI")
         }
     }
 }
 
 mavenPublishing {
     pom {
-        name.set("Compose ur Pres")
-        description.set("A framework to program a presentation slide deck with Compose multiplatform.")
+        name.set("CuP Speaker Window plugin")
+        description.set("A CuP plugin that allows the presenter to control their presentation from a dedicated window.")
     }
 }

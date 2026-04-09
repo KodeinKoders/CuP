@@ -3,7 +3,7 @@ package net.kodein.cup.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.create
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -26,18 +26,5 @@ public class CupPlugin : Plugin<Project> {
         if (composeDeps !is ComposePlugin.Dependencies) error("invalid kotlin.compose extension")
 
         extensions.create<CupExtension>("cup", this, kotlin, compose, composeDeps)
-        kotlin.extensions.create<CupDependencies>("cup")
-
-        kotlin.apply {
-            sourceSets.apply {
-                commonMain.dependencies {
-                    implementation("org.jetbrains.compose.runtime:runtime:${CupBuildInfo.COMPOSE_VERSION}")
-                    implementation("org.jetbrains.compose.foundation:foundation:${CupBuildInfo.COMPOSE_VERSION}")
-                    implementation("org.jetbrains.compose.components:components-resources:${CupBuildInfo.COMPOSE_VERSION}")
-
-                    implementation("net.kodein.cup:cup:${CupBuildInfo.VERSION}")
-                }
-            }
-        }
     }
 }

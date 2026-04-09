@@ -73,10 +73,10 @@ val kodeinKoders by Slide(
                 color = KodeinTheme.Color.Orange,
                 fontSize = 56.sp,
                 lineHeight = 56.sp,
-                modifier = Modifier.height(46.dp)
+                modifier = Modifier.height(50.dp)
             )
             Text(
-                text = "painless multiplatform technology",
+                text = "Multiplatform consulting & training",
                 color = KodeinTheme.Color.Orange,
                 fontSize = 22.sp,
                 modifier = Modifier.padding(start = 2.dp)

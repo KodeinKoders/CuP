@@ -18,12 +18,12 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(
     ":cup",
     ":cup-gradle-plugin",
-    ":cup-source-code",
-    ":plugin:cup-image-export",
-    ":plugin:cup-key-events",
-    ":plugin:cup-laser",
-    ":plugin:cup-speaker-window",
+    ":widgets:cup-widgets-source-code",
+    ":plugin:cup-plugin-image-export",
+    ":plugin:cup-plugin-key-events",
+    ":plugin:cup-plugin-laser",
+    ":plugin:cup-plugin-speaker-window",
     ":widgets:cup-widgets-foundation",
-    ":widgets:cup-widgets-material",
+    ":widgets:cup-widgets-material2",
     ":widgets:cup-widgets-material3",
 )

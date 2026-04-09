@@ -17,6 +17,7 @@ public abstract class CupExtension internal constructor(
     private val compose: ComposeExtension,
     private val composeDeps: ComposePlugin.Dependencies
 ) : ExtensionAware {
+
     public fun targetDesktop(mainClass: String = "MainKt") {
         kotlin.jvm()
         kotlin.apply {

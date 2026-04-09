@@ -29,7 +29,6 @@ buildConfig {
     packageName("${project.group}.gradle")
     className("CupBuildInfo")
     buildConfigField("String", "VERSION", "\"${project.version}\"")
-    buildConfigField("String", "COMPOSE_VERSION", "\"${libs.versions.compose.get()}\"")
     useKotlinOutput {
         internalVisibility = true
     }

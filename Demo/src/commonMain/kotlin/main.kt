@@ -26,6 +26,7 @@ import cup_demo.generated.resources.logo
 import net.kodein.cup.*
 import net.kodein.cup.laser.laser
 import net.kodein.cup.imgexp.imageExport
+import net.kodein.cup.keyevents.keyEvents
 import net.kodein.cup.speaker.speakerWindow
 import net.kodein.cup.utils.DataMap
 import net.kodein.cup.utils.DataMapElement
@@ -67,6 +68,7 @@ fun KodeinPresentation(
             speakerWindow()
             laser()
             imageExport()
+            keyEvents()
         },
         backgroundColor = KodeinTheme.Color.background
     ) { slidesContent ->
