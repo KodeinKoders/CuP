@@ -26,6 +26,7 @@ rootProject.name = "How-to-CuP"
 ----
 [versions]
 compose = "1.10.3"                      # https://github.com/JetBrains/compose-multiplatform/releases
+cup = "1.0.0-Beta-13"                   # https://github.com/KodeinKoders/CuP/releases
 emoji = "2.3.0"                         # https://github.com/kosi-libs/Emoji.kt/releases
 kotlin = "2.3.20"                       # https://github.com/jetbrains/kotlin/releases
 material3 = "1.10.0-alpha05"            # https://github.com/JetBrains/compose-multiplatform/releases
@@ -44,14 +45,14 @@ compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", v
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
-cup = { module = "net.kodein.cup:cup" }
-cup-plugin-imageExport = { module = "net.kodein.cup:cup-plugin-image-export" }
-cup-plugin-keyEvents = { module = "net.kodein.cup:cup-plugin-key-events" }
-cup-plugin-laser = { module = "net.kodein.cup:cup-plugin-laser" }
-cup-plugin-speakerWindow = { module = "net.kodein.cup:cup-plugin-speaker-window" }
-#cup-widgets-material2 = { module = "net.kodein.cup:cup-widgets-material2" }
-cup-widgets-material3 = { module = "net.kodein.cup:cup-widgets-material3" }
-cup-widgets-sourceCode = { module = "net.kodein.cup:cup-widgets-source-code" }
+cup = { module = "net.kodein.cup:cup", version.ref = "cup" }
+cup-plugin-imageExport = { module = "net.kodein.cup:cup-plugin-image-export", version.ref = "cup" }
+cup-plugin-keyEvents = { module = "net.kodein.cup:cup-plugin-key-events", version.ref = "cup" }
+cup-plugin-laser = { module = "net.kodein.cup:cup-plugin-laser", version.ref = "cup" }
+cup-plugin-speakerWindow = { module = "net.kodein.cup:cup-plugin-speaker-window", version.ref = "cup" }
+#cup-widgets-material2 = { module = "net.kodein.cup:cup-widgets-material2", version.ref = "cup" }
+cup-widgets-material3 = { module = "net.kodein.cup:cup-widgets-material3", version.ref = "cup" }
+cup-widgets-sourceCode = { module = "net.kodein.cup:cup-widgets-source-code", version.ref = "cup" }
 #emoji-compose = { module = "org.kodein.emoji:emoji-compose-m2", version.ref = "emoji" }
 emoji-compose = { module = "org.kodein.emoji:emoji-compose-m3", version.ref = "emoji" }
 
