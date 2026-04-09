@@ -11,34 +11,16 @@ The downside is that there are two material libraries.
 [[install]]
 == Installing
 
-[tabs]
-====
-CuP Plugin::
-+
-.build.gradle.kts
-[source, kotlin]
-----
-kotlin {
-    sourceSets.commonMain.dependencies {
-        implementation(cup.widgets.material)
-        // or implementation(cup.widgets.material3)
-    }
-}
-----
-
-Regular Gradle::
-+
 .build.gradle.kts
 [source, kotlin, subs="attributes"]
 ----
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation("net.kodein.cup:cup-widgets-material:{version}")
-        // or implementation("net.kodein.cup:cup-widgets-material3:{version}")
+        implementation("net.kodein.cup:cup-widgets-material3:{version}")
+        // or implementation("net.kodein.cup:cup-widgets-material2:{version}")
     }
 }
 ----
-====
 
 [CAUTION]
 ====

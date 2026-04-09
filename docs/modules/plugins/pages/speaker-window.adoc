@@ -17,32 +17,15 @@ The speaker window allows you to control the presentation and:
 
 First, add the plugin dependency to your project:
 
-[tabs]
-====
-CuP Plugin::
-+
-.build.gradle.kts
-[source, kotlin]
-----
-kotlin {
-    sourceSets.commonMain.dependencies {
-        implementation(cup.plugin.speakerWindow)
-    }
-}
-----
-
-Regular Gradle::
-+
 .build.gradle.kts
 [source, kotlin, subs="attributes"]
 ----
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation("net.kodein.cup:cup-speaker-window:{version}")
+        implementation("net.kodein.cup:cup-plugin-speaker-window:{version}")
     }
 }
 ----
-====
 
 Then, in your presentation configuration, add the Speaker Window plugin:
 

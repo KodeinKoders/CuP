@@ -24,7 +24,7 @@ cup-plugin-laser = { module = "net.kodein.cup:cup-plugin-laser" }
 cup-plugin-speakerWindow = { module = "net.kodein.cup:cup-plugin-speaker-window" }
 cup-widgets-material3 = { module = "net.kodein.cup:cup-widgets-material3" }
 cup-widgets-sourceCode = { module = "net.kodein.cup:cup-widgets-source-code" }
-emoji-compose = { module = "org.kodein.emoji:emoji-compose", version.ref = "emoji" }
+emoji-compose = { module = "org.kodein.emoji:emoji-compose-m3", version.ref = "emoji" }
 
 [bundles]
 compose = [

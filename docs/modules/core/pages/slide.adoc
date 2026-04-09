@@ -202,6 +202,8 @@ You can draw inspiration from:
 [[previewing]]
 == Previewing a Slide content
 
+WARNING: This is deprecated. You should use Compose Hot Reload to preview your content in real time.
+
 [[preview-run]]
 === By running the app
 

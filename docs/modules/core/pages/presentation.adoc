@@ -52,17 +52,24 @@ Configure the dependencies you will be using in your presentation application:
 ----
 kotlin {
     sourceSets.commonMain.dependencies {
+        implementation("org.jetbrains.compose.runtime:runtime:{compose}")
+        implementation("org.jetbrains.compose.foundation:foundation:{compose}")
+        implementation("org.jetbrains.compose.components:components-resources:{compose}")
+        implementation("org.jetbrains.compose.material3:material3:{material3}")
+
+        implementation("net.kodein.cup:cup:{version}")
+
         // Optional: source code animation composables. <1>
-        implementation(cup.sourceCode)
+        implementation("net.kodein.cup:cup-widgets-source-code:{version}")
 
         // Optional: secondary window with preview & speaker notes. <2>
-        implementation(cup.plugin.speakerWindow)
+        implementation("net.kodein.cup:cup-plugin-speaker-window:{version}")
 
         // Optional: tool to draw over the presentation. <3>
-        implementation(cup.plugin.laser)
+        implementation("net.kodein.cup:cup-plugin-laser:{version}")
 
-        // Mandatory (can be material3 instead).
-        implementation(compose.material)
+        // Optional: tool to export your presentation as PNGs and/or PDF.
+        implementation("net.kodein.cup:cup-plugin-image-export:{version}")
     }
 }
 ----
@@ -142,22 +149,24 @@ Add the CuP & Compose dependencies:
 ----
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation(compose.runtime)
-        implementation(compose.foundation)
-        implementation(compose.components.resources)
-        implementation(compose.material) // or material3
+        implementation("org.jetbrains.compose.runtime:runtime:{compose}")
+        implementation("org.jetbrains.compose.foundation:foundation:{compose}")
+        implementation("org.jetbrains.compose.components:components-resources:{compose}")
+        implementation("org.jetbrains.compose.material3:material3:{material3}")
 
-        val cupVersion = "{version}"
-        implementation("net.kodein.cup:cup:$cupVersion")
+        implementation("net.kodein.cup:cup:{version}")
 
         // Optional: source code animation composables. <1>
-        implementation("net.kodein.cup:cup-source-code:$cupVersion")
+        implementation("net.kodein.cup:cup-widgets-source-code:{version}")
 
         // Optional: secondary window with preview & speaker notes. <2>
-        implementation("net.kodein.cup:cup-speaker-window:$cupVersion")
+        implementation("net.kodein.cup:cup-plugin-speaker-window:{version}")
 
         // Optional: tool to draw over the presentation. <3>
-        implementation("net.kodein.cup:cup-laser:$cupVersion")
+        implementation("net.kodein.cup:cup-plugin-laser:{version}")
+
+        // Optional: tool to export your presentation as PNGs and/or PDF.
+        implementation("net.kodein.cup:cup-plugin-image-export:{version}")
     }
 }
 ----
@@ -327,7 +336,7 @@ Presentation(
         painter = painterResource(Res.drawable.logo),
         contentDescription = "Logo",
         modifier = Modifier
-            .alignment(Alignment.CenterEnd),
+            .alignment(Alignment.CenterEnd)
             .alpha(0.4f)
             .fillMaxSize()
             .offset(x = (-16).dp, y = 64.dp)

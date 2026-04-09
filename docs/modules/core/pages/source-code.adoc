@@ -3,33 +3,15 @@
 Compose-Ur-Pres provides additional utilities to display and animate source code.
 To access them, you need to add the following dependency in your presentation's `build.gradle.kts`:
 
-[tabs]
-====
-CuP Plugin::
-+
-.build.gradle.kts
-[source, kotlin]
-----
-kotlin {
-    sourceSets.commonMain.dependencies {
-        implementation(cup.sourceCode)
-    }
-}
-----
-
-Regular Gradle::
-+
 .build.gradle.kts
 [source, kotlin, subs="attributes"]
 ----
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation("net.kodein.cup:cup-source-code:{version}")
+        implementation("net.kodein.cup:cup-plugin-source-code:{version}")
     }
 }
 ----
-====
-
 
 NOTE: Source Coloring is provided by https://highlightjs.org[highlight.js], which is either run inside a dedicated runtime when targeting the JVM, or directly in the browser when targeting Wasm.
 

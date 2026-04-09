@@ -17,32 +17,15 @@ image:laser-highlight.png[width=600]
 
 First, add the plugin dependency to your project:
 
-[tabs]
-====
-CuP Plugin::
-+
-.build.gradle.kts
-[source, kotlin]
-----
-kotlin {
-    sourceSets.commonMain.dependencies {
-        implementation(cup.plugin.laser)
-    }
-}
-----
-
-Regular Gradle::
-+
 .build.gradle.kts
 [source, kotlin, subs="attributes"]
 ----
 kotlin {
     sourceSets.commonMain.dependencies {
-        implementation("net.kodein.cup:cup-laser:{version}")
+        implementation("net.kodein.cup:cup-plugin-laser:{version}")
     }
 }
 ----
-====
 
 Then, in your presentation configuration, add the Laser plugin:
 
