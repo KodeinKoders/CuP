@@ -200,6 +200,7 @@ public class PresentationConfig(
     public val backgroundColor: Color,
     public val defaultSpecs: SlideSpecs,
     public val plugins: ImmutableList<CupPlugin>,
+    public val originalDensity: Density,
 ) {
     public fun slideSpecs(slide: Slide): SlideSpecs =
         if (slide.specs != null) defaultSpecs.merge(slide.specs) else defaultSpecs
@@ -241,6 +242,7 @@ public fun Presentation(
 ) {
     val state = LocalPresentationState.current
     val layoutDirection = LocalLayoutDirection.current
+    val originalDensity = LocalDensity.current
 
     val config = remember {
         val builder = CupConfigurationBuilder().apply(configuration)
@@ -249,6 +251,7 @@ public fun Presentation(
             backgroundColor = backgroundColor,
             defaultSpecs = builder.defaultSlideSpecs ?: SlideSpecs.default(layoutDirection),
             plugins = builder.plugins.toImmutableList(),
+            originalDensity = originalDensity,
         )
     }
     remember(slides) { state.connect(slides, config) }
