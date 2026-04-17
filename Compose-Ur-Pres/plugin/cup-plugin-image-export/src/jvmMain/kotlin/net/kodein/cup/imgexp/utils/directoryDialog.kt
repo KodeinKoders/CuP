@@ -20,8 +20,7 @@ internal suspend fun directoryDialog(
     return coroutineScope {
         val def = CompletableDeferred<Path?>()
         val dialog = object : FileDialog(null as Frame?, title, LOAD) {
-            @Suppress("DEPRECATION")
-            @Deprecated("Deprecated in Java")
+            @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
             override fun hide() {
                 super.hide()
                 if (!def.isCompleted) {
