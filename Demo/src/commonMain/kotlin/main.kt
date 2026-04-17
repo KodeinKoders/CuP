@@ -28,8 +28,8 @@ import net.kodein.cup.laser.laser
 import net.kodein.cup.imgexp.imageExport
 import net.kodein.cup.keyevents.keyEvents
 import net.kodein.cup.speaker.speakerWindow
-import net.kodein.cup.utils.DataMap
-import net.kodein.cup.utils.DataMapElement
+import net.kodein.cup.utils.SlideContext
+import net.kodein.cup.utils.SlideContextElement
 import org.jetbrains.compose.resources.painterResource
 import org.kodein.emoji.compose.EmojiService
 import utils.PresentationProgressBar
@@ -47,14 +47,14 @@ fun KodeinPresentationPreview(
 
 data class KodeinBackground(
     val color: Color,
-) : DataMapElement<KodeinBackground>(Key) {
-    companion object Key : DataMap.Key<KodeinBackground>
+) : SlideContextElement<KodeinBackground>(Key) {
+    companion object Key : SlideContext.Key<KodeinBackground>
 }
 
 data class KodeinBanner(
     val visible: Boolean,
-) : DataMapElement<KodeinBanner>(Key) {
-    companion object Key : DataMap.Key<KodeinBanner>
+) : SlideContextElement<KodeinBanner>(Key) {
+    companion object Key : SlideContext.Key<KodeinBanner>
 }
 
 @Composable
@@ -84,12 +84,12 @@ fun KodeinPresentation(
                 .offset(x = (-16).dp, y = 64.dp)
         )
         val background by animateColorAsState(
-            targetValue = presentationState.currentSlide.user[KodeinBackground]?.color ?: Color.Transparent,
+            targetValue = presentationState.currentSlide.context[KodeinBackground]?.color ?: Color.Transparent,
             animationSpec = tween(1_500)
         )
         val density = LocalDensity.current
         val bannerAlpha by animateFloatAsState(
-            targetValue = if (presentationState.currentSlide.user[KodeinBanner]?.visible == true) 1f else 0f,
+            targetValue = if (presentationState.currentSlide.context[KodeinBanner]?.visible == true) 1f else 0f,
             animationSpec = tween(1_000)
         )
         if (bannerAlpha > 0f) {

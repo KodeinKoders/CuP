@@ -24,7 +24,7 @@ import utils.Title
 
 val sourceCode by PreparedSlide(
     stepCount = 9,
-    user = Export.only(1, 3, 8)
+    context = Export.only(1, 3, 8)
 ) {
     @Suppress("LocalVariableName", "RemoveCurlyBracesFromTemplate")
     val sourceCode = rememberSourceCode("kotlin") {

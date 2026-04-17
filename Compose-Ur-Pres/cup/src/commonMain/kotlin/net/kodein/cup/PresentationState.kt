@@ -27,13 +27,6 @@ public sealed interface PresentationState {
 
     public val currentPosition: PresentationPosition
 
-    // Deprecated since Beta-12
-    @Deprecated("use currentPosition instead", ReplaceWith("currentPosition.slideIndex"), DeprecationLevel.ERROR)
-    public val currentSlideIndex: Int get() = currentPosition.slideIndex
-    // Deprecated since Beta-12
-    @Deprecated("use currentPosition instead", ReplaceWith("currentPosition.step"), DeprecationLevel.ERROR)
-    public val currentStep: Int get() = currentPosition.step
-
     public val forward: Boolean
 
     public var isInOverview: Boolean

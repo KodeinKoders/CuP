@@ -15,7 +15,7 @@ public sealed interface SlideGroup {
 
 public class Slides(
     content: List<SlideGroup>,
-    private val user: ((Position) -> DataMap)? = null,
+    private val context: ((Position) -> SlideContext)? = null,
     private val specs: ((Position) -> SlideSpecs)? = null
 ): SlideGroup {
 
@@ -26,13 +26,13 @@ public class Slides(
 
     public constructor(
         vararg content: SlideGroup,
-        user: ((Position) -> DataMap)? = null,
+        context: ((Position) -> SlideContext)? = null,
         specs: ((Position) -> SlideSpecs)? = null
-    ) : this(content.toList(), user, specs)
+    ) : this(content.toList(), context, specs)
 
     override val slideList: ImmutableList<Slide> = run {
         val slides = content.flatMap { it.slideList }
-        if (specs == null && user == null) slides.toImmutableList()
+        if (specs == null && context == null) slides.toImmutableList()
         else slides.mapIndexed { index, slide ->
             val position = Position(index, slides.lastIndex)
             val mergedSpecs = when {
@@ -40,11 +40,11 @@ public class Slides(
                 slide.specs == null && specs != null -> specs.invoke(position)
                 else -> slide.specs
             }
-            val mergedUser = when {
-                user != null -> slide.user + user.invoke(position)
-                else -> slide.user
+            val mergedContext = when {
+                context != null -> slide.context + context.invoke(position)
+                else -> slide.context
             }
-            slide.copy(specs = mergedSpecs, user = mergedUser)
+            slide.copy(specs = mergedSpecs, context = mergedContext)
         }.toImmutableList()
     }
 }
@@ -59,7 +59,7 @@ public data class Slide internal constructor(
     public val name: String,
     public val stepCount: Int = 1,
     public val specs: SlideSpecs? = null,
-    public val user: DataMap = emptyDataMap(),
+    public val context: SlideContext = EmptySlideContext,
     public val contentBuilder: @Composable () -> SlideContent
 ) : SlideGroup {
     public val lastStep: Int get() = stepCount - 1
@@ -73,7 +73,7 @@ public data class Slide internal constructor(
 public fun Slide(
     stepCount: Int = 1,
     specs: SlideSpecs? = null,
-    user: DataMap = emptyDataMap(),
+    context: SlideContext = EmptySlideContext,
     content: SlideContent
 ): EagerProperty<Slide> =
     eagerProperty { property ->
@@ -81,7 +81,7 @@ public fun Slide(
             name = property.name,
             stepCount = stepCount,
             specs = specs,
-            user = user,
+            context = context,
             contentBuilder = { content }
         )
     }
@@ -90,14 +90,14 @@ public fun Slide(
     name: String,
     stepCount: Int = 1,
     specs: SlideSpecs? = null,
-    user: DataMap = emptyDataMap(),
+    context: SlideContext = EmptySlideContext,
     content: SlideContent
 ): Slide =
     Slide(
         name = name,
         stepCount = stepCount,
         specs = specs,
-        user = user,
+        context = context,
         contentBuilder = { content }
     )
 
@@ -109,7 +109,7 @@ public object PreparedSlideScope {
 public fun PreparedSlide(
     stepCount: Int = 1,
     specs: SlideSpecs? = null,
-    user: DataMap = emptyDataMap(),
+    context: SlideContext = EmptySlideContext,
     prepare: @Composable PreparedSlideScope.() -> SlideContent
 ) : EagerProperty<Slide> =
     eagerProperty { property ->
@@ -117,7 +117,7 @@ public fun PreparedSlide(
             name = property.name,
             stepCount = stepCount,
             specs = specs,
-            user = user,
+            context = context,
             contentBuilder = { PreparedSlideScope.prepare() }
         )
     }

@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.kodein.cup.Slide
 import net.kodein.cup.SlideSpecs
-import net.kodein.cup.utils.dataMapOf
 import utils.TextWithEmoji
 import utils.Title
 import utils.y3DRotation
@@ -14,9 +13,7 @@ import utils.y3DRotation
 val transitions by Slide(
     stepCount = 2,
     specs = SlideSpecs(startTransitions = y3DRotation),
-    user = dataMapOf(
-        KodeinBackground(KodeinTheme.Color.BackgroundSpecial),
-    )
+    context = KodeinBackground(KodeinTheme.Color.BackgroundSpecial),
 ) { step ->
     Title(Modifier.padding(16.dp)) {
         Text("There can also be complex slide transition transitions !")

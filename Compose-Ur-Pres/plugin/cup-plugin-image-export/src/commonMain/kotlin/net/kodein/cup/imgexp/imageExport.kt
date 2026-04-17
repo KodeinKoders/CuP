@@ -1,16 +1,16 @@
 package net.kodein.cup.imgexp
 
 import net.kodein.cup.config.CupConfigurationBuilder
-import net.kodein.cup.utils.DataMap
-import net.kodein.cup.utils.DataMapElement
+import net.kodein.cup.utils.SlideContext
+import net.kodein.cup.utils.SlideContextElement
 
 
 public class Export private constructor(
     public val steps: List<Int>,
     internal val type: Type
-) : DataMapElement<Export>(Key) {
+) : SlideContextElement<Export>(Key) {
     internal enum class Type { Only, Ignore }
-    public companion object Key : DataMap.Key<Export> {
+    public companion object Key : SlideContext.Key<Export> {
         public fun only(vararg steps: Int): Export = Export(steps.asList(), Type.Only)
         public fun ignore(vararg steps: Int): Export = Export(steps.asList(), Type.Ignore)
         public fun none(): Export = Export(emptyList(), Type.Only)

@@ -5,15 +5,15 @@ import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import net.kodein.cup.config.CupConfigurationBuilder
-import net.kodein.cup.utils.DataMap
-import net.kodein.cup.utils.DataMapElement
+import net.kodein.cup.utils.SlideContext
+import net.kodein.cup.utils.SlideContextElement
 
 
 @Stable
 public class SpeakerNotes(
     notes: List<Pair<IntRange, String>>
-) : DataMapElement<SpeakerNotes>(Key) {
-    internal companion object Key : DataMap.Key<SpeakerNotes> {
+) : SlideContextElement<SpeakerNotes>(Key) {
+    internal companion object Key : SlideContext.Key<SpeakerNotes> {
         private val allSteps = 0..Int.MAX_VALUE
     }
 

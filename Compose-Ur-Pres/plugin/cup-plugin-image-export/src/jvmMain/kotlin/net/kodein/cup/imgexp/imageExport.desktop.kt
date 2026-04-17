@@ -89,7 +89,7 @@ private suspend fun export(
     val sceneHeight = (heightInch * density).toInt()
 
     val toExport = state.slides.flatMapIndexed { slideIndex, slide ->
-        val slideExport = slide.user[Export.Key]
+        val slideExport = slide.context[Export.Key]
         when (slideExport?.type) {
             Export.Type.Only -> (0..<slide.stepCount).filter { it in slideExport.steps }
             Export.Type.Ignore -> (0..<slide.stepCount).filterNot { it in slideExport.steps }

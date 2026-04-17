@@ -23,7 +23,7 @@ import utils.y3DRotation
 val steps by Slide(
     stepCount = 5,
     specs = SlideSpecs(endTransitions = y3DRotation),
-    user = Export.ignore(1, 2)
+    context = Export.ignore(1, 2)
 ) { step ->
     Title {
         Text("A slide may contain multiple steps.")

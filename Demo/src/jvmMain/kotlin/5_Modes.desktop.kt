@@ -6,13 +6,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import net.kodein.cup.*
 import net.kodein.cup.speaker.SpeakerNotes
-import net.kodein.cup.utils.dataMapOf
+import net.kodein.cup.utils.SlideContext
+import net.kodein.cup.utils.slideContextOf
 import utils.InlineIcon
 import utils.Title
 
 
 val speakerWindow by Slide(
-    user = dataMapOf(
+    context = slideContextOf(
         SpeakerNotes(
             """
                     This slides has some **speaker notes** that you can see here!
