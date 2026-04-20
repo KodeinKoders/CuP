@@ -23,6 +23,7 @@ include(
     ":plugin:cup-plugin-key-events",
     ":plugin:cup-plugin-laser",
     ":plugin:cup-plugin-speaker-window",
+    ":plugin:cup-plugin-auto-move",
     ":widgets:cup-widgets-foundation",
     ":widgets:cup-widgets-material2",
     ":widgets:cup-widgets-material3",

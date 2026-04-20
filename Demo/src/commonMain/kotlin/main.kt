@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import cup_demo.generated.resources.Res
 import cup_demo.generated.resources.logo
 import net.kodein.cup.*
+import net.kodein.cup.automove.autoMove
 import net.kodein.cup.laser.laser
 import net.kodein.cup.imgexp.imageExport
 import net.kodein.cup.keyevents.keyEvents
@@ -33,6 +34,7 @@ import net.kodein.cup.utils.SlideContextElement
 import org.jetbrains.compose.resources.painterResource
 import org.kodein.emoji.compose.EmojiService
 import utils.PresentationProgressBar
+import kotlin.time.Duration.Companion.seconds
 
 
 @Composable
@@ -69,6 +71,7 @@ fun KodeinPresentation(
             laser()
             imageExport()
             keyEvents()
+            autoMove()
         },
         backgroundColor = KodeinTheme.Color.background
     ) { slidesContent ->

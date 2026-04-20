@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.kodein.cup.Slide
 import net.kodein.cup.SlideSpecs
+import net.kodein.cup.automove.AutoMovePause
 import net.kodein.cup.imgexp.Export
+import net.kodein.cup.utils.slideContextOf
 import net.kodein.cup.widgets.material3.BulletPoints
 import org.kodein.emoji.Emoji
 import org.kodein.emoji.smileys_emotion.emotion.Collision
@@ -19,11 +21,18 @@ import utils.TextWithAnimatedEmoji
 import utils.TextWithEmoji
 import utils.Title
 import utils.y3DRotation
+import kotlin.time.Duration.Companion.seconds
 
 val steps by Slide(
     stepCount = 5,
     specs = SlideSpecs(endTransitions = y3DRotation),
-    context = Export.ignore(1, 2)
+    context = slideContextOf(
+        Export.ignore(1, 2),
+        AutoMovePause { step ->
+            if (step in 1..3) 1.seconds
+            else 5.seconds
+        }
+    )
 ) { step ->
     Title {
         Text("A slide may contain multiple steps.")

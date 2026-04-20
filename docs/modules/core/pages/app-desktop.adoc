@@ -1,5 +1,4 @@
 = Presenting with the desktop app
-:experimental:
 
 [[running]]
 == Running & distributing the app

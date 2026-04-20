@@ -272,10 +272,50 @@ val contentDemo by PreparedSlide(
 WARNING: You must not display anything in the "prepare" section of the `PreparedSlide` or you will break your presentation!
 
 
-[[user-data]]
-== Attaching user data to a slide
+[[context-data]]
+== Attaching context data to a slide
 
-You can attach custom user data to a `Slide` that can be consumed by your xref:presentation.adoc#user-data[presentation decoration] or by a plugin.
+You can attach custom context data to a `Slide` that can be consumed by your presentation decoration or by a plugin.
+
+=== Attaching context data to a slide
+
+Some plugins provide configuration `SlideContext` data classes that allow you to modify the behaviour of that plugin when the slide is displayed.
+
+To attach a `SlideContext` to a slide, simply pass it to its `context` parameter:
+
+[source, kotlin]
+----
+val whatever by Slide(
+    context = SpeakerNotesMD("Amazing!")
+) {}
+----
+
+You can combine multiple `SlideContextElement` into a single `SlideContext`:
+
+* With the `plus` operator:
++
+[source, kotlin]
+----
+val whatever by Slide(
+    context = SpeakerNotesMD("Amazing!") + Export.only(1, 3) + AutoMovePause { 3.seconds }
+) {}
+----
+* With the `slideContextOf` function:
++
+[source, kotlin]
+----
+val whatever by Slide(
+    context = slideContextOf(
+        SpeakerNotesMD("Amazing!"),
+        Export.only(1, 3),
+        AutoMovePause { 3.seconds },
+    )
+) {}
+----
+
+[[custom-context-data]]
+=== Creating custom context data
+
 For example, let's say that you want your presentation decoration to display a text banner over certain slides.
 
 You first need to create a `DataMapElement`:
@@ -291,39 +331,15 @@ data class Banner(
 <1> A data class to be attached to a Slide must implement `DataMapElement`.
 <2> Each `DataMapElement` must have a corresponding `DataMap.Key`.
 
-You can now attach this user data to a `Slide`:
+You can now attach this context data to a `Slide`:
 
 [source, kotlin]
 ----
 val whatever by Slide(
-    user = Banner("Work In Progress!")
+    context = Banner("Work In Progress!")
 ) {
     /* Slide content */
 }
 ----
 
-[TIP]
-====
-You can combine multiple `DataMapElement` into a `DataMap`:
-
-* With the `plus` operator:
-+
-[source, kotlin]
-----
-val whatever by Slide(
-    user = Banner("Work In Progress!") + SpeakerNotesMD("Amazing!")
-) {}
-----
-* With the `dataMapOf` function:
-+
-[source, kotlin]
-----
-val whatever by Slide(
-    user = dataMapOf(
-        Banner("Work In Progress!"),
-        SpeakerNotesMD("Amazing!")
-    )
-) {}
-----
-
-====
+Once attached to a slide, xref:presentation.adoc#context-data[your presentation decoration can access this context].

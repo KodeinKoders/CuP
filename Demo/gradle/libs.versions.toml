@@ -18,6 +18,7 @@ compose-material3 = { module = "org.jetbrains.compose.material3:material3", vers
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
 cup = { module = "net.kodein.cup:cup" }
+cup-plugin-autoMove = { module = "net.kodein.cup:cup-plugin-auto-move" }
 cup-plugin-imageExport = { module = "net.kodein.cup:cup-plugin-image-export" }
 cup-plugin-keyEvents = { module = "net.kodein.cup:cup-plugin-key-events" }
 cup-plugin-laser = { module = "net.kodein.cup:cup-plugin-laser" }
@@ -36,6 +37,7 @@ compose = [
 ]
 cup = [
     "cup",
+    "cup-plugin-autoMove",
     "cup-plugin-imageExport",
     "cup-plugin-keyEvents",
     "cup-plugin-laser",

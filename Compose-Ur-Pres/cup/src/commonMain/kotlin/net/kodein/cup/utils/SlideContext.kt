@@ -12,9 +12,15 @@ public sealed interface SlideContext {
     public operator fun <T : Any> get(key: Key<T>): T?
 }
 
+@Deprecated("Renamed SlideContext", ReplaceWith("SlideContext"), DeprecationLevel.ERROR)
+public typealias DataMap = SlideContext
+
 public data object EmptySlideContext : SlideContext {
     override fun <T : Any> get(key: SlideContext.Key<T>): T? = null
 }
+
+@Deprecated("Renamed EmptySlideContext", ReplaceWith("EmptySlideContext"), DeprecationLevel.ERROR)
+public typealias EmptyDataMap = EmptySlideContext
 
 public operator fun SlideContext.contains(key: SlideContext.Key<*>): Boolean = get(key) != null
 
@@ -40,6 +46,10 @@ public fun slideContextOf(contexts: List<SlideContext>): SlideContext = when (co
     else -> CompositeSlideContext(contexts.toImmutableList())
 }
 
+@Deprecated("Renamed slideContextOf", ReplaceWith("slideContextOf"), DeprecationLevel.ERROR)
+public fun dataMapOf(vararg entries: AbstractDataMapEntry<*>): SlideContext =
+    slideContextOf(*entries)
+
 public abstract class AbstractSlideContextEntry<T : Any> : SlideContext {
     public abstract val key: SlideContext.Key<T>
     public abstract val value: T
@@ -49,6 +59,9 @@ public abstract class AbstractSlideContextEntry<T : Any> : SlideContext {
         if (this.key == key) value as T else null
 }
 
+@Deprecated("Renamed AbstractSlideContextEntry", ReplaceWith("AbstractSlideContextEntry"), DeprecationLevel.ERROR)
+public typealias AbstractDataMapEntry<T> = AbstractSlideContextEntry<T>
+
 public abstract class SlideContextElement<T : Any>(
     override val key: SlideContext.Key<T>
 ) : AbstractSlideContextEntry<T>() {
@@ -56,9 +69,15 @@ public abstract class SlideContextElement<T : Any>(
     final override val value: T get() = this as T
 }
 
+@Deprecated("Renamed SlideContextElement", ReplaceWith("SlideContextElement<T>"), DeprecationLevel.ERROR)
+public typealias DataMapElement<T> = SlideContextElement<T>
+
 public data class SlideContextEntry<T : Any>(
     override val key: SlideContext.Key<T>,
     override val value: T
 ) : AbstractSlideContextEntry<T>()
+
+@Deprecated("Renamed SlideContextEntry", ReplaceWith("SlideContextEntry"), DeprecationLevel.ERROR)
+public typealias DataMapEntry<T> = SlideContextEntry<T>
 
 public infix fun <T : Any> SlideContext.Key<T>.sets(value: T): SlideContextEntry<T> = SlideContextEntry(this, value)

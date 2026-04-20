@@ -7,3 +7,12 @@
 * xref:laser.adoc[Plugin: Laser]
 ** xref:laser.adoc#install[Installing]
 ** xref:laser.adoc#usage[Using while presenting]
+
+* xref:image-export.adoc[Plugin: Image Export]
+** xref:image-export.adoc#install[Installing]
+** xref:image-export.adoc#usage[Exporting]
+** xref:image-export.adoc#configuring[Configuring which steps are exported]
+
+* xref:auto-move.adoc[Plugin: Auto Move]
+** xref:auto-move.adoc#install[Installing]
+** xref:auto-move.adoc#configuring[Per-step pause]

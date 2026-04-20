@@ -1,5 +1,4 @@
 = Plugin: Speaker Window
-:experimental:
 
 image:speaker-window.png[]
 
@@ -10,6 +9,9 @@ The speaker window allows you to control the presentation and:
 * See previously prepared speaker notes.
 * Draw over the slide or highlight a portion of it.
 * See a timer to ensure you're on time.
+
+IMPORTANT: This plugin only works on desktop. +
+You can safely install it on a multi-platform presentation project, but it will only activate on the desktop app.
 
 
 [[install]]
@@ -51,25 +53,14 @@ Within this speaker window, you can control the navigation of your presentation 
 [[notes]]
 == Writing speaker notes
 
-To attach speaker notes to a slide, add it its xref:core:slide.adoc#user-data[user data]:
+To attach speaker notes to a slide, add the `SpeakerNotes` xref:core:slide.adoc#context-data[context] to it.
+
+TIP: Speaker notes are written in Markdown.
 
 [source, kotlin]
 ----
 val mySlide by Slide(
-    user = SpeakerNotes {
-        Text("Some speaker notes")
-    }
-) {
-    /* slide content */
-}
-----
-
-For ease of writing, CuP provides the ability to write speaker notes in MarkDown with `SpeakerNotesMD`:
-
-[source, kotlin]
-----
-val mySlide by Slide(
-    user = SpeakerNotesMD("""
+    context = SpeakerNotes("""
         This slides has some **speaker notes** that you can see here!
 
         - You can use markdown in speaker notes

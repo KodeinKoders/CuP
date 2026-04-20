@@ -10,7 +10,7 @@ nav:
 asciidoc:
   attributes:
     branch: 'main'
-    version: '1.0.0-Beta-13'
+    version: '1.0.0-Beta-14'
     kotlin: '2.3.20'
     compose: '1.10.3'
     jdk: '21'

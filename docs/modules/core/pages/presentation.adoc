@@ -353,12 +353,12 @@ The `LocalPresentationState` composition locals allows you to access a `https://
 Have a look at the demo's `https://github.com/KodeinKoders/CuP/blob/main/Demo/src/commonMain/kotlin/utils/PresentationProgressBar.kt[PresentationProgressBar]` which displays a progress bar filled according to the presentation progress.
 
 
-[[user-data]]
+[[context-data]]
 === Getting custom values from the current slide
 
-The decoration can react to xref:slide.adoc#user-data[user data attached to the slide] being currently displayed.
+The decoration can react to xref:slide.adoc#context-data[context data attached to the slide] being currently displayed.
 
-To continue xref:slide.adoc#user-data[the slide's example] of text banner, you can retrieve the slide's user data and react upon it:
+To continue xref:slide.adoc#custom-context-data[the slide's example] of text banner, you can retrieve the slide's context data and react upon it:
 
 [source, kotlin]
 ----
@@ -366,7 +366,7 @@ Presentation(
     slides = presentationSlides,
 ) { slidesContent ->
     val presentationState = LocalPresentationState.current
-    val bannerText = presentationState.currentSlide.user[Banner]?.text
+    val bannerText = presentationState.currentSlide.context[Banner]?.text
     if (bannerText != null) {
         TextBanner(bannerText)
     }

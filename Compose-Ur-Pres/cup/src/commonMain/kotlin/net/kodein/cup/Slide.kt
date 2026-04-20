@@ -6,7 +6,12 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import net.kodein.cup.utils.*
+import net.kodein.cup.Slides.Position
+import net.kodein.cup.utils.EagerProperty
+import net.kodein.cup.utils.EmptySlideContext
+import net.kodein.cup.utils.SlideContext
+import net.kodein.cup.utils.eagerProperty
+import net.kodein.cup.utils.plus
 
 
 public sealed interface SlideGroup {
@@ -49,8 +54,8 @@ public class Slides(
     }
 }
 
-public val Slides.Position.isFirst: Boolean get() = indexInGroup == 0
-public val Slides.Position.isLast: Boolean get() = indexInGroup == lastGroupIndex
+public val Position.isFirst: Boolean get() = indexInGroup == 0
+public val Position.isLast: Boolean get() = indexInGroup == lastGroupIndex
 
 public typealias SlideContent = @Composable ColumnScope.(Int) -> Unit
 
@@ -68,6 +73,9 @@ public data class Slide internal constructor(
     public interface CacheKey
     @PluginCupAPI
     public var cache: HashMap<CacheKey, Any> = HashMap()
+
+    @Deprecated("Renamed to user", ReplaceWith("context"), DeprecationLevel.ERROR)
+    public val user: SlideContext = context
 }
 
 public fun Slide(

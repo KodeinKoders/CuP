@@ -1,0 +1,81 @@
+= Plugin: Image Export
+
+The Image Export tools allow you to export all slides as:
+
+* Multiple PNG images.
+* One PDF file.
+
+IMPORTANT: This plugin only works on desktop. +
+           You can safely install it on a multi-platform presentation project, but it will only activate on the desktop app.
+
+Unless otherwise configured, each step of each slide is rendered as an independent image.
+
+[[install]]
+== Installing
+
+First, add the plugin dependency to your project:
+
+.build.gradle.kts
+[source, kotlin, subs="attributes"]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation("net.kodein.cup:cup-plugin-image-export:{version}")
+    }
+}
+----
+
+Then, in your presentation configuration, add the Image Export plugin:
+
+[source, kotlin]
+----
+Presentation(
+    slides = presentationSlides,
+    configuration = {
+        imageExport()
+    }
+)
+----
+
+
+[[usage]]
+== Exporting
+
+In the top left icon bar, open the the image:icon/more.svg[] menu and select the image:icon/export.svg[] tool.
+
+image:image-export.png[]
+
+You can then configure:
+
+* The directory in which the PNGs or PDF will be exported.
+* The size or format and density of images (both PNGs or embedded in a PDF).
+
+Note that:
+
+* The PNG files will be named "$index-${slide.name}-${position.step}.png".
+* The PDF file will always be named "presentation.pdf".
+
+
+[[configuring]]
+== Configuring which steps are exported
+
+You can attach an `Export` xref:core:slide.adoc#context-data[context] to a slide to configure which of its steps will be exported:
+
+[source, kotlin]
+----
+val s1 by Slide(
+    stepCount = 5,
+    context = Export.ignore(1, 2) // <1>
+) {}
+val s2 by Slide(
+    stepCount = 5,
+    context = Export.only(0, 3, 4) // <2>
+) {}
+val s1 by Slide(
+    stepCount = 5,
+    context = Export.none() // <3>
+) {}
+----
+<1> Exports all steps *except* these explicitly defined.
+<2> Exports *only* steps that are explicitly defined.
+<3> The slide will not be exported at all.

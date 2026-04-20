@@ -1,0 +1,50 @@
+= Plugin: Auto Move
+
+The Auto Move plugin allows you to run your presentation automatically. +
+Each step of each slide is displayed for a fixed amount of time (default to 5 seconds) in a loop.
+
+[[install]]
+== Installing
+
+First, add the plugin dependency to your project:
+
+.build.gradle.kts
+[source, kotlin, subs="attributes"]
+----
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation("net.kodein.cup:cup-plugin-auto-move:{version}")
+    }
+}
+----
+
+Then, in your presentation configuration, add the Auto Move plugin:
+
+[source, kotlin]
+----
+Presentation(
+    slides = presentationSlides,
+    configuration = {
+        autoMove() // default pause: 5 seconds
+        // or
+        autoMove(3.seconds) // <1>
+    }
+)
+----
+<1> You can configure the duration of the pause.
+
+[[configuring]]
+== Per-step pause
+
+You can attach the `AutoMovePause` xref:core:slide.adoc#context-data[context] to a slide to configure how much time a step in a slide will be displayed:
+
+[source, kotlin]
+----
+val steps by Slide(
+    stepCount = 5,
+    context = AutoMovePause { step ->
+        if (step in 1..3) 1.seconds
+        else 5.seconds
+    },
+) {}
+----

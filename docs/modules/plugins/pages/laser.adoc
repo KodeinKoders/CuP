@@ -1,5 +1,4 @@
 = Plugin: Laser
-:experimental:
 
 The laser tools allow you to:
 
