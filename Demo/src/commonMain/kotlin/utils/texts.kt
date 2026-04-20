@@ -3,15 +3,14 @@ package utils
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.kodein.emoji.compose.WithNotoAnimatedEmoji
 import org.kodein.emoji.compose.WithPlatformEmoji
 
@@ -21,12 +20,18 @@ fun Title(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    CompositionLocalProvider(
-        LocalTextStyle provides LocalTextStyle.current.copy(
-            fontSize = 22.sp,
+//    CompositionLocalProvider(
+//        LocalTextStyle provides LocalTextStyle.current.copy(
+//            fontSize = 22.sp,
+//            fontWeight = FontWeight.Bold,
+//            textAlign = TextAlign.Center
+//        )
+//    ) {
+    ProvideTextStyle(
+        MaterialTheme.typography.titleLarge.copy(
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
-        )
+        ),
     ) {
         Column(
             content = content,

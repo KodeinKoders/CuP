@@ -42,9 +42,22 @@ You can attach the `AutoMovePause` xref:core:slide.adoc#context-data[context] to
 ----
 val steps by Slide(
     stepCount = 5,
-    context = AutoMovePause { step ->
+    context = AutoMovePause { step, default ->
         if (step in 1..3) 1.seconds
-        else 5.seconds
+        else default
     },
 ) {}
 ----
+
+[TIP]
+====
+This example can be simplified with `AutoMovePause.onSteps`:
+
+[source, kotlin]
+----
+val steps by Slide(
+    stepCount = 5,
+    context = AutoMovePause.onSteps(1..3) { 1.seconds },
+) {}
+----
+====

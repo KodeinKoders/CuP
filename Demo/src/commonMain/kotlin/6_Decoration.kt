@@ -10,12 +10,17 @@ import org.kodein.emoji.compose.NotoAnimatedEmoji
 import org.kodein.emoji.smileys_emotion.face_affection.StarStruck
 import org.kodein.emoji.symbols.arrow.DownArrow
 import net.kodein.cup.Slide
+import net.kodein.cup.automove.AutoMovePause
+import net.kodein.cup.imgexp.Export
+import net.kodein.cup.utils.plus
 import utils.TextWithEmoji
 import utils.Title
+import kotlin.time.Duration.Companion.seconds
 
 
 val decoration by Slide(
-    stepCount = 2
+    stepCount = 2,
+    context = AutoMovePause.onSteps(0) { 2.seconds} + Export.only(1)
 ) { step ->
     Title {
         Text("You can decorate and\ntheme your presentation")

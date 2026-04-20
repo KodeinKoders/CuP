@@ -20,6 +20,10 @@ public value class PresentationPosition private constructor(private val packed: 
     public operator fun compareTo(other: PresentationPosition): Int =
         if (slideIndex != other.slideIndex) slideIndex.compareTo(other.slideIndex)
         else step.compareTo(other.step)
+
+    public companion object {
+        public val START: PresentationPosition get() = PresentationPosition(0, 0)
+    }
 }
 
 @Stable
@@ -82,6 +86,11 @@ public fun PresentationState.goToPrevious() {
     if (isInOverview) goToPreviousSlide()
     else goToPreviousStep()
 }
+
+public val PresentationState.lastPosition: PresentationPosition get() = PresentationPosition(
+    slideIndex = slides.lastIndex,
+    step = slides.last().lastStep,
+)
 
 public val PresentationState.totalStepCount: Int get() =
     slides.sumOf { it.stepCount }

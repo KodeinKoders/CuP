@@ -3,7 +3,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -23,18 +29,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cup_demo.generated.resources.Res
 import cup_demo.generated.resources.logo
-import net.kodein.cup.*
+import net.kodein.cup.LocalPresentationState
+import net.kodein.cup.Presentation
+import net.kodein.cup.PresentationPreview
+import net.kodein.cup.Slide
+import net.kodein.cup.SlideGroup
+import net.kodein.cup.Slides
 import net.kodein.cup.automove.autoMove
-import net.kodein.cup.laser.laser
+import net.kodein.cup.cupApplication
+import net.kodein.cup.currentSlide
 import net.kodein.cup.imgexp.imageExport
 import net.kodein.cup.keyevents.keyEvents
+import net.kodein.cup.laser.laser
 import net.kodein.cup.speaker.speakerWindow
 import net.kodein.cup.utils.SlideContext
 import net.kodein.cup.utils.SlideContextElement
 import org.jetbrains.compose.resources.painterResource
 import org.kodein.emoji.compose.EmojiService
 import utils.PresentationProgressBar
-import kotlin.time.Duration.Companion.seconds
 
 
 @Composable
@@ -154,6 +166,7 @@ private val slides = Slides(
     sourceCode,
     modes,
     decoration,
+    export,
     kodeinKoders,
     getStarted,
 )

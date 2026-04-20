@@ -27,11 +27,8 @@ val steps by Slide(
     stepCount = 5,
     specs = SlideSpecs(endTransitions = y3DRotation),
     context = slideContextOf(
-        Export.ignore(1, 2),
-        AutoMovePause { step ->
-            if (step in 1..3) 1.seconds
-            else 5.seconds
-        }
+        Export.ignore(1..3),
+        AutoMovePause.onSteps(1..3) {  1.seconds }
     )
 ) { step ->
     Title {

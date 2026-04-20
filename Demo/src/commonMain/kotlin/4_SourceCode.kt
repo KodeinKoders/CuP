@@ -12,6 +12,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import net.kodein.cup.PreparedSlide
+import net.kodein.cup.automove.AutoMovePause
 import net.kodein.cup.imgexp.Export
 import net.kodein.cup.sa.SAStyle
 import net.kodein.cup.sa.SourceCode
@@ -19,12 +20,14 @@ import net.kodein.cup.sa.line
 import net.kodein.cup.sa.rememberSourceCode
 import net.kodein.cup.ui.SpanStyleSheet
 import net.kodein.cup.ui.styled
+import net.kodein.cup.utils.plus
 import utils.Title
+import kotlin.time.Duration.Companion.seconds
 
 
 val sourceCode by PreparedSlide(
     stepCount = 9,
-    context = Export.only(1, 3, 8)
+    context = Export.only(1, 3, 8) + AutoMovePause.onSteps(1..7) { 1.seconds }
 ) {
     @Suppress("LocalVariableName", "RemoveCurlyBracesFromTemplate")
     val sourceCode = rememberSourceCode("kotlin") {

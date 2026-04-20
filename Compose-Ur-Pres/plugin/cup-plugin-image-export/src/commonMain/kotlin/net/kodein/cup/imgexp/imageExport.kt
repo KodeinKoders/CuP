@@ -12,7 +12,9 @@ public class Export private constructor(
     internal enum class Type { Only, Ignore }
     public companion object Key : SlideContext.Key<Export> {
         public fun only(vararg steps: Int): Export = Export(steps.asList(), Type.Only)
+        public fun only(vararg steps: IntRange): Export = Export(steps.flatMap { it }, Type.Only)
         public fun ignore(vararg steps: Int): Export = Export(steps.asList(), Type.Ignore)
+        public fun ignore(vararg steps: IntRange): Export = Export(steps.flatMap { it }, Type.Ignore)
         public fun none(): Export = Export(emptyList(), Type.Only)
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import kotlinx.coroutines.delay
 import net.kodein.cup.CupKeyEvent
 import net.kodein.cup.LocalPresentationState
+import net.kodein.cup.PresentationPosition
 import net.kodein.cup.PresentationState
 import net.kodein.cup.config.CupAdditionalOverlay
 import net.kodein.cup.config.CupConfigurationBuilder
@@ -22,6 +23,7 @@ import net.kodein.cup.config.CupPlugin
 import net.kodein.cup.currentSlide
 import net.kodein.cup.goToNextStep
 import net.kodein.cup.key
+import net.kodein.cup.lastPosition
 import net.kodein.cup.type
 import net.kodein.cup.utils.SlideContext
 import net.kodein.cup.utils.SlideContextElement
@@ -30,9 +32,14 @@ import kotlin.time.Duration.Companion.seconds
 
 
 public data class AutoMovePause(
-    val pause: (Int) -> Duration,
+    val pause: (Int, Duration) -> Duration,
 ) : SlideContextElement<AutoMovePause>(Key) {
-    public companion object Key : SlideContext.Key<AutoMovePause>
+    public companion object Key : SlideContext.Key<AutoMovePause> {
+        public fun onSteps(vararg steps: Int, pause: (Duration) -> Duration): AutoMovePause =
+            AutoMovePause { step, default -> if (step in steps) pause(default) else default }
+        public fun onSteps(vararg steps: IntRange, pause: (Duration) -> Duration): AutoMovePause =
+            AutoMovePause { step, default -> if (step in steps.flatMap { it }) pause(default) else default }
+    }
 }
 
 internal class AutoMovePlugin(
@@ -51,9 +58,13 @@ internal class AutoMovePlugin(
 
         LaunchedEffect(started, presentationState.currentPosition) {
             if (started) {
-                val duration = presentationState.currentSlide.context[AutoMovePause.Key]?.pause(presentationState.currentPosition.step) ?: defaultPause
+                val duration = presentationState.currentSlide.context[AutoMovePause.Key]?.pause(presentationState.currentPosition.step, defaultPause) ?: defaultPause
                 delay(duration)
-                presentationState.goToNextStep()
+                if (presentationState.currentPosition == presentationState.lastPosition) {
+                    presentationState.goTo(PresentationPosition.START)
+                } else {
+                    presentationState.goToNextStep()
+                }
             }
         }
     }
