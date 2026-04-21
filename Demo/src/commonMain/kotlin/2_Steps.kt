@@ -41,9 +41,9 @@ val steps by Slide(
             .padding(top = 32.dp)
             .padding(horizontal = 64.dp)
     ) {
-        BulletPoint(step >= 1) { Text("This slide has 5 steps!") }
-        BulletPoint(step >= 2) { Text("You can use states to animate a lot of things and make your presentation more engaging!") }
-        BulletPoint(step >= 3) {
+        item(step >= 1) { Text("This slide has 5 steps!") }
+        item(step >= 2) { Text("You can use states to animate a lot of things and make your presentation more engaging!") }
+        item(step >= 3) {
             TextWithEmoji("...such as progressively revealing a list ${Emoji.Wink}")
         }
     }
