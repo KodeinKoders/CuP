@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.kodein.emoji.compose.WithNotoAnimatedEmoji
-import org.kodein.emoji.compose.WithPlatformEmoji
 
 
 @Composable
@@ -39,14 +36,4 @@ fun Title(
                 .padding(top = 8.dp, bottom = 16.dp)
         )
     }
-}
-
-@Composable
-fun TextWithEmoji(text: String) {
-    WithPlatformEmoji(text) { aStr, ic -> Text(text = aStr, inlineContent = ic) }
-}
-
-@Composable
-fun TextWithAnimatedEmoji(text: String) {
-    WithNotoAnimatedEmoji(text) { aStr, ic -> Text(text = aStr, inlineContent = ic) }
 }

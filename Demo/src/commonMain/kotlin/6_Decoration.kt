@@ -1,19 +1,23 @@
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.kodein.emoji.Emoji
-import org.kodein.emoji.compose.NotoAnimatedEmoji
-import org.kodein.emoji.smileys_emotion.face_affection.StarStruck
-import org.kodein.emoji.symbols.arrow.DownArrow
 import net.kodein.cup.Slide
 import net.kodein.cup.automove.AutoMovePause
 import net.kodein.cup.imgexp.Export
 import net.kodein.cup.utils.plus
-import utils.TextWithEmoji
+import org.kodein.emoji.Emoji
+import org.kodein.emoji.compose.NotoAnimatedEmoji
+import org.kodein.emoji.compose.m3.TextWithNotoImageEmoji
+import org.kodein.emoji.smileys_emotion.face_affection.StarStruck
+import org.kodein.emoji.symbols.arrow.DownArrow
 import utils.Title
 import kotlin.time.Duration.Companion.seconds
 
@@ -35,7 +39,7 @@ val decoration by Slide(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            TextWithEmoji("For example the ${Emoji.DownArrow} light purple bar is not standard and part of our theming.")
+            TextWithNotoImageEmoji("For example the ${Emoji.DownArrow} light purple bar is not standard and part of our theming.")
             Spacer(Modifier.height(16.dp))
             NotoAnimatedEmoji(Emoji.StarStruck, Modifier.size(64.dp))
         }

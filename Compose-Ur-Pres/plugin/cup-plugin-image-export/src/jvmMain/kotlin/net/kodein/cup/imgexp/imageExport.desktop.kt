@@ -1,8 +1,11 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package net.kodein.cup.imgexp
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.NoPhotography
 import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -26,12 +28,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,9 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.rememberWindowState
-import kotlinx.coroutines.Dispatchers
+import com.chrisjenx.compose2pdf.RenderMode
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.kodein.cup.LocalPresentationState
 import net.kodein.cup.PresentationPosition
 import net.kodein.cup.PresentationState
@@ -51,366 +52,240 @@ import net.kodein.cup.config.CupAdditionalOverlay
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupPlugin
 import net.kodein.cup.copyFixed
-import net.kodein.cup.imgexp.utils.directoryDialog
 import net.kodein.cup.utils.CupToolsColors
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
-import org.apache.pdfbox.pdmodel.PDPageContentStream
-import org.apache.pdfbox.pdmodel.common.PDRectangle
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
-import java.awt.Desktop
-import java.nio.file.Path
 import java.text.DecimalFormat
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.createDirectories
-import kotlin.io.path.deleteRecursively
-import kotlin.io.path.writeBytes
 
 
-private const val in2mm = 25.4f
+private class SizeState {
+    var width by mutableStateOf("297")
+    var height by mutableStateOf("210")
+    var density by mutableStateOf("300")
+    var unit by mutableStateOf(Unit.MM)
 
-@OptIn(ExperimentalPathApi::class)
-private suspend fun export(
-    state: PresentationState,
-    dir: Path,
-    widthInch: Float,
-    heightInch: Float,
-    density: Int,
-    exportPngs: Boolean,
-    exportPdf: Boolean,
-    exporting: (Pair<String, Float>) -> Unit
-) {
-    dir.deleteRecursively()
-    dir.createDirectories()
-
-    val sceneWidth = (widthInch * density).toInt()
-    val sceneHeight = (heightInch * density).toInt()
-
-    val toExport = state.slides.flatMapIndexed { slideIndex, slide ->
-        val slideExport = slide.context[Export.Key]
-        when (slideExport?.type) {
-            Export.Type.Only -> (0..<slide.stepCount).filter { it in slideExport.steps }
-            Export.Type.Ignore -> (0..<slide.stepCount).filterNot { it in slideExport.steps }
-            null -> (0..<slide.stepCount)
-        }.map { PresentationPosition(slideIndex, it) }
+    enum class Unit(val inInch: Float, format: String) {
+        MM(25.4f, "0"),
+        IN(1f, "0.#"),
+        ;
+        val format = DecimalFormat(format)
     }
 
-    (if (exportPdf) PDDocument() else null).use { pdfDocument ->
-        toExport.forEachIndexed { index, position ->
-            val slide = state.slides[position.slideIndex]
-            exporting("${slide.name} - ${position.step}" to (index.toFloat() / (toExport.size + 1).toFloat()))
-            val imageState = state.copyFixed().copy(
-                currentPosition = position,
-                inOverview = false,
-                forward = true,
+    fun convertTo(value: Unit) {
+        if (value != unit) {
+            width = width.toFloatOrNull()?.let { it * value.inInch / unit.inInch }?.let { value.format.format(it) } ?: width
+            height = height.toFloatOrNull()?.let { it * value.inInch / unit.inInch }?.let { value.format.format(it) } ?: height
+        }
+        unit = value
+    }
+
+    val isFormValid: Boolean
+        get() = width.toFloatOrNull() != null && width.toFloat() != 0f
+                &&  height.toFloatOrNull() != null && height.toFloat() != 0f
+                &&  density.toIntOrNull() != null && density.toInt() != 0
+}
+
+@Composable
+private fun SizeForm(
+    state: SizeState,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        RadioButton(
+            selected = state.width == "297" && state.height == "210" && state.unit == SizeState.Unit.MM,
+            onClick = {
+                state.width = "297"
+                state.height = "210"
+                state.unit = SizeState.Unit.MM
+            }
+        )
+        Text("A4")
+        Spacer(Modifier.width(24.dp))
+        RadioButton(
+            selected = state.width == "11" && state.height == "8.5" && state.unit == SizeState.Unit.IN,
+            onClick = {
+                state.width = "11"
+                state.height = "8.5"
+                state.unit = SizeState.Unit.IN
+            }
+        )
+        Text("Letter")
+        Spacer(Modifier.width(24.dp))
+        RadioButton(
+            selected = state.width == "12" && state.height == "9" && state.unit == SizeState.Unit.IN,
+            onClick = {
+                state.width = "12"
+                state.height = "9"
+                state.unit = SizeState.Unit.IN
+            }
+        )
+        Text("4:3")
+        Spacer(Modifier.width(24.dp))
+        RadioButton(
+            selected = state.width == "16" && state.height == "9" && state.unit == SizeState.Unit.IN,
+            onClick = {
+                state.width = "16"
+                state.height = "9"
+                state.unit = SizeState.Unit.IN
+            }
+        )
+        Text("16:9")
+    }
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = state.width,
+            onValueChange = { state.width = it },
+            isError = state.width.toFloatOrNull() == null,
+            label = { Text("Width") },
+            singleLine = true,
+            modifier = Modifier.width(100.dp)
+        )
+        Text("x")
+        OutlinedTextField(
+            value = state.height,
+            onValueChange = { state.height = it },
+            isError = state.height.toFloatOrNull() == null,
+            label = { Text("Height") },
+            singleLine = true,
+            modifier = Modifier.width(100.dp)
+        )
+        Spacer(Modifier.width(4.dp))
+        var expanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+            modifier = Modifier.width(100.dp)
+        ) {
+            OutlinedTextField(
+                value = state.unit.name.lowercase(),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Unit") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                modifier = Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    .pointerHoverIcon(PointerIcon.Default, overrideDescendants = true)
             )
-            val png = renderCupSlide(sceneWidth, sceneHeight, imageState)
-                ?: error("Could not generate image for${slide.name} - ${position.step}")
-
-            withContext(Dispatchers.IO) {
-                if (exportPngs) {
-                    dir.resolve("$index-${slide.name}-${position.step}.png").writeBytes(png)
-                }
-
-                if (pdfDocument != null) {
-                    val pdfPage = PDPage(PDRectangle(widthInch * 72f, heightInch * 72f))
-                    val pdfImage = PDImageXObject.createFromByteArray(pdfDocument, png, "$index-${slide.name}-${position.step}.png")
-                    PDPageContentStream(pdfDocument, pdfPage).use { stream ->
-                        stream.drawImage(pdfImage, 0f, 0f, widthInch * 72f, heightInch * 72f)
-                    }
-                    pdfDocument.addPage(pdfPage)
-                }
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("mm") },
+                    onClick = { state.convertTo(SizeState.Unit.MM) ; expanded = false }
+                )
+                DropdownMenuItem(
+                    text = { Text("in") },
+                    onClick = { state.convertTo(SizeState.Unit.IN) ; expanded = false }
+                )
             }
         }
-        if (pdfDocument != null) {
-            exporting("presentation.pdf" to (toExport.size.toFloat() / (toExport.size + 1).toFloat()))
-            pdfDocument.save(dir.resolve("presentation.pdf").absolutePathString())
-            exporting("presentation.pdf" to 1f)
-        } else {
-            exporting("PNGs" to 1f)
-        }
+        Text("at")
+        OutlinedTextField(
+            value = state.density,
+            onValueChange = { state.density = it },
+            isError = state.density.toIntOrNull() == null,
+            label = { Text("Density") },
+            singleLine = true,
+            modifier = Modifier.width(100.dp)
+        )
+        Text("dpi")
     }
 }
 
-internal data class ExportConfig(
-    val dir: Path,
-    val widthInch: Float,
-    val heightInch: Float,
-    val density: Int,
-    val pngs: Boolean,
-    val pdf: Boolean,
-)
+private class ExporterState(
+    val allExporters: List<Exporter>
+) {
+    var exporter: Exporter by mutableStateOf(allExporters.first())
+}
 
 @Composable
-private fun ExportForm(
-    onExport: (ExportConfig) -> Unit
+private fun ColumnScope.ExporterForm(
+    exporterState: ExporterState,
 ) {
-    val scope = rememberCoroutineScope()
+    var expanded by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = Modifier.width(256.dp)
+    ) {
+        OutlinedTextField(
+            value = exporterState.exporter.format,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Export as") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier = Modifier
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .pointerHoverIcon(PointerIcon.Default, overrideDescendants = true)
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            exporterState.allExporters.forEach {
+                DropdownMenuItem(
+                    text = { Text(it.format) },
+                    onClick = { exporterState.exporter = it ; expanded = false }
+                )
+            }
+        }
+    }
+    with (exporterState.exporter) { Form() }
+}
 
+internal sealed interface ExportStatus {
+    data object Configuring : ExportStatus
+    data class InProgress(val step: String?, val progress: Float) : ExportStatus
+    data object Finished : ExportStatus
+}
+
+@Composable
+private fun ImageExportWindow(
+    sizeState: SizeState,
+    exporterState: ExporterState,
+    export: () -> Unit,
+    exportStatus: ExportStatus,
+) {
     Column(
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
-        var dir: String by remember { mutableStateOf(System.getProperty("user.dir") + "/cup-export") }
-        var width by remember { mutableStateOf("297") }
-        var height by remember { mutableStateOf("210") }
-        var unit by remember { mutableStateOf("mm") }
-        var density by remember { mutableStateOf("300") }
-        var exportPngs by remember { mutableStateOf(false) }
-        var exportPdf by remember { mutableStateOf(true) }
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextField(
-                value = dir,
-                onValueChange = { dir = it },
-                label = { Text("Export directory") },
-                singleLine = true,
-                modifier = Modifier.weight(1f)
-            )
-            Button(
-                onClick = {
-                    scope.launch {
-                        val path = directoryDialog("Select export directory")
-                        if (path != null) {
-                            dir = path.absolutePathString()
-                        }
-                    }
-                }
-            ) {
-                Text("...")
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(
-                selected = width == "297" && height == "210" && unit == "mm",
-                onClick = {
-                    width = "297"
-                    height = "210"
-                    unit = "mm"
-                }
-            )
-            Text("A4")
-            Spacer(Modifier.width(24.dp))
-            RadioButton(
-                selected = width == "11" && height == "8.5" && unit == "in",
-                onClick = {
-                    width = "11"
-                    height = "8.5"
-                    unit = "in"
-                }
-            )
-            Text("Letter")
-            Spacer(Modifier.width(24.dp))
-            RadioButton(
-                selected = width == "12" && height == "9" && unit == "in",
-                onClick = {
-                    width = "12"
-                    height = "9"
-                    unit = "in"
-                }
-            )
-            Text("4:3")
-            Spacer(Modifier.width(24.dp))
-            RadioButton(
-                selected = width == "16" && height == "9" && unit == "in",
-                onClick = {
-                    width = "16"
-                    height = "9"
-                    unit = "in"
-                }
-            )
-            Text("16:9")
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = width,
-                onValueChange = { width = it },
-                isError = width.toFloatOrNull() == null,
-                label = { Text("Width") },
-                singleLine = true,
-                modifier = Modifier.width(100.dp)
-            )
-            Text("x")
-            OutlinedTextField(
-                value = height,
-                onValueChange = { height = it },
-                isError = height.toFloatOrNull() == null,
-                label = { Text("Height") },
-                singleLine = true,
-                modifier = Modifier.width(100.dp)
-            )
-            Spacer(Modifier.width(4.dp))
-            var expanded by remember { mutableStateOf(false) }
-            @OptIn(ExperimentalMaterial3Api::class)
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = it },
-                modifier = Modifier.width(100.dp)
-            ) {
-                OutlinedTextField(
-                    value = unit,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Unit") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier
-                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                        .pointerHoverIcon(PointerIcon.Default, overrideDescendants = true)
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    val mmFormat = remember { DecimalFormat("0") }
-                    DropdownMenuItem(
-                        text = {
-                            Text("mm")
-                        },
-                        onClick = {
-                            if (unit == "in") {
-                                width = width.toFloatOrNull()?.let { it * in2mm }?.let { mmFormat.format(it) } ?: width
-                                height = height.toFloatOrNull()?.let { it * in2mm }?.let { mmFormat.format(it) } ?: height
-                            }
-                            unit = "mm"
-                        }
-                    )
-                    val inFormat = remember { DecimalFormat("0.#") }
-                    DropdownMenuItem(
-                        text = {
-                            Text("in")
-                        },
-                        onClick = {
-                            if (unit == "mm") {
-                                width = width.toFloatOrNull()?.let { it / in2mm }?.let { inFormat.format(it) } ?: width
-                                height = height.toFloatOrNull()?.let { it / in2mm }?.let { inFormat.format(it) } ?: height
-                            }
-                            unit = "in"
-                        }
-                    )
-                }
-            }
-            Text("at")
-            OutlinedTextField(
-                value = density,
-                onValueChange = { density = it },
-                isError = density.toIntOrNull() == null,
-                label = { Text("Density") },
-                singleLine = true,
-                modifier = Modifier.width(100.dp)
-            )
-            Text("dpi")
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(
-                checked = exportPngs,
-                onCheckedChange = { exportPngs = it },
-            )
-            Text("PNGs")
-            Spacer(Modifier.width(24.dp))
-            Checkbox(
-                checked = exportPdf,
-                onCheckedChange = { exportPdf = it },
-            )
-            Text("PDF")
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                scope.launch {
-                    onExport(
-                        ExportConfig(
-                            dir = Path(dir),
-                            widthInch = width.toFloat() / (if (unit == "mm") in2mm else 1f),
-                            heightInch = height.toFloat() / (if (unit == "mm") in2mm else 1f),
-                            density = density.toInt(),
-                            pngs = exportPngs,
-                            pdf = exportPdf,
-                        )
-                    )
-                }
-            },
-            enabled =
-                    width.toFloatOrNull() != null && width.toFloat() != 0f
-                &&  height.toFloatOrNull() != null && height.toFloat() != 0f
-                &&  density.toIntOrNull() != null && density.toInt() != 0
-                &&  (exportPngs || exportPdf)
-        ) {
-            Text("EXPORT")
-        }
-    }
-}
-
-@Composable
-private fun ImageExportWindow() {
-    val state = LocalPresentationState.current
-
-    val scope = rememberCoroutineScope()
-    var exporting: Pair<String, Float>? by remember { mutableStateOf(null) }
-    var exportDir: Path by remember { mutableStateOf(Path(".")) }
-
-    if (exporting == null) {
-        ExportForm { config ->
-            exportDir = config.dir
-            scope.launch {
-                export(
-                    state = state,
-                    dir = config.dir,
-                    widthInch = config.widthInch,
-                    heightInch = config.heightInch,
-                    density = config.density,
-                    exportPngs = config.pngs,
-                    exportPdf = config.pdf,
-                ) {
-                    exporting = it
-                }
-            }
-        }
-    } else {
-        val (step, progress) = exporting!!
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Text(
-                text = if (progress == 1f) "Exported!" else "Exporting",
-                fontSize = 48.sp
-            )
-            LinearProgressIndicator(
-                progress = { progress }
-            )
-            Text(
-                text = step,
-                fontSize = 16.sp
-            )
-            if (progress == 1f) {
+        when (exportStatus) {
+            ExportStatus.Configuring -> {
+                SizeForm(sizeState)
+                Spacer(Modifier.height(24.dp))
+                ExporterForm(exporterState)
+                Spacer(Modifier.height(24.dp))
                 Button(
-                    onClick = {
-                        Desktop.getDesktop().open(exportDir.toFile())
-                    },
+                    onClick = { export() },
+                    enabled = sizeState.isFormValid && exporterState.exporter.isFormValid
                 ) {
-                    Text("OPEN")
+                    Text("EXPORT")
                 }
+            }
+            is ExportStatus.InProgress -> {
+                Text(
+                    text = exporterState.exporter.format,
+                    fontSize = 48.sp,
+                )
+                LinearProgressIndicator(
+                    progress = { exportStatus.progress }
+                )
+                Text(
+                    text = exportStatus.step ?: " ",
+                    fontSize = 16.sp
+                )
+            }
+            ExportStatus.Finished -> {
+                Text(
+                    text = exporterState.exporter.format,
+                    fontSize = 48.sp,
+                )
+                with(exporterState.exporter) { Done() }
             }
         }
     }
@@ -420,6 +295,53 @@ internal class ImageExportPlugin : CupPlugin {
 
     private var isOpen by mutableStateOf(false)
 
+    private val exporterState = ExporterState(
+        allExporters = listOf(
+            PngExporter(),
+            PdfImageExporter("PDF", RenderMode.RASTER, "presentation.pdf"),
+            // At the moment, vector mode produces bad results, so it is disabled.
+            // Compared to Raster mode:
+            // - It does not render Lottie animated images first frame.
+            // - It does not support platform emoji (in Demo slide 1, using TextWithPlatformEmoji instead of TextWithNotoImageEmoji makes the renderer crash).
+            // - It does not support XML vectors (in Demo, the Kodein logo is not displayed behind all slides, and in slide 8, the Kodein logo is not shown).
+            // - It ignores icon tint (in Demo, all icons are black when they should be white-ish).
+            // - It does not support multiple fonts (the Compose2Pdf API only supports one font family).
+            // PdfImageExporter("Vector PDF", RenderMode.VECTOR, "presentation.pdf"),
+        )
+    )
+
+    private val sizeState = SizeState()
+
+    private suspend fun export(
+        presentationState: PresentationState,
+        setStatus: (ExportStatus) -> Unit,
+    ) {
+        setStatus(ExportStatus.InProgress(null, 0f))
+        exporterState.exporter.export(
+            size = Exporter.Size(
+                widthIn = sizeState.width.toFloat() / sizeState.unit.inInch,
+                heightIn = sizeState.height.toFloat() / sizeState.unit.inInch,
+                density = sizeState.density.toInt(),
+            ),
+            states = presentationState.slides.flatMapIndexed { slideIndex, slide ->
+                val slideExport = slide.context[Export.Key]
+                when (slideExport?.type) {
+                    Export.Type.Only -> (0..<slide.stepCount).filter { it in slideExport.steps }
+                    Export.Type.Ignore -> (0..<slide.stepCount).filterNot { it in slideExport.steps }
+                    null -> (0..<slide.stepCount)
+                }.map {
+                    presentationState.copyFixed(
+                        currentPosition = PresentationPosition(slideIndex, it),
+                        isInOverview = false,
+                        forward = true,
+                    )
+                }
+            },
+            progress = setStatus,
+        )
+        setStatus(ExportStatus.Finished)
+    }
+
     @Composable
     override fun BoxScope.Content() {
         if (isOpen) {
@@ -428,9 +350,25 @@ internal class ImageExportPlugin : CupPlugin {
                 title = "Export presentation",
                 onCloseRequest = { isOpen = false },
             ) {
+                var exportStatus: ExportStatus by remember { mutableStateOf(ExportStatus.Configuring) }
+                val presentationState by rememberUpdatedState(LocalPresentationState.current)
+                val scope = rememberCoroutineScope()
+
                 MaterialTheme(colorScheme = CupToolsColors.scheme) {
                     Surface(Modifier.fillMaxSize()) {
-                        ImageExportWindow()
+                        ImageExportWindow(
+                            sizeState = sizeState,
+                            exporterState = exporterState,
+                            export = {
+                                scope.launch {
+                                    export(
+                                        presentationState = presentationState,
+                                        setStatus = { exportStatus = it }
+                                    )
+                                }
+                            },
+                            exportStatus = exportStatus,
+                        )
                     }
                 }
             }

@@ -1,18 +1,18 @@
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.KeyboardReturn
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.SpaceBar
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.kodein.cup.Slide
+import net.kodein.cup.ui.styled
 import org.kodein.emoji.Emoji
 import org.kodein.emoji.compose.NotoAnimatedEmoji
 import org.kodein.emoji.people_body.hand_fingers_open.WavingHand
-import net.kodein.cup.Slide
-import net.kodein.cup.ui.styled
 import utils.InlineIcon
 import utils.Title
 

@@ -118,7 +118,11 @@ public data class FixedPresentationState(
         set(value) { error("Cannot mutate a FixedPresentationState") }
 }
 
-public fun PresentationState.copyFixed(): FixedPresentationState =
+public fun PresentationState.copyFixed(
+    currentPosition: PresentationPosition = this.currentPosition,
+    forward: Boolean = this.forward,
+    isInOverview: Boolean = this.isInOverview,
+): FixedPresentationState =
     FixedPresentationState(
         currentPosition = currentPosition,
         forward = forward,
