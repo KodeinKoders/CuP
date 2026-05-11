@@ -73,9 +73,6 @@ public data class Slide internal constructor(
     public interface CacheKey
     @PluginCupAPI
     public var cache: HashMap<CacheKey, Any> = HashMap()
-
-    @Deprecated("Renamed to user", ReplaceWith("context"), DeprecationLevel.ERROR)
-    public val user: SlideContext = context
 }
 
 public fun Slide(

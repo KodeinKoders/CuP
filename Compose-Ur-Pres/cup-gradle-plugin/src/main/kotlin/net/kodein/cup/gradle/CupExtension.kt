@@ -56,7 +56,12 @@ public abstract class CupExtension internal constructor(
     }
 
     @OptIn(ExperimentalWasmDsl::class)
-    public fun targetWeb() {
+    public fun targetWeb(withJsCompat: Boolean = true) {
+        val extractIndexHtml = project.tasks.register<ExtractResources>("extractIndexHtml") {
+            inputPaths.set(listOf("html/index.html", "html/icon.png"))
+            outputDirectory.set(project.layout.buildDirectory.dir("cup"))
+        }
+
         kotlin.wasmJs {
             browser {
                 runTask { mainOutputFileName.set("presentation.js") }
@@ -64,27 +69,24 @@ public abstract class CupExtension internal constructor(
             }
             binaries.executable()
         }
-
-        kotlin.js {
-            browser {
-                runTask { mainOutputFileName.set("presentation.js") }
-                webpackTask { mainOutputFileName.set("presentation.js") }
-            }
-            binaries.executable()
-            useCommonJs()
-        }
-
-        val extractIndexHtml = project.tasks.register<ExtractResources>("extractIndexHtml") {
-            inputPaths.set(listOf("html/index.html", "html/icon.png"))
-            outputDirectory.set(project.layout.buildDirectory.dir("cup"))
-        }
         project.tasks.named<ProcessResources>("wasmJsProcessResources") {
             dependsOn(extractIndexHtml)
             from(extractIndexHtml.get().outputDirectory.dir("html"))
         }
-        project.tasks.named<ProcessResources>("jsProcessResources") {
-            dependsOn(extractIndexHtml)
-            from(extractIndexHtml.get().outputDirectory.dir("html"))
+
+        if (withJsCompat) {
+            kotlin.js {
+                browser {
+                    runTask { mainOutputFileName.set("presentation.js") }
+                    webpackTask { mainOutputFileName.set("presentation.js") }
+                }
+                binaries.executable()
+                useCommonJs()
+            }
+            project.tasks.named<ProcessResources>("jsProcessResources") {
+                dependsOn(extractIndexHtml)
+                from(extractIndexHtml.get().outputDirectory.dir("html"))
+            }
         }
     }
 }

@@ -18,11 +18,6 @@ import androidx.compose.ui.unit.dp
 public class BulletPointsBuilder {
     internal val contents = ArrayList<Pair<Boolean, @Composable () -> Unit>>()
 
-    @Deprecated("Use item instead", ReplaceWith("item(visible, content)"), DeprecationLevel.ERROR)
-    public fun BulletPoint(visible: Boolean = true, content: @Composable () -> Unit) {
-        item(visible, content)
-    }
-
     public fun item(visible: Boolean = true, content: @Composable () -> Unit) {
         contents += visible to content
     }
