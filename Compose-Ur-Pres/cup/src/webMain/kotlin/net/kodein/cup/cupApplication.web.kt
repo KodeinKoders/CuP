@@ -22,7 +22,7 @@ public actual fun cupPlatformApplication(
     val (initialName, initialStep) = initialStateFromHash()
     document.title = title
     ComposeViewport(
-        document.body!!
+        document.body!!.id
     ) {
         withPresentationState(
             initial = { slides -> slides.indexOfFirst { it.name == initialName } to initialStep }

@@ -17,6 +17,11 @@ kotlin {
         browser()
     }
 
+    js {
+        browser()
+        useCommonJs()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -31,7 +36,8 @@ kotlin {
             implementation(libs.kotlinx.collectionsImmutable)
         }
 
-        named("wasmJsMain").dependencies {
+        webMain.dependencies {
+            implementation(libs.kotlinx.browser)
             implementation(npm("ismobilejs", libs.versions.npm.ismobilejs.get()))
         }
 
@@ -46,7 +52,7 @@ kotlin {
 
 mavenPublishing {
     pom {
-        name.set("Compose ur Pres")
-        description.set("A framework to program a presentation slide deck with Compose multiplatform.")
+        name = "Compose ur Pres"
+        description = "A framework to program a presentation slide deck with Compose multiplatform."
     }
 }

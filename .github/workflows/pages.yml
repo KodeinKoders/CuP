@@ -45,9 +45,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Generate Demo web export
-        run: ./gradlew :Demo:wasmJsBrowserDistribution
+        run: ./gradlew :Demo:composeCompatibilityBrowserDistribution
       - name: Copy Demo web export to site directory
-        run: cp -r Demo/build/dist/wasmJs/productionExecutable build/site/Demo
+        run: cp -r Demo/build/dist/composeWebCompatibility/productionExecutable build/site/Demo
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v2

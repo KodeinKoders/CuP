@@ -17,6 +17,11 @@ kotlin {
         browser()
     }
 
+    js {
+        browser()
+        useCommonJs()
+    }
+
     explicitApi()
 
     sourceSets {
@@ -35,7 +40,7 @@ kotlin {
             implementation(libs.graalvm.js)
         }
 
-        named("wasmJsMain").dependencies {
+        webMain.dependencies {
             implementation(npm("highlight.js", libs.versions.npm.highlightjs.get()))
         }
 

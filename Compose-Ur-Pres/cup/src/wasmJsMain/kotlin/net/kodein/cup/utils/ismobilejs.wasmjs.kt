@@ -13,4 +13,4 @@ private external interface MobileDetectionResult {
 @JsModule("ismobilejs")
 private external fun isMobile(navigator: Navigator): MobileDetectionResult
 
-internal fun isAnyMobile() = isMobile(window.navigator).any
+internal actual fun isAnyMobile(): Boolean = isMobile(window.navigator).any

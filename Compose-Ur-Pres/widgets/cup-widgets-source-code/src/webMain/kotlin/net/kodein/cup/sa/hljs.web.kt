@@ -1,6 +1,16 @@
-@file:OptIn(ExperimentalWasmJsInterop::class)
+@file:OptIn(ExperimentalWasmJsInterop::class, ExperimentalWasmJsInterop::class)
 
 package net.kodein.cup.sa
+
+import kotlin.js.ExperimentalWasmJsInterop
+import kotlin.js.JsAny
+import kotlin.js.JsArray
+import kotlin.js.JsModule
+import kotlin.js.JsString
+import kotlin.js.get
+import kotlin.js.js
+import kotlin.js.length
+import kotlin.js.toJsString
 
 private external interface JsHljsResult {
     val value: JsString
@@ -25,7 +35,7 @@ private class WasmHljs : PlatformHljs {
 
     override suspend fun listLanguages(): List<String> {
         val jsArray = hljs.listLanguages()
-        return Array(jsArray.length) { jsArray.get(it).toString() }.toList()
+        return Array(jsArray.length) { jsArray[it].toString() }.toList()
     }
 }
 

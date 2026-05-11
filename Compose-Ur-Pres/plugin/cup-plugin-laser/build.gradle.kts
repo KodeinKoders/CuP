@@ -17,6 +17,11 @@ kotlin {
         browser()
     }
 
+    js {
+        browser()
+        useCommonJs()
+    }
+
     explicitApi()
 
     sourceSets {
