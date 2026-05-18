@@ -25,7 +25,6 @@ public expect val CupKeyEvent.type: KeyEventType
 public fun PresentationKeyHandler(
     getState: () -> PresentationState?,
 ): (CupKeyEvent) -> Boolean {
-    val fullScreenToggle by rememberUpdatedState(LocalFullScreenState.current?.second ?: {})
     val ltr by rememberUpdatedState(LocalLayoutDirection.current == LayoutDirection.Ltr)
 
     return handler@ { event ->
@@ -75,9 +74,6 @@ public fun PresentationKeyHandler(
             Key.DirectionUp -> {
                 if (event.isShiftPressed) state.goToPreviousSlide()
                 else state.goToPreviousStep()
-            }
-            Key.F -> {
-                fullScreenToggle()
             }
             Key.Escape -> {
                 state.isInOverview = !state.isInOverview

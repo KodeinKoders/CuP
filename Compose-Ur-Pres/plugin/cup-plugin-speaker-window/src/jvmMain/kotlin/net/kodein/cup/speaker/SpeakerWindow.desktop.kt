@@ -23,7 +23,9 @@ import net.kodein.cup.laser.LaserDisplay
 import net.kodein.cup.type
 
 
-internal class SpeakerNotesPlugin : CupPlugin {
+internal class SpeakerNotesPlugin(
+    val key: Pair<Key, String>?,
+) : CupPlugin {
 
     var isOpen by mutableStateOf(false)
 
@@ -48,7 +50,7 @@ internal class SpeakerNotesPlugin : CupPlugin {
     override fun overlay(state: PresentationState): List<CupAdditionalOverlay> = listOf(
         CupAdditionalOverlay(
             text = "Speaker notes",
-            keys = "S",
+            keys = key?.second,
             onClick = { isOpen = !isOpen },
             icon = if (isOpen) Icons.Rounded.SpeakerNotesOff else Icons.AutoMirrored.Rounded.SpeakerNotes
         )
@@ -56,7 +58,7 @@ internal class SpeakerNotesPlugin : CupPlugin {
 
     override fun onKeyEvent(event: CupKeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false
-        if (event.key == Key.S) {
+        if (event.key == key?.first) {
             isOpen = !isOpen
             return true
         }
@@ -64,8 +66,10 @@ internal class SpeakerNotesPlugin : CupPlugin {
     }
 }
 
-public actual fun CupConfigurationBuilder.speakerWindow() {
-    plugin(SpeakerNotesPlugin())
+public actual fun CupConfigurationBuilder.speakerWindow(
+    key: Pair<Key, String>?,
+) {
+    plugin(SpeakerNotesPlugin(key))
 }
 
 internal val LocalIsInSpeakerWindow = compositionLocalOf { false }

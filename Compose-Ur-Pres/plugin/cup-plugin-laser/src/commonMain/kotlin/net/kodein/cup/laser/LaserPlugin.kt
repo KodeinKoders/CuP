@@ -24,7 +24,11 @@ import net.kodein.cup.key
 import net.kodein.cup.type
 
 
-internal class LaserPlugin : CupPlugin {
+internal class LaserPlugin(
+    val pointerKey: Pair<Key, String>?,
+    val highlightKey: Pair<Key, String>?,
+    val closeKey: Pair<Key, String>?,
+) : CupPlugin {
 
     private var laser: Laser? by mutableStateOf(null)
 
@@ -51,7 +55,7 @@ internal class LaserPlugin : CupPlugin {
             return listOf(
                 CupAdditionalOverlay(
                     text = "Close laser",
-                    keys = "Esc",
+                    keys = closeKey?.second,
                     onClick = { laser = null },
                     icon = Icons.Rounded.Close
                 )
@@ -60,13 +64,13 @@ internal class LaserPlugin : CupPlugin {
         return listOf(
             CupAdditionalOverlay(
                 text = "Laser: Pointer & free draw",
-                keys = "P",
+                keys = pointerKey?.second,
                 onClick = { laser = Laser.Pointer() },
                 icon = Icons.Rounded.Draw
             ),
             CupAdditionalOverlay(
                 text = "Laser: Highlight rectangle",
-                keys = "H",
+                keys = highlightKey?.second,
                 onClick = { laser = Laser.Highlight() },
                 icon = Icons.Rounded.Rectangle
             ),
@@ -75,18 +79,22 @@ internal class LaserPlugin : CupPlugin {
 
     override fun onKeyEvent(event: CupKeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false
-        laser = when {
-            event.key == Key.Escape && laser != null -> null
-            event.key == Key.P && laser == null -> Laser.Pointer()
-            event.key == Key.P && laser is Laser.Pointer -> null
-            event.key == Key.H && laser == null -> Laser.Highlight()
-            event.key == Key.H && laser is Laser.Highlight -> null
+        laser = when (event.key) {
+            closeKey?.first if laser != null -> null
+            pointerKey?.first if laser == null -> Laser.Pointer()
+            pointerKey?.first if laser is Laser.Pointer -> null
+            highlightKey?.first if laser == null -> Laser.Highlight()
+            highlightKey?.first if laser is Laser.Highlight -> null
             else -> return false
         }
         return true
     }
 }
 
-public fun CupConfigurationBuilder.laser() {
-    plugin(LaserPlugin())
+public fun CupConfigurationBuilder.laser(
+    pointerKey: Pair<Key, String>? = Key.P to "P",
+    highlightKey: Pair<Key, String>? = Key.H to "H",
+    closeKey: Pair<Key, String>? = Key.Escape to "Esc",
+) {
+    plugin(LaserPlugin(pointerKey, highlightKey, closeKey))
 }

@@ -43,7 +43,8 @@ public data class AutoMovePause(
 }
 
 internal class AutoMovePlugin(
-    private val defaultPause: Duration,
+    val defaultPause: Duration,
+    val key: Pair<Key, String>?,
 ) : CupPlugin {
 
     var started by mutableStateOf(false)
@@ -75,13 +76,13 @@ internal class AutoMovePlugin(
             onClick = { started = !started },
             icon = if (started) Icons.Rounded.StopCircle else Icons.Rounded.PlayCircle,
             inMenu = false,
-            keys = "A",
+            keys = key?.second,
         )
     )
 
     override fun onKeyEvent(event: CupKeyEvent): Boolean {
         if (event.type != KeyEventType.KeyDown) return false
-        if (event.key == Key.A) {
+        if (event.key == key?.first) {
             started = !started
             return true
         }
@@ -91,6 +92,7 @@ internal class AutoMovePlugin(
 
 public fun CupConfigurationBuilder.autoMove(
     pause: Duration = 5.seconds,
+    key: Pair<Key, String>? = Key.A to "A",
 ) {
-    plugin(AutoMovePlugin(pause))
+    plugin(AutoMovePlugin(pause, key))
 }

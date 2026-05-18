@@ -2,6 +2,7 @@ package net.kodein.cup.speaker
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.input.key.Key
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import net.kodein.cup.config.CupConfigurationBuilder
@@ -22,7 +23,9 @@ public class SpeakerNotes(
     public constructor(md: String): this(listOf(allSteps to md))
 }
 
-public expect fun CupConfigurationBuilder.speakerWindow()
+public expect fun CupConfigurationBuilder.speakerWindow(
+    key: Pair<Key, String>? = Key.S to "S",
+)
 
 @Composable
 public expect fun isInSpeakerWindow(): Boolean

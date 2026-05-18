@@ -1,6 +1,14 @@
 package net.kodein.cup.desktop
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -12,10 +20,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import net.kodein.cup.LocalFullScreenState
+import net.kodein.cup.PluginCupAPI
 import java.io.IOException
 import java.util.*
-import kotlin.io.path.*
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
+import kotlin.io.path.reader
+import kotlin.io.path.writer
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -112,13 +124,12 @@ internal fun rememberCupSavedWindowState(): Pair<Boolean, WindowState> {
     return (initial != null) to state
 }
 
+@PluginCupAPI
+public val LocalCupWindowState: ProvidableCompositionLocal<WindowState?> = staticCompositionLocalOf { null }
+
 @Composable
 public fun withCupManagedWindowState(windowState: WindowState, content: @Composable () -> Unit) {
-    fun isFullScreen() = windowState.placement == WindowPlacement.Fullscreen
-
-    CompositionLocalProvider(LocalFullScreenState provides (isFullScreen() to {
-        windowState.placement = if (isFullScreen()) WindowPlacement.Floating else WindowPlacement.Fullscreen
-    })) {
+    CompositionLocalProvider(LocalCupWindowState provides windowState) {
         content()
     }
 }

@@ -31,8 +31,6 @@ import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.FilterListOff
-import androidx.compose.material.icons.rounded.Fullscreen
-import androidx.compose.material.icons.rounded.FullscreenExit
 import androidx.compose.material.icons.rounded.ZoomIn
 import androidx.compose.material.icons.rounded.ZoomOut
 import androidx.compose.material3.DropdownMenu
@@ -43,13 +41,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -63,8 +59,6 @@ import net.kodein.cup.utils.CupToolsColors
 import net.kodein.cup.utils.IconButtonWithTooltip
 import net.kodein.cup.utils.OverlayScope
 
-
-internal val LocalFullScreenState: ProvidableCompositionLocal<Pair<Boolean, () -> Unit>?> = staticCompositionLocalOf { null }
 
 @Composable
 internal fun OverlayScope.PresentationOverlay(
@@ -135,16 +129,6 @@ internal fun OverlayScope.PresentationOverlay(
                 .presentationOverlayComponent()
         ) {
             Column {
-                val fullScreenState = LocalFullScreenState.current
-                if (fullScreenState != null) {
-                    val (isFullScreen, toggleFullScreen) = fullScreenState
-                    IconButtonWithTooltip(
-                        text = "Full Screen",
-                        keys = "F",
-                        onClick = { toggleFullScreen() },
-                        icon = if (isFullScreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen
-                    )
-                }
                 IconButtonWithTooltip(
                     text = "Overview",
                     keys = "Esc",
@@ -164,15 +148,15 @@ internal fun OverlayScope.PresentationOverlay(
                     )
                 }
                 if (menuOverlays.isNotEmpty()) {
-                    var showMenu by remember { mutableStateOf(false) }
+                    var menuExpanded by remember { mutableStateOf(false) }
                     IconButton(
-                        onClick = { showMenu = !showMenu }
+                        onClick = { menuExpanded = !menuExpanded }
                     ) {
                         Icon(Icons.Filled.MoreVert, contentDescription = "Menu")
                     }
                     DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
                     ) {
                         menuOverlays.forEach { overlay ->
                             DropdownMenuItem(
@@ -186,7 +170,10 @@ internal fun OverlayScope.PresentationOverlay(
                                         }
                                     }
                                 },
-                                onClick = overlay.onClick,
+                                onClick = {
+                                    menuExpanded = false
+                                    overlay.onClick()
+                                },
                             )
                         }
                     }

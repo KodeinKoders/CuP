@@ -23,6 +23,7 @@ cup-plugin-imageExport = { module = "net.kodein.cup:cup-plugin-image-export" }
 cup-plugin-keyEvents = { module = "net.kodein.cup:cup-plugin-key-events" }
 cup-plugin-laser = { module = "net.kodein.cup:cup-plugin-laser" }
 cup-plugin-speakerWindow = { module = "net.kodein.cup:cup-plugin-speaker-window" }
+cup-plugin-windowManagement = { module = "net.kodein.cup:cup-plugin-window-management" }
 cup-widgets-material3 = { module = "net.kodein.cup:cup-widgets-material3" }
 cup-widgets-sourceCode = { module = "net.kodein.cup:cup-widgets-source-code" }
 emoji-compose = { module = "org.kodein.emoji:emoji-compose-m3", version.ref = "emoji" }
@@ -42,6 +43,7 @@ cup = [
     "cup-plugin-keyEvents",
     "cup-plugin-laser",
     "cup-plugin-speakerWindow",
+    "cup-plugin-windowManagement",
     "cup-widgets-material3",
     "cup-widgets-sourceCode",
 ]

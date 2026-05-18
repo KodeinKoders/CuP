@@ -42,6 +42,7 @@ import net.kodein.cup.imgexp.imageExport
 import net.kodein.cup.keyevents.keyEvents
 import net.kodein.cup.laser.laser
 import net.kodein.cup.speaker.speakerWindow
+import net.kodein.cup.speaker.windowManagement
 import net.kodein.cup.utils.SlideContext
 import net.kodein.cup.utils.SlideContextElement
 import org.jetbrains.compose.resources.painterResource
@@ -79,6 +80,7 @@ fun KodeinPresentation(
     Presentation(
         slides = slides,
         configuration = {
+            windowManagement()
             speakerWindow()
             laser()
             imageExport()

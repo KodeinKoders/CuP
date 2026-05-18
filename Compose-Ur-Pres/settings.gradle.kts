@@ -24,6 +24,7 @@ include(
     ":plugin:cup-plugin-laser",
     ":plugin:cup-plugin-speaker-window",
     ":plugin:cup-plugin-auto-move",
+    ":plugin:cup-plugin-window-management",
     ":widgets:cup-widgets-foundation",
     ":widgets:cup-widgets-material2",
     ":widgets:cup-widgets-material3",
