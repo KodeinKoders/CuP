@@ -96,16 +96,14 @@ internal class PngExporter : Exporter {
                 height = sceneHeight
             ) {
                 FixedCupSlide(sceneWidth, sceneHeight, state)
-            }.use { scene ->
-                // https://youtrack.jetbrains.com/issue/CMP-6227
-                scene.render()
-                val img = scene.render(1.seconds)
-                val bitmap = Bitmap.makeFromImage(img)
-                val data = Image.makeFromBitmap(bitmap).use { image ->
-                    image.encodeToData(EncodedImageFormat.PNG)!!
-                }
-                data.bytes
             }
+                .use { scene ->
+                    // https://youtrack.jetbrains.com/issue/CMP-6227
+                    scene.render()
+                    scene.render(1.seconds)
+                }
+                .use { it.encodeToData(EncodedImageFormat.PNG)!! }
+                .bytes
 
             withContext(Dispatchers.IO) {
                 dirPath.resolve("$index-${state.currentSlide.name}-${state.currentPosition.step}.png").writeBytes(png)
