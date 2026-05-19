@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import net.kodein.cup.utils.CupToolsColors
+import net.kodein.cup.utils.CupToolsMaterialTheme
 
 
 private const val shrinkRatio = 4.5f
@@ -52,7 +52,7 @@ private fun OverviewSlideView(
         val alpha by animateFloatAsState(if (state.currentPosition == position) 1f else 0f)
         Box(
             Modifier
-                .border(24.dp, CupToolsColors.dark.copy(alpha = alpha), RoundedCornerShape(32.dp))
+                .border(24.dp, MaterialTheme.colorScheme.outline.copy(alpha = alpha), RoundedCornerShape(32.dp))
                 .padding(56.dp)
                 .pointerHoverIcon(PointerIcon.Hand)
                 .clickable {
@@ -141,7 +141,7 @@ public fun Overview() {
                     ) {
                         item { Spacer(Modifier.height(spacerHeightDp - 24.dp)) }
                         stickyHeader {
-                            MaterialTheme(colorScheme = CupToolsColors.scheme) {
+                            CupToolsMaterialTheme {
                                 Text(
                                     text = slide.name,
                                     textAlign = TextAlign.Center,

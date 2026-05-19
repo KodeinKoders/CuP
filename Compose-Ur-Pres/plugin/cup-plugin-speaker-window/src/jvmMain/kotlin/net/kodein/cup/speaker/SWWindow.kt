@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.FilterListOff
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.ZoomIn
 import androidx.compose.material.icons.rounded.ZoomOut
 import androidx.compose.material3.MaterialTheme
@@ -19,11 +21,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
@@ -54,8 +59,11 @@ import net.kodein.cup.goToPrevious
 import net.kodein.cup.laser.Laser
 import net.kodein.cup.totalStepCount
 import net.kodein.cup.totalStepCurrent
-import net.kodein.cup.utils.CupToolsColors
+import net.kodein.cup.utils.CupToolsMaterialTheme
 import net.kodein.cup.utils.IconButtonWithTooltip
+import net.kodein.cup.utils.cupToolsColorScheme
+
+internal val LocalSpeakerWindowIsInDarkMode: ProvidableCompositionLocal<Boolean> = compositionLocalOf { error("Not set") }
 
 @Composable
 internal fun SWWindow(
@@ -75,7 +83,12 @@ internal fun SWWindow(
 
     val updatedLaser by rememberUpdatedState(laser)
 
-    CompositionLocalProvider(LocalPresentationState provides swState) {
+    var isInDarkMode by remember { mutableStateOf(false) }
+
+    CompositionLocalProvider(
+        LocalPresentationState provides swState,
+        LocalSpeakerWindowIsInDarkMode provides isInDarkMode,
+    ) {
         Window(
             state = rememberWindowState(width = 960.dp, height = 720.dp),
             title = "Speaker Notes",
@@ -88,19 +101,24 @@ internal fun SWWindow(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(cupToolsColorScheme(isInDarkMode).surface)
             ) {
                 var slideListVisible by remember { mutableStateOf(false) }
                 SWTopBar(
                     presentationState = swState,
                     slideListVisible = slideListVisible,
-                    toggleSlideListVisible = { slideListVisible = !slideListVisible }
+                    toggleSlideListVisible = { slideListVisible = !slideListVisible },
+                    isInDarkTheme = isInDarkMode,
+                    toggleDarkTheme = { isInDarkMode = !isInDarkMode },
                 )
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    SlideList(slideListVisible)
+                    SlideList(
+                        visible = slideListVisible,
+                        darkMode = isInDarkMode,
+                    )
                     var boxSize: IntSize? by remember { mutableStateOf(null) }
                     Column(
                         modifier = Modifier
@@ -170,8 +188,10 @@ private fun SWTopBar(
     presentationState: PresentationState,
     slideListVisible: Boolean,
     toggleSlideListVisible: () -> Unit,
+    isInDarkTheme: Boolean,
+    toggleDarkTheme: () -> Unit,
 ) {
-    MaterialTheme(colorScheme = CupToolsColors.scheme) {
+    CupToolsMaterialTheme(LocalSpeakerWindowIsInDarkMode.current) {
         Surface(
             color = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -232,6 +252,12 @@ private fun SWTopBar(
                     keys = "Esc",
                     onClick = { presentationState.isInOverview = !presentationState.isInOverview },
                     icon = if (presentationState.isInOverview) Icons.Rounded.ZoomIn else Icons.Rounded.ZoomOut,
+                )
+                Spacer(Modifier.weight(1f))
+                IconButtonWithTooltip(
+                    text = "Theme",
+                    onClick = { toggleDarkTheme() },
+                    icon = if (isInDarkTheme) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
                 )
                 Spacer(Modifier.weight(1f))
             }

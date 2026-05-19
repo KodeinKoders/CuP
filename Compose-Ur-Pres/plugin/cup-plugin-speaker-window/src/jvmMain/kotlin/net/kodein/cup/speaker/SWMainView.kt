@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,13 +42,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mikepenz.markdown.m2.Markdown
+import com.mikepenz.markdown.m3.Markdown
 import kotlinx.coroutines.delay
 import net.kodein.cup.LocalPresentationState
 import net.kodein.cup.PresentationState
 import net.kodein.cup.currentSlide
 import net.kodein.cup.laser.Laser
-import net.kodein.cup.utils.CupToolsColors
+import net.kodein.cup.utils.CupToolsMaterialTheme
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
@@ -132,45 +133,49 @@ private fun SWTimer() {
         }
     }
 
-    MaterialTheme(colorScheme = CupToolsColors.scheme) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+    CupToolsMaterialTheme(LocalSpeakerWindowIsInDarkMode.current) {
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.onBackground,
         ) {
-            Column {
-                Button(
-                    onClick = { started = !started },
-                    modifier = Modifier.width(96.dp)
-                ) { Text(if (started) "PAUSE" else "START") }
-                Button(
-                    onClick = { elapsedSeconds = 0 },
-                    enabled = !started,
-                    modifier = Modifier.width(96.dp)
-                ) { Text("RESET") }
-            }
-            val seconds = elapsedSeconds % 60
-            val minutes = (elapsedSeconds - seconds) / 60
-            CompositionLocalProvider(
-                LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 48.sp),
-                LocalLayoutDirection provides LayoutDirection.Ltr
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
             ) {
-                Row {
-                    Text(
-                        text = minutes.toString().padStart(2, '0'),
-                        textAlign = TextAlign.End,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.width(128.dp)
-                    )
-                    Text(
-                        text = " : ",
-                        modifier = Modifier.alpha(0.5f)
-                    )
-                    Text(
-                        text = seconds.toString().padStart(2, '0'),
-                        fontWeight = FontWeight.Light,
+                Column {
+                    Button(
+                        onClick = { started = !started },
                         modifier = Modifier.width(96.dp)
-                    )
+                    ) { Text(if (started) "PAUSE" else "START") }
+                    Button(
+                        onClick = { elapsedSeconds = 0 },
+                        enabled = !started,
+                        modifier = Modifier.width(96.dp)
+                    ) { Text("RESET") }
+                }
+                val seconds = elapsedSeconds % 60
+                val minutes = (elapsedSeconds - seconds) / 60
+                CompositionLocalProvider(
+                    LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 48.sp),
+                    LocalLayoutDirection provides LayoutDirection.Ltr
+                ) {
+                    Row {
+                        Text(
+                            text = minutes.toString().padStart(2, '0'),
+                            textAlign = TextAlign.End,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.width(128.dp)
+                        )
+                        Text(
+                            text = " : ",
+                            modifier = Modifier.alpha(0.5f)
+                        )
+                        Text(
+                            text = seconds.toString().padStart(2, '0'),
+                            fontWeight = FontWeight.Light,
+                            modifier = Modifier.width(96.dp)
+                        )
+                    }
                 }
             }
         }
@@ -188,10 +193,10 @@ private fun SWStepRow(presentationState: PresentationState) {
                 Modifier
                     .height(16.dp)
                     .weight(1f)
-                    .border(4.dp, CupToolsColors.dark.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                    .border(4.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
                     .then(
                         if (presentationState.currentPosition.step > it) Modifier.background(
-                            CupToolsColors.dark.copy(
+                            MaterialTheme.colorScheme.outline.copy(
                                 alpha = 0.5f
                             ), RoundedCornerShape(8.dp)
                         )
@@ -216,9 +221,10 @@ private fun SWNotes(presentationState: PresentationState) {
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            MaterialTheme(colorScheme = CupToolsColors.scheme) {
+            CupToolsMaterialTheme(LocalSpeakerWindowIsInDarkMode.current) {
                 CompositionLocalProvider(
-                    LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 18.sp)
+                    LocalTextStyle provides LocalTextStyle.current.copy(fontSize = 18.sp),
+                    LocalContentColor provides MaterialTheme.colorScheme.onBackground,
                 ) {
                     val speakerNotes = presentationState.currentSlide.context[SpeakerNotes]
                     if (speakerNotes != null) {

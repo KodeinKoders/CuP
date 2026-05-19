@@ -23,7 +23,6 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -52,7 +51,7 @@ import net.kodein.cup.config.CupAdditionalOverlay
 import net.kodein.cup.config.CupConfigurationBuilder
 import net.kodein.cup.config.CupPlugin
 import net.kodein.cup.copyFixed
-import net.kodein.cup.utils.CupToolsColors
+import net.kodein.cup.utils.CupToolsMaterialTheme
 import java.text.DecimalFormat
 
 
@@ -354,7 +353,7 @@ internal class ImageExportPlugin : CupPlugin {
                 val presentationState by rememberUpdatedState(LocalPresentationState.current)
                 val scope = rememberCoroutineScope()
 
-                MaterialTheme(colorScheme = CupToolsColors.scheme) {
+                CupToolsMaterialTheme {
                     Surface(Modifier.fillMaxSize()) {
                         ImageExportWindow(
                             sizeState = sizeState,

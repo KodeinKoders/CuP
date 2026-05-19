@@ -4,15 +4,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import net.kodein.cup.utils.CupToolsColors
 
 
 @Composable
@@ -31,7 +30,7 @@ public fun PresentationPreview(
             modifier = Modifier
                 .scale(previewScale)
                 .size(previewSize + DpSize(8.dp, 8.dp))
-                .border(4.dp, CupToolsColors.darker)
+                .border(4.dp, MaterialTheme.colorScheme.outline)
                 .clipToBounds()
         ) {
             withPresentationState(

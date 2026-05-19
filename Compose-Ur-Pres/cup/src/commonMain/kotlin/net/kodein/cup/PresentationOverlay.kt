@@ -37,7 +37,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,7 +54,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import net.kodein.cup.utils.CupToolsColors
+import net.kodein.cup.utils.CupToolsMaterialTheme
 import net.kodein.cup.utils.IconButtonWithTooltip
 import net.kodein.cup.utils.OverlayScope
 
@@ -71,7 +70,7 @@ internal fun OverlayScope.PresentationOverlay(
         .padding(16.dp)
         .clip(RoundedCornerShape(8.dp))
 
-    MaterialTheme(colorScheme = CupToolsColors.scheme) {
+    CupToolsMaterialTheme {
         val state = LocalPresentationState.current
         val config = state.config
 
@@ -221,13 +220,14 @@ internal fun OverlayScope.PresentationOverlay(
 @PluginCupAPI
 public fun SlideList(
     visible: Boolean,
+    darkMode: Boolean,
 ) {
     AnimatedVisibility(
         visible = visible,
         enter = expandIn(expandFrom = Alignment.Center) { IntSize(0, it.height) },
         exit = shrinkOut(shrinkTowards = Alignment.Center) { IntSize(0, it.height) }
     ) {
-        MaterialTheme(colorScheme = CupToolsColors.scheme) {
+        CupToolsMaterialTheme(darkMode) {
             Surface(
                 Modifier
                     .fillMaxHeight()
