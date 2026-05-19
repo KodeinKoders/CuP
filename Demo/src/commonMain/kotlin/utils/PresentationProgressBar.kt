@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import net.kodein.cup.LocalPresentationState
-import net.kodein.cup.totalStepCount
 import net.kodein.cup.totalStepCurrent
 import net.kodein.cup.totalStepLast
 
@@ -34,7 +33,7 @@ fun PresentationProgressBar(
                 .fillMaxHeight()
                 .fillMaxWidth(fraction = fraction)
                 .align(Alignment.CenterStart)
-                .background(KodeinTheme.Color.Dark)
+                .background(KodeinTheme.Colors.purple800)
         )
     }
 }

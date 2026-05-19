@@ -4,19 +4,26 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -24,18 +31,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cup_demo.generated.resources.Res
 import cup_demo.generated.resources.logo
 import net.kodein.cup.LocalPresentationState
+import net.kodein.cup.PluginCupAPI
 import net.kodein.cup.Presentation
 import net.kodein.cup.PresentationPreview
+import net.kodein.cup.PresentationState
 import net.kodein.cup.Slide
 import net.kodein.cup.SlideGroup
 import net.kodein.cup.Slides
 import net.kodein.cup.automove.autoMove
+import net.kodein.cup.config.CupAdditionalOverlay
+import net.kodein.cup.config.CupPlugin
 import net.kodein.cup.cupApplication
 import net.kodein.cup.currentSlide
 import net.kodein.cup.imgexp.imageExport
@@ -50,6 +60,8 @@ import org.kodein.emoji.compose.EmojiService
 import utils.PresentationProgressBar
 
 
+var isPresentationInDarkMode by mutableStateOf(true)
+
 @Composable
 fun KodeinPresentationPreview(
     slide: Slide,
@@ -61,7 +73,7 @@ fun KodeinPresentationPreview(
 }
 
 data class KodeinBackground(
-    val color: Color,
+    val color: @Composable () -> Color,
 ) : SlideContextElement<KodeinBackground>(Key) {
     companion object Key : SlideContext.Key<KodeinBackground>
 }
@@ -76,86 +88,102 @@ data class KodeinBanner(
 fun KodeinPresentation(
     slides: SlideGroup
 ) {
-
     Presentation(
         slides = slides,
         configuration = {
             windowManagement()
+            @OptIn(PluginCupAPI::class)
+            plugin(object : CupPlugin {
+
+                @Composable
+                override fun BoxScope.Content() {}
+
+                override fun overlay(state: PresentationState) = listOf(
+                    CupAdditionalOverlay(
+                        text = "Toggle theme",
+                        onClick = { isPresentationInDarkMode = !isPresentationInDarkMode },
+                        icon = if (isPresentationInDarkMode) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
+                    )
+                )
+            })
             speakerWindow()
             laser()
             imageExport()
             keyEvents()
             autoMove()
         },
-        backgroundColor = KodeinTheme.Color.background
     ) { slidesContent ->
-        val presentationState = LocalPresentationState.current
-        Image(
-            painter = painterResource(Res.drawable.logo),
-            contentDescription = null,
-            alignment = Alignment.CenterEnd,
-            colorFilter = ColorFilter.tint(KodeinTheme.Color.Dark),
-            modifier = Modifier
-                .alpha(0.4f)
-                .fillMaxSize()
-                .offset(x = (-16).dp, y = 64.dp)
-        )
-        val background by animateColorAsState(
-            targetValue = presentationState.currentSlide.context[KodeinBackground]?.color ?: Color.Transparent,
-            animationSpec = tween(1_500)
-        )
-        val density = LocalDensity.current
-        val bannerAlpha by animateFloatAsState(
-            targetValue = if (presentationState.currentSlide.context[KodeinBanner]?.visible == true) 1f else 0f,
-            animationSpec = tween(1_000)
-        )
-        if (bannerAlpha > 0f) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .graphicsLayer(
-                        rotationZ = 45f,
-                        translationY = with(density) { (-16 + 64).dp.toPx() },
-                        translationX = with(density) { (160 - 64).dp.toPx() },
-                        alpha = 0.5f * bannerAlpha
-                    )
-                    .size(width = 320.dp, height = 32.dp)
-                    .background(KodeinTheme.Color.Orange)
-                    .align(Alignment.TopEnd)
+        KodeinMaterialTheme(isPresentationInDarkMode) {
+            Surface(
+                color = MaterialTheme.colorScheme.background,
             ) {
-                Text(
-                    text = "Desktop only!",
-                    fontSize = 20.sp,
-                    color = Color.Black,
+                Image(
+                    painter = painterResource(Res.drawable.logo),
+                    contentDescription = null,
+                    alignment = Alignment.CenterEnd,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)),
+                    modifier = Modifier
+                        .alpha(0.4f)
+                        .fillMaxSize()
+                        .offset(x = (-16).dp, y = 64.dp)
                 )
-            }
-        }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(background)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-            ) {
-                CompositionLocalProvider(
-                    LocalContentColor provides KodeinTheme.Color.Light,
-                    LocalTextStyle provides TextStyle(
-                        fontFamily = KodeinTheme.Fonts.LCTPicon.Regular
-                    ),
+                val presentationState = LocalPresentationState.current
+                val background by animateColorAsState(
+                    targetValue = presentationState.currentSlide.context[KodeinBackground]?.color() ?: Color.Transparent,
+                    animationSpec = tween(1_500)
+                )
+                val density = LocalDensity.current
+                val bannerAlpha by animateFloatAsState(
+                    targetValue = if (presentationState.currentSlide.context[KodeinBanner]?.visible == true) 1f else 0f,
+                    animationSpec = tween(1_000)
+                )
+                if (bannerAlpha > 0f) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .graphicsLayer(
+                                rotationZ = 45f,
+                                translationY = with(density) { (-16 + 64).dp.toPx() },
+                                translationX = with(density) { (160 - 64).dp.toPx() },
+                                alpha = 0.5f * bannerAlpha
+                            )
+                            .size(width = 320.dp, height = 32.dp)
+                            .background(KodeinTheme.Colors.orange600)
+                            .align(Alignment.TopEnd)
+                    ) {
+                        Text(
+                            text = "Desktop only!",
+                            fontSize = 20.sp,
+                            color = Color.Black,
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(background)
                 ) {
-                    slidesContent()
+                    Box(
+                        modifier = Modifier
+                            .padding(8.dp)
+                    ) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+                        ) {
+                            slidesContent()
+                        }
+                    }
+
+                    PresentationProgressBar(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .align(Alignment.BottomCenter)
+                    )
                 }
             }
-
-            PresentationProgressBar(
-                Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .align(Alignment.BottomCenter)
-            )
         }
     }
 }

@@ -1,5 +1,6 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,13 +19,13 @@ val transitions by Slide(
     stepCount = 2,
     specs = SlideSpecs(startTransitions = y3DRotation),
     context = slideContextOf(
-        KodeinBackground(KodeinTheme.Color.BackgroundSpecial),
+        KodeinBackground { MaterialTheme.colorScheme.surfaceContainerHighest },
         AutoMovePause.onSteps(0..0) { 2.seconds },
         Export.only(1)
     ),
 ) { step ->
     Title(Modifier.padding(16.dp)) {
-        Text("There can also be complex slide transition transitions !")
+        Text("There can also be complex slide transitions !")
     }
     AnimatedVisibility(step >= 1) {
         TextWithNotoImageEmoji("Have you noticed the background change? 🤔")

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,14 +64,17 @@ val sourceCode by PreparedSlide(
         val stylesheet = object : SpanStyleSheet() {
             val pre by registerMarker(SpanStyle(
                 fontFamily = KodeinTheme.Fonts.JetBrainsMono,
-                color = KodeinTheme.Color.Orange
+                color = KodeinTheme.Colors.orange600
             ))
         }
 
         Title {
             Text("You can animate source code!")
         }
-        Text(styled(stylesheet) { "(Here's an example of how I would introduce Kotlin's ${+pre}lazy${-pre} property delegate)" })
+        Text(
+            text = styled(stylesheet) { "(Here's an example of how I would introduce Kotlin's ${+pre}lazy${-pre} property delegate)" },
+            style = MaterialTheme.typography.bodySmall
+        )
         Spacer(Modifier.height(8.dp))
         SourceCode(
             sourceCode = sourceCode,
@@ -81,13 +86,15 @@ val sourceCode by PreparedSlide(
                 .padding(8.dp)
         )
         Spacer(Modifier.height(8.dp))
-        Row {
-            Text(" ")
-            AnimatedVisibility(step >= 1) { Text("You can reveal") }
-            AnimatedVisibility(step >= 2) { Text(", highlight") }
-            AnimatedVisibility(step >= 4) { Text(", remove, replace") }
-            AnimatedVisibility(step >= 5) { Text(" or decorate source code") }
-            Text(" ")
+        ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
+            Row {
+                Text(" ")
+                AnimatedVisibility(step >= 1) { Text("You can reveal") }
+                AnimatedVisibility(step >= 2) { Text(", highlight") }
+                AnimatedVisibility(step >= 4) { Text(", remove, replace") }
+                AnimatedVisibility(step >= 5) { Text(" or decorate source code") }
+                Text(" ")
+            }
         }
     }
 }

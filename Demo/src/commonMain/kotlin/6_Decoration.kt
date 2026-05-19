@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +40,10 @@ val decoration by Slide(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            TextWithNotoImageEmoji("For example the ${Emoji.DownArrow} light purple bar is not standard and part of our theming.")
+            TextWithNotoImageEmoji(
+                text = "For example the ${Emoji.DownArrow} light purple bar is not standard and part of our theming.",
+                style = MaterialTheme.typography.bodySmall
+            )
             Spacer(Modifier.height(16.dp))
             NotoAnimatedEmoji(Emoji.StarStruck, Modifier.size(64.dp))
         }

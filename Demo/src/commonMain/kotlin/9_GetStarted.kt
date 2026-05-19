@@ -3,6 +3,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +48,7 @@ val getStarted by Slide {
     Text(
         text = "https://github.com/KodeinKoders/CuP",
         textAlign = TextAlign.Center,
-        color = KodeinTheme.Color.Link,
+        color = MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .pointerHoverIcon(PointerIcon.Hand)
             .clickable {
@@ -67,7 +68,7 @@ val getStarted by Slide {
                         LinkAnnotation.Url(
                             url = "mailto:contact@kodein.net",
                             styles = TextLinkStyles(
-                                style = SpanStyle(color = KodeinTheme.Color.Link)
+                                style = SpanStyle(color = KodeinTheme.Colors.orange300)
                             )
                         )
                     ) {
@@ -77,6 +78,7 @@ val getStarted by Slide {
                     appendLine("and we'll repost your social media posts about it!")
                 },
                 textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }

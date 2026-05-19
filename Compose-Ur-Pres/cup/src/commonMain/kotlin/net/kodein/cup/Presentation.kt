@@ -278,22 +278,24 @@ public fun Presentation(
 
     var presentationSize: IntSize? by remember { mutableStateOf(null) }
 
-    ProvideSlideContents(state) {
-        Box(Modifier.fillMaxSize()) {
-            WithPresentationOverlay(
-                onContainerSizeChanged = { presentationSize = it }
-            ) {
-                if (presentationSize == null) return@WithPresentationOverlay
-                CompositionLocalProvider(LocalPresentationSize provides presentationSize!!.toSize()) {
-                    if (state.isInOverview) {
-                        Overview()
-                    }
-                    else {
-                        PresentationMainView()
-                    }
-                    CupToolsMaterialTheme {
-                        config.plugins.forEach {
-                            with(it) { Content() }
+    CupToolsMaterialTheme {
+        ProvideSlideContents(state) {
+            Box(Modifier.fillMaxSize()) {
+                WithPresentationOverlay(
+                    onContainerSizeChanged = { presentationSize = it }
+                ) {
+                    if (presentationSize == null) return@WithPresentationOverlay
+                    CompositionLocalProvider(LocalPresentationSize provides presentationSize!!.toSize()) {
+                        if (state.isInOverview) {
+                            Overview()
+                        }
+                        else {
+                            PresentationMainView()
+                        }
+                        CupToolsMaterialTheme {
+                            config.plugins.forEach {
+                                with(it) { Content() }
+                            }
                         }
                     }
                 }
