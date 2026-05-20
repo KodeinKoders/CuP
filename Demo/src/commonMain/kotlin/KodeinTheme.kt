@@ -11,6 +11,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -390,10 +391,12 @@ object KodeinTheme {
 
     val SourceCodeTheme: SourceCodeTheme = { cls ->
         when (cls) {
-            "default"
+            "default",
+            "class",
+            "params",
                 -> SpanStyle(
-                    color = Color(0xFF_F7E1DE)
-                )
+                color = Colors.orange100
+            )
 
             "code",
             "selector-class",
@@ -410,8 +413,8 @@ object KodeinTheme {
             "addition",
             "title",
                 -> SpanStyle(
-                    color = Color(0xFF_F0A698)
-                )
+                color = Colors.orange300
+            )
 
             "keyword",
             "selector-tag",
@@ -419,9 +422,10 @@ object KodeinTheme {
             "attribute",
             "name",
             "variable",
+            "function",
                 -> SpanStyle(
-                    color = Color(0xFF_EC755B)
-                )
+                color = Colors.orange600
+            )
 
             "bullet",
             "quote",
@@ -431,27 +435,28 @@ object KodeinTheme {
             "literal",
             "string",
                 -> SpanStyle(
-                    color = Color(0xFF_D39AB8)
-                )
+                color = Colors.purple200
+            )
 
             "comment",
             "deletion",
             "meta",
                 -> SpanStyle(
-                    color = Color(0xFF_B35C9D)
-                )
+                color = Colors.purple400
+            )
 
             "strong",
                 -> SpanStyle(
-                    color = Color(0xFF_F0A698),
-                    fontWeight = FontWeight.Bold
-                )
+                color = Colors.orange300,
+                fontWeight = FontWeight.Bold
+            )
 
             "emphasis",
                 -> SpanStyle(
-                    color = Color(0xFF_F0A698),
-                    fontStyle = FontStyle.Italic
-                )
+                color = Colors.orange300,
+                fontStyle = FontStyle.Italic,
+                fontSynthesis = FontSynthesis.Style,
+            )
 
             else -> null
         }

@@ -9,6 +9,7 @@ import androidx.compose.ui.text.TextRange
 
 public data class StyleSection(
     public val range: TextRange,
+    public val styleName: String,
     public val style: SpanStyle
 )
 
@@ -28,10 +29,10 @@ public fun Iterable<StyleSection>.restrict(inRanges: Iterable<TextRange>): List<
             inRanges.mapNotNull { inRange ->
 /*    │   │    */   when {
 /* ╠═╣│   │    */       section.range.max <= inRange.min -> null
-/*   ╠╪╣  │    */       section.range.min <= inRange.min && section.range.max < inRange.max -> StyleSection(TextRange(inRange.min, section.range.max) , section.style)
-/*   ╠╪═══╪╣   */       section.range.min <= inRange.min && section.range.max >= inRange.max -> StyleSection(TextRange(inRange.min, inRange.max) , section.style)
-/*    │╠═╣│    */       section.range.min > inRange.min && section.range.max < inRange.max -> StyleSection(TextRange(section.range.min, section.range.max) , section.style)
-/*    │  ╠╪╣   */       section.range.min < inRange.max && section.range.max >= inRange.max -> StyleSection(TextRange(section.range.min, inRange.max) , section.style)
+/*   ╠╪╣  │    */       section.range.min <= inRange.min && section.range.max < inRange.max -> section.copy(range = TextRange(inRange.min, section.range.max))
+/*   ╠╪═══╪╣   */       section.range.min <= inRange.min && section.range.max >= inRange.max -> section.copy(range = TextRange(inRange.min, inRange.max))
+/*    │╠═╣│    */       section.range.min > inRange.min && section.range.max < inRange.max -> section.copy(range = TextRange(section.range.min, section.range.max))
+/*    │  ╠╪╣   */       section.range.min < inRange.max && section.range.max >= inRange.max -> section.copy(range = TextRange(section.range.min, inRange.max))
 /*    │   │╠═╣ */       section.range.min >= inRange.max -> null
 /*    │   │    */       else -> error("Impossible section ${section.range} applied in range $inRange")
                     }
@@ -53,6 +54,37 @@ public fun Iterable<StyleSection>.offset(toRange: TextRange): List<StyleSection>
                     }
     }
 
+public fun Iterable<StyleSection>.remove(ranges: Iterable<TextRange>): List<StyleSection> {
+    var sections = this.filterNot { it.range.collapsed }
+    var remainingRanges = ranges.filterNot { it.collapsed }
+    while (remainingRanges.isNotEmpty()) {
+        val outRange = remainingRanges.first()
+        sections = sections.mapNotNull { section ->
+            /*    │   │    */   when {
+            /* ╠═╣│   │    */       section.range.max <= outRange.min -> section
+            /*   ╠╪╣  │    */       section.range.min <= outRange.min && section.range.max < outRange.max -> section.copy(range = TextRange(section.range.min, outRange.min))
+            /*   ╠╪═══╪╣   */       section.range.min <= outRange.min && section.range.max >= outRange.max -> section.copy(range = TextRange(section.range.min, section.range.max - outRange.length))
+            /*    │╠═╣│    */       section.range.min >= outRange.min && section.range.max <= outRange.max -> null
+            /*    │  ╠╪╣   */       section.range.min < outRange.max && section.range.max >= outRange.max -> section.copy(range = TextRange(outRange.max, section.range.max))
+            /*    │   │╠═╣ */       section.range.min >= outRange.max -> section.copy(range = TextRange(section.range.min - outRange.length, section.range.max - outRange.length))
+            /*    │   │    */       else -> error("Impossible section ${section.range} applied in range $outRange")
+                                }
+        }
+        remainingRanges = remainingRanges.drop(1).mapNotNull { otherRange ->
+            /*    │   │    */   when {
+            /* ╠═╣│   │    */       otherRange.max <= outRange.min -> otherRange
+            /*   ╠╪╣  │    */       otherRange.min <= outRange.min && otherRange.max < outRange.max -> TextRange(otherRange.min, outRange.min)
+            /*   ╠╪═══╪╣   */       otherRange.min <= outRange.min && otherRange.max >= outRange.max -> TextRange(otherRange.min, otherRange.max - outRange.length)
+            /*    │╠═╣│    */       otherRange.min >= outRange.min && otherRange.max <= outRange.max -> null
+            /*    │  ╠╪╣   */       otherRange.min < outRange.max && otherRange.max >= outRange.max -> TextRange(outRange.max, otherRange.max)
+            /*    │   │╠═╣ */       otherRange.min >= outRange.max -> TextRange(otherRange.min - outRange.length, otherRange.max - outRange.length)
+            /*    │   │    */       else -> error("Impossible range $otherRange applied in range $outRange")
+                                }
+        }
+    }
+    return sections
+}
+
 public fun Iterable<StyleSection>.merge(other: StyleSection): List<StyleSection> =
     this
         .filterNot { it.range.collapsed }
@@ -60,18 +92,18 @@ public fun Iterable<StyleSection>.merge(other: StyleSection): List<StyleSection>
 /*    │   │    */   when {
 /* ╠═╣│   │    */       section.range.max <= other.range.min -> listOf(section)
 /*   ╠╪╣  │    */       section.range.min <= other.range.min && section.range.max <= other.range.max -> listOf(
-/*    │   │    */           StyleSection(TextRange(section.range.min, other.range.min), section.style),
-/*    │   │    */           StyleSection(TextRange(other.range.min, section.range.max), section.style.merge(other.style)),
+/*    │   │    */           section.copy(range = TextRange(section.range.min, other.range.min)),
+/*    │   │    */           StyleSection(TextRange(other.range.min, section.range.max), "${section.styleName}+${other.styleName}", section.style.merge(other.style)),
 /*    │   │    */       )
 /*   ╠╪═══╪╣   */       section.range.min <= other.range.min && section.range.max > other.range.max -> listOf(
-/*    │   │    */           StyleSection(TextRange(section.range.min, other.range.min), section.style),
-/*    │   │    */           StyleSection(other.range, section.style.merge(other.style)),
-/*    │   │    */           StyleSection(TextRange(other.range.max, section.range.max), section.style),
+/*    │   │    */           section.copy(range = TextRange(section.range.min, other.range.min)),
+/*    │   │    */           StyleSection(other.range, "${section.styleName}+${other.styleName}", section.style.merge(other.style)),
+/*    │   │    */           section.copy(range = TextRange(other.range.max, section.range.max)),
 /*    │   │    */       )
-/*    │╠═╣│    */       section.range.min > other.range.min && section.range.max <= other.range.max -> listOf(section.copy(style = section.style.merge(other.style)))
+/*    │╠═╣│    */       section.range.min > other.range.min && section.range.max <= other.range.max -> listOf(section.copy(styleName = "${section.styleName}+${other.styleName}", style = section.style.merge(other.style)))
 /*    │  ╠╪╣   */       section.range.min <= other.range.max && section.range.max > other.range.max -> listOf(
-/*    │   │    */           StyleSection(TextRange(section.range.min, other.range.max), section.style.merge(other.style)),
-/*    │   │    */           StyleSection(TextRange(other.range.max, section.range.max), section.style),
+/*    │   │    */           StyleSection(TextRange(section.range.min, other.range.max), "${section.styleName}+${other.styleName}", section.style.merge(other.style)),
+/*    │   │    */           section.copy(range = TextRange(other.range.max, section.range.max)),
 /*    │   │    */       )
 /*    │   │╠═╣ */       section.range.min > other.range.max -> listOf(section)
 /*    │   │    */       else -> error("Impossible section ${section.range} overridden by range ${other.range}")

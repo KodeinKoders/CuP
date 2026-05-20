@@ -12,17 +12,24 @@ public typealias SourceCodeTheme = (String) -> SpanStyle?
 
 private val emptyStyle = SpanStyle()
 
-public fun List<ClassesSection>.applySourceCodeTheme(theme: SourceCodeTheme): List<StyleSection> =
+public fun List<ClassesSection>.applySourceCodeTheme(
+    theme: SourceCodeTheme,
+    printMissingClasses: Boolean,
+): List<StyleSection> =
     mapNotNull { section ->
         var style = emptyStyle
+        val styleNames = ArrayList<String>()
         section.classes.forEach { cls ->
             val classStyle = theme(cls)
             if (classStyle != null) {
                 style = style.merge(classStyle)
+                styleNames.add(cls)
+            } else if (printMissingClasses) {
+                println("Missing source code theme class: \"$cls\"")
             }
         }
         if (style === emptyStyle) null
-        else StyleSection(section.range, style)
+        else StyleSection(section.range, styleNames.joinToString("+"), style)
     }
 
 public object SourceCodeThemes {

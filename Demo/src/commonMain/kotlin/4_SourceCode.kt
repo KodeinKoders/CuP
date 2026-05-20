@@ -8,18 +8,30 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import net.kodein.cup.PreparedSlide
 import net.kodein.cup.automove.AutoMovePause
 import net.kodein.cup.imgexp.Export
+import net.kodein.cup.isShiftPressed
+import net.kodein.cup.key
+import net.kodein.cup.keyevents.CupKeyEventEffect
 import net.kodein.cup.sa.SAStyle
 import net.kodein.cup.sa.SourceCode
+import net.kodein.cup.sa.SourceCodeBlockDebugColors
+import net.kodein.cup.sa.SourceCodeThemeDebugColors
 import net.kodein.cup.sa.line
 import net.kodein.cup.sa.rememberSourceCode
+import net.kodein.cup.type
 import net.kodein.cup.ui.SpanStyleSheet
 import net.kodein.cup.ui.styled
 import net.kodein.cup.utils.plus
@@ -49,11 +61,11 @@ val sourceCode by PreparedSlide(
         """
                 class Universe {
                 ${CmRecomputes}    // Recomputes every time!${X}
-                    val answer: ${Error}Int ${Get}get() ${X}${Equal}=${X}${Lazy}${LazyH}${By}by${X} lazy${X} {${X} computeAnswer()${Lazy} }${X}${X}
-                    private fun computeAnswer(): Int {
+                    val answer: ${Error}Int ${Get}get() ${X}${Equal}=${X}${Lazy}${LazyH}${By}by${X} lazy${X} {${X} computeAnswer(0)${Lazy} }${X}${X}
+                    private suspend fun computeAnswer(of: Int): Int {
                 ${Function}        ${CmHardWork}// Hard work${CmOnlyOnce} computed only once!${X}${X}
                         println("Computing...")
-                        Thread.sleep(2_000)
+                        delay(duration = 2.seconds)
                         return 42
                 ${X}    }
                 }
@@ -76,11 +88,24 @@ val sourceCode by PreparedSlide(
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(Modifier.height(8.dp))
+
+        var debug by remember { mutableStateOf(0) }
+
+        CupKeyEventEffect {
+            if (it.type == KeyEventType.KeyDown && it.key == Key.R && it.isShiftPressed) {
+                debug = (debug + 1) % 3
+                true
+            } else false
+        }
+
         SourceCode(
             sourceCode = sourceCode,
             step = step,
             style = TextStyle(fontFamily = KodeinTheme.Fonts.JetBrainsMono),
             theme = KodeinTheme.SourceCodeTheme,
+            debugBlocks = if (debug == 1) SourceCodeBlockDebugColors() else null,
+            printMissingThemeClasses = true,
+            debugTheme = if (debug == 2) SourceCodeThemeDebugColors() else null,
             modifier = Modifier
                 .background(Color.DarkGray, RoundedCornerShape(4.dp))
                 .padding(8.dp)

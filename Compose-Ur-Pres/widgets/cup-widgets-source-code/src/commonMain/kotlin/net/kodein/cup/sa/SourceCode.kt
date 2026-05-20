@@ -14,7 +14,9 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -66,18 +68,23 @@ private fun buildTextPartNode(
     )
 }
 
-public data class SourceCodeDebugColors(
+public data class SourceCodeBlockDebugColors(
     val multipleLines: Color = Color.Magenta,
     val oneLine: Color = Color.Red,
     val text: Color = Color.Green
 )
 
-private fun SourceCodeDebugColors.colorFor(type: TextPartNode.Type) =
+private fun SourceCodeBlockDebugColors.colorFor(type: TextPartNode.Type) =
     when (type) {
         TextPartNode.Type.MultipleLines -> multipleLines
         TextPartNode.Type.OneLine -> oneLine
         TextPartNode.Type.Text -> text
     }
+
+public data class SourceCodeThemeDebugColors(
+    val outline: Color = Color.White,
+    val text: Color = Color.Black
+)
 
 @Composable
 private fun SourceCodePart(
@@ -88,10 +95,9 @@ private fun SourceCodePart(
     codeStyle: ImmutableList<StyleSection>,
     isParentHidden: Boolean,
     isParentHighlighted: Boolean,
-//    partFractions: ImmutableList<State<Float>>,
     partFractions: (Int) -> Float,
     overSpanStyles: ImmutableMap<Int, Pair<SpanStyle, Float>>,
-    debug: SourceCodeDebugColors?
+    debugBlocks: SourceCodeBlockDebugColors?,
 ) {
     val blockId = part.block?.id ?: SABlock.ID.None
     val currentStep = steps[step]
@@ -142,7 +148,7 @@ private fun SourceCodePart(
             .zIndex(if (highlight != 0f) 2f else 1f)
             .scale(1f + 0.4f * highlight)
             .then(
-                if (debug != null && part.block != null && part.block.id != SABlock.ID.None) {
+                if (debugBlocks != null && part.block != null && part.block.id != SABlock.ID.None) {
                     val textMeasurer = rememberTextMeasurer()
                     val dim by animateFloatAsState(
                         targetValue = if (hasHighlight && !isHighlighted && !isParentHighlighted) 1f else 0f,
@@ -161,13 +167,13 @@ private fun SourceCodePart(
                                     color = Color.White.copy(alpha = 1f - dim),
                                     fontSize = 4.sp,
                                     lineHeight = 4.sp,
-                                    background = lerp(debug.colorFor(part.type), Color.Black, 0.5f).copy(alpha = 1f - dim),
+                                    background = lerp(debugBlocks.colorFor(part.type), Color.Black, 0.5f).copy(alpha = 1f - dim),
                                 )
                             )
                         }
                         .border(
                             width = 1.dp,
-                            color = debug.colorFor(part.type).copy(alpha = 1f - dim * 0.85f)
+                            color = debugBlocks.colorFor(part.type).copy(alpha = 1f - dim * 0.85f)
                         )
                         .padding(1.dp)
                         .padding(top = (3 * visibility).dp)
@@ -232,7 +238,7 @@ private fun SourceCodePart(
                         isParentHighlighted = isHighlighted || isParentHighlighted,
                         partFractions = partFractions,
                         overSpanStyles = partOverStyles,
-                        debug = debug
+                        debugBlocks = debugBlocks
                     )
                 }
             }
@@ -247,7 +253,9 @@ private fun SourceCodeContent(
     step: Int,
     style: TextStyle,
     theme: SourceCodeTheme,
-    debug: SourceCodeDebugColors?,
+    debugBlocks: SourceCodeBlockDebugColors?,
+    printMissingThemeClasses: Boolean,
+    debugTheme: SourceCodeThemeDebugColors?,
     modifier: Modifier = Modifier
 ) {
     val partFractions = sourceCode.data.steps.mapIndexed { index, _ ->
@@ -259,17 +267,17 @@ private fun SourceCodeContent(
 
     Box(modifier) {
         var codeSize by remember { mutableStateOf(IntSize.Zero) }
-        SelectionContainer(
-            modifier = Modifier.size(with (LocalDensity.current) { codeSize.toSize().toDpSize() })
-        ) {
-            Text(
-                text = sourceCode.data.fullText - sourceCode.data.hiddenRanges(step),
-                style = style.copy(color = Color.Transparent),
-                softWrap = false,
-            )
+
+        val codeStyle by produceState(persistentListOf(), step) {
+            value = sourceCode.sections(step)
+                .await()
+                .applySourceCodeTheme(
+                    theme = theme,
+                    printMissingClasses = printMissingThemeClasses,
+                )
+                .toImmutableList()
         }
 
-        val codeStyle by produceState(persistentListOf(), step) { value = sourceCode.sections(step).await().applySourceCodeTheme(theme).toImmutableList() }
         Column(Modifier.onSizeChanged { codeSize = it }) {
             parts.forEach {
                 SourceCodePart(
@@ -280,12 +288,62 @@ private fun SourceCodeContent(
                     codeStyle = codeStyle,
                     isParentHidden = false,
                     isParentHighlighted = false,
-//                    partFractions = partFractions,
                     partFractions = { partFractions[it].value },
                     overSpanStyles = persistentMapOf(),
-                    debug = debug
+                    debugBlocks = debugBlocks
                 )
             }
+        }
+
+        SelectionContainer(
+            modifier = Modifier.size(with (LocalDensity.current) { codeSize.toSize().toDpSize() })
+        ) {
+            val hiddenRanges = sourceCode.data.hiddenRanges(step)
+            val text = sourceCode.data.fullText - hiddenRanges
+            var textLayoutResult: TextLayoutResult? by remember(text) { mutableStateOf(null) }
+            val textMeasurer = rememberTextMeasurer()
+            Text(
+                text = text,
+                style = style.copy(color = Color.Transparent),
+                softWrap = false,
+                onTextLayout = { textLayoutResult = it },
+                modifier = Modifier
+                    .drawWithContent {
+                        drawContent()
+                        if (debugTheme != null) {
+                            val tlr = textLayoutResult ?: return@drawWithContent
+                            codeStyle.remove(hiddenRanges).forEach { section ->
+                                val topLeft = tlr.getBoundingBox(section.range.start).topLeft
+                                val bottomRight = tlr.getBoundingBox(section.range.end - 1).bottomRight
+                                drawRect(
+                                    color = debugTheme.outline,
+                                    topLeft = topLeft,
+                                    size = Size(bottomRight.x - topLeft.x, bottomRight.y - topLeft.y),
+                                    style = Stroke(1.dp.toPx())
+                                )
+                                val result = textMeasurer.measure(
+                                    text = section.styleName,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    style = TextStyle(
+                                        fontSize = 4.sp,
+                                        lineHeight = 4.sp,
+                                    ),
+                                )
+                                drawRect(
+                                    color = debugTheme.outline,
+                                    topLeft = topLeft,
+                                    size = result.size.toSize(),
+                                )
+                                drawText(
+                                    textLayoutResult = result,
+                                    topLeft = topLeft,
+                                    color = debugTheme.text,
+                                )
+                            }
+                        }
+                    }
+            )
         }
     }
 }
@@ -302,7 +360,9 @@ public fun SourceCode(
     modifier: Modifier = Modifier,
     style: TextStyle = TextStyle(fontFamily = FontFamily.Monospace),
     theme: SourceCodeTheme = SourceCodeThemes.intelliJLight,
-    debug: SourceCodeDebugColors? = null
+    debugBlocks: SourceCodeBlockDebugColors? = null,
+    printMissingThemeClasses: Boolean = false,
+    debugTheme: SourceCodeThemeDebugColors? = null,
 ) {
     remember(sourceCode.data.steps.size, step) {
         if (step > sourceCode.data.steps.lastIndex) {
@@ -345,7 +405,9 @@ public fun SourceCode(
             else style
         },
         theme = theme,
+        debugBlocks = debugBlocks,
+        printMissingThemeClasses = printMissingThemeClasses,
+        debugTheme = debugTheme,
         modifier = modifier,
-        debug = debug
     )
 }
