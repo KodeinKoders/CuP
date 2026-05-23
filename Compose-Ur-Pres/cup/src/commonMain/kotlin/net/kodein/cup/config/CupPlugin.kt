@@ -25,7 +25,7 @@ public interface CupPlugin {
     public fun onKeyEvent(event: CupKeyEvent): Boolean = false
 
     @Composable
-    public fun BoxScope.Content()
+    public fun BoxScope.Content() {}
 
     public fun overlay(state: PresentationState): List<CupAdditionalOverlay> = emptyList()
 }

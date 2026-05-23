@@ -31,8 +31,6 @@ import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.FilterListOff
-import androidx.compose.material.icons.rounded.ZoomIn
-import androidx.compose.material.icons.rounded.ZoomOut
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -74,51 +72,33 @@ internal fun OverlayScope.PresentationOverlay(
         val state = LocalPresentationState.current
         val config = state.config
 
-        if (!state.isInOverview) {
-            Surface(
-                Modifier
-                    .align(Alignment.TopCenter)
-                    .presentationOverlayComponent()
-            ) {
-                SelectionContainer {
-                    Row(Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
-                        Text(state.currentSlide.name)
-                        if (state.currentSlide.stepCount > 1) {
-                            Text(" ")
-                            Text("(${state.currentPosition.step})")
-                        }
+        Surface(
+            Modifier
+                .align(Alignment.TopCenter)
+                .presentationOverlayComponent()
+        ) {
+            SelectionContainer {
+                Row(Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
+                    Text(state.currentSlide.name)
+                    if (state.currentSlide.stepCount > 1) {
+                        Text(" ")
+                        Text("(${state.currentPosition.step})")
                     }
                 }
             }
         }
 
-        if (!state.isInOverview) {
-            Surface(
-                Modifier
-                    .align(Alignment.BottomStart)
-                    .presentationOverlayComponent()
-            ) {
-                SelectionContainer {
-                    Row(Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
-                        Text((state.currentPosition.slideIndex + 1).toString())
-                        Text(" / ")
-                        Text(state.slides.size.toString())
-                    }
+        Surface(
+            Modifier
+                .align(Alignment.BottomStart)
+                .presentationOverlayComponent()
+        ) {
+            SelectionContainer {
+                Row(Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
+                    Text((state.currentPosition.slideIndex + 1).toString())
+                    Text(" / ")
+                    Text(state.slides.size.toString())
                 }
-            }
-        }
-
-        if (state.isInOverview) {
-            Surface(
-                Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(bottom = 16.dp)
-                    .presentationOverlayComponent()
-            ) {
-                Text(
-                    text = "Use ⇧ to scroll horizontally",
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                )
             }
         }
 
@@ -128,12 +108,6 @@ internal fun OverlayScope.PresentationOverlay(
                 .presentationOverlayComponent()
         ) {
             Column {
-                IconButtonWithTooltip(
-                    text = "Overview",
-                    keys = "Esc",
-                    onClick = { state.isInOverview = !state.isInOverview },
-                    icon = if (state.isInOverview) Icons.Rounded.ZoomIn else Icons.Rounded.ZoomOut
-                )
                 val overlays = config.plugins.flatMap { it.overlay(state) }
                 val mainOverlays = overlays.filter { !it.inMenu }
                 val menuOverlays = overlays.filter { it.inMenu }
@@ -202,13 +176,13 @@ internal fun OverlayScope.PresentationOverlay(
                 IconButtonWithTooltip(
                     text = "Previous",
                     keys = "${if (ltr) "←" else "→"} / ↑ / ⌫",
-                    onClick = { state.goToPrevious() },
+                    onClick = { state.goToPreviousStep() },
                     icon = if (ltr) Icons.Rounded.ChevronLeft else Icons.Rounded.ChevronRight
                 )
                 IconButtonWithTooltip(
                     text = "Next",
                     keys = "${if (ltr) "→" else "←"} / ↓ / ␣ / ⏎",
-                    onClick = { state.goToNext() },
+                    onClick = { state.goToNextStep() },
                     icon = if (ltr) Icons.Rounded.ChevronRight else Icons.Rounded.ChevronLeft
                 )
             }

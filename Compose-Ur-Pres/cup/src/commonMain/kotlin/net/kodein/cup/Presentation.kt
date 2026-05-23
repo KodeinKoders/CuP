@@ -286,12 +286,7 @@ public fun Presentation(
                 ) {
                     if (presentationSize == null) return@WithPresentationOverlay
                     CompositionLocalProvider(LocalPresentationSize provides presentationSize!!.toSize()) {
-                        if (state.isInOverview) {
-                            Overview()
-                        }
-                        else {
-                            PresentationMainView()
-                        }
+                        PresentationMainView()
                         CupToolsMaterialTheme {
                             config.plugins.forEach {
                                 with(it) { Content() }

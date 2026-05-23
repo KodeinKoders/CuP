@@ -22,6 +22,7 @@ cup-plugin-autoMove = { module = "net.kodein.cup:cup-plugin-auto-move" }
 cup-plugin-imageExport = { module = "net.kodein.cup:cup-plugin-image-export" }
 cup-plugin-keyEvents = { module = "net.kodein.cup:cup-plugin-key-events" }
 cup-plugin-laser = { module = "net.kodein.cup:cup-plugin-laser" }
+cup-plugin-overview = { module = "net.kodein.cup:cup-plugin-overview" }
 cup-plugin-speakerWindow = { module = "net.kodein.cup:cup-plugin-speaker-window" }
 cup-plugin-windowManagement = { module = "net.kodein.cup:cup-plugin-window-management" }
 cup-widgets-material3 = { module = "net.kodein.cup:cup-widgets-material3" }
@@ -42,6 +43,7 @@ cup = [
     "cup-plugin-imageExport",
     "cup-plugin-keyEvents",
     "cup-plugin-laser",
+    "cup-plugin-overview",
     "cup-plugin-speakerWindow",
     "cup-plugin-windowManagement",
     "cup-widgets-material3",

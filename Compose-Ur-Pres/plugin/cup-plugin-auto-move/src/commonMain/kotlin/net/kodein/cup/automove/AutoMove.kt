@@ -53,10 +53,6 @@ internal class AutoMovePlugin(
     override fun BoxScope.Content() {
         val presentationState by rememberUpdatedState(LocalPresentationState.current)
 
-        LaunchedEffect(presentationState.isInOverview) {
-            if (presentationState.isInOverview) started = false
-        }
-
         LaunchedEffect(started, presentationState.currentPosition) {
             if (started) {
                 val duration = presentationState.currentSlide.context[AutoMovePause.Key]?.pause(presentationState.currentPosition.step, defaultPause) ?: defaultPause

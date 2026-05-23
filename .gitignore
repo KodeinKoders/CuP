@@ -22,3 +22,7 @@ node_modules/
 
 ### Test ###
 test-release.sh
+
+### AI ###
+.junie/
+.claude/

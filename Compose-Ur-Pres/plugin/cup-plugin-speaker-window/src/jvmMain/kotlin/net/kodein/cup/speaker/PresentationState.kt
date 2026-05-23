@@ -1,8 +1,5 @@
 package net.kodein.cup.speaker
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import net.kodein.cup.PresentationPosition
 import net.kodein.cup.PresentationState
 import net.kodein.cup.PresentationStateWrapper
@@ -22,8 +19,4 @@ internal class ShiftedPresentationState(state: PresentationState) : Presentation
                 else -> originalState.currentPosition.step + 1
             },
         )
-}
-
-internal class SWPresentationState(state: PresentationState) : PresentationStateWrapper(state) {
-    override var isInOverview: Boolean by mutableStateOf(false)
 }

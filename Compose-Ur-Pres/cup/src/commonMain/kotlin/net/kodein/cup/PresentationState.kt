@@ -33,8 +33,6 @@ public sealed interface PresentationState {
 
     public val forward: Boolean
 
-    public var isInOverview: Boolean
-
     public val slides: List<Slide>
 
     public fun goTo(position: PresentationPosition)
@@ -64,10 +62,9 @@ public fun PresentationState.goToNextStep() {
     }
 }
 
-public fun PresentationState.goToNext() {
-    if (isInOverview) goToNextSlide()
-    else goToNextStep()
-}
+@Deprecated("Use goToNextStep instead", ReplaceWith("goToNextStep()"))
+public fun PresentationState.goToNext(): Unit =
+    goToNextStep()
 
 public fun PresentationState.goToPreviousSlide() {
     goTo(slideIndex = currentPosition.slideIndex - 1, step = 0)
@@ -82,10 +79,9 @@ public fun PresentationState.goToPreviousStep() {
     }
 }
 
-public fun PresentationState.goToPrevious() {
-    if (isInOverview) goToPreviousSlide()
-    else goToPreviousStep()
-}
+@Deprecated("Use goToPreviousStep instead", ReplaceWith("goToPreviousStep()"))
+public fun PresentationState.goToPrevious(): Unit =
+    goToPreviousStep()
 
 public val PresentationState.lastPosition: PresentationPosition get() = PresentationPosition(
     slideIndex = slides.lastIndex,
@@ -105,28 +101,21 @@ public val PresentationState.totalStepLast: Int get() =
 public data class FixedPresentationState(
     override val currentPosition: PresentationPosition,
     override val forward: Boolean,
-    val inOverview: Boolean,
     override val slides: List<Slide>,
     override val config: PresentationConfig
 ) : PresentationState {
     @Deprecated("Cannot mutate a FixedPresentationState", level = DeprecationLevel.ERROR, replaceWith = ReplaceWith(""))
     override fun goTo(position: PresentationPosition): Unit =
         error("Cannot mutate a FixedPresentationState")
-    override var isInOverview: Boolean
-        get() = inOverview
-        @Deprecated("Cannot mutate a FixedPresentationState", level = DeprecationLevel.ERROR, replaceWith = ReplaceWith(""))
-        set(value) { error("Cannot mutate a FixedPresentationState") }
 }
 
 public fun PresentationState.copyFixed(
     currentPosition: PresentationPosition = this.currentPosition,
     forward: Boolean = this.forward,
-    isInOverview: Boolean = this.isInOverview,
 ): FixedPresentationState =
     FixedPresentationState(
         currentPosition = currentPosition,
         forward = forward,
-        inOverview = isInOverview,
         slides = slides,
         config = config,
     )
@@ -145,8 +134,6 @@ internal class PresentationStateImpl(
     override var config: PresentationConfig
         get() = _config ?: error("PresentationState has not been connected to a Presentation.")
         private set(value) { _config = value }
-
-    override var isInOverview: Boolean by mutableStateOf(false)
 
     internal fun connect(slides: SlideGroup, config: PresentationConfig) {
         val initial: (List<Slide>) -> Pair<Int, Int> =

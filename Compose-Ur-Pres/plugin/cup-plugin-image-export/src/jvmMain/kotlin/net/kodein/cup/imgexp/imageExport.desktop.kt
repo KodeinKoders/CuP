@@ -331,7 +331,6 @@ internal class ImageExportPlugin : CupPlugin {
                 }.map {
                     presentationState.copyFixed(
                         currentPosition = PresentationPosition(slideIndex, it),
-                        isInOverview = false,
                         forward = true,
                     )
                 }

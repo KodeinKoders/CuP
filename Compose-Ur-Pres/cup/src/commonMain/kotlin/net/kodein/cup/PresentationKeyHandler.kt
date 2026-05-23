@@ -39,13 +39,13 @@ public fun PresentationKeyHandler(
         when (event.key) {
             Key.DirectionRight -> {
                 if (event.isShiftPressed) { if (ltr) state.goToNextSlide() else state.goToPreviousSlide() }
-                else { if (ltr) state.goToNext() else state.goToPrevious() }
+                else { if (ltr) state.goToNextStep() else state.goToPreviousStep() }
             }
             Key.NavigateNext,
             Key.Spacebar,
             -> {
                 if (event.isShiftPressed) state.goToNextSlide()
-                else state.goToNext()
+                else state.goToNextStep()
             }
             Key.DirectionDown -> {
                 if (event.isShiftPressed) state.goToNextSlide()
@@ -53,30 +53,24 @@ public fun PresentationKeyHandler(
             }
             Key.Enter,
             -> {
-                if (state.isInOverview) state.isInOverview = false
-                else {
-                    if (event.isShiftPressed) state.goToNextSlide()
-                    else state.goToNext()
-                }
+                if (event.isShiftPressed) state.goToNextSlide()
+                else state.goToNextStep()
             }
 
             Key.DirectionLeft -> {
                 if (event.isShiftPressed) { if (ltr) state.goToPreviousSlide() else state.goToNextSlide() }
-                else { if (ltr) state.goToPrevious() else state.goToNext() }
+                else { if (ltr) state.goToPreviousStep() else state.goToNextStep() }
             }
             Key.NavigatePrevious,
             Key.Back,
             Key.Backspace
             -> {
                 if (event.isShiftPressed) state.goToPreviousSlide()
-                else state.goToPrevious()
+                else state.goToPreviousStep()
             }
             Key.DirectionUp -> {
                 if (event.isShiftPressed) state.goToPreviousSlide()
                 else state.goToPreviousStep()
-            }
-            Key.Escape -> {
-                state.isInOverview = !state.isInOverview
             }
         }
         true

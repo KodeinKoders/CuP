@@ -50,7 +50,6 @@ internal class LaserPlugin(
     }
 
     override fun overlay(state: PresentationState): List<CupAdditionalOverlay> {
-        if (state.isInOverview) return emptyList()
         if (laser != null) {
             return listOf(
                 CupAdditionalOverlay(

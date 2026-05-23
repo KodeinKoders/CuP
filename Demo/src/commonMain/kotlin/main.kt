@@ -51,6 +51,7 @@ import net.kodein.cup.currentSlide
 import net.kodein.cup.imgexp.imageExport
 import net.kodein.cup.keyevents.keyEvents
 import net.kodein.cup.laser.laser
+import net.kodein.cup.overview.overview
 import net.kodein.cup.speaker.speakerWindow
 import net.kodein.cup.speaker.windowManagement
 import net.kodein.cup.utils.SlideContext
@@ -92,6 +93,7 @@ fun KodeinPresentation(
         slides = slides,
         configuration = {
             windowManagement()
+            overview()
             @OptIn(PluginCupAPI::class)
             plugin(object : CupPlugin {
 

@@ -1,16 +1,31 @@
 package net.kodein.cup
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.HorizontalScrollbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -30,7 +45,9 @@ private class OverviewPresentationState(
     state: PresentationState,
     override val currentPosition: PresentationPosition,
 ) : PresentationStateWrapper(state) {
-    override fun goTo(position: PresentationPosition): Unit = error("Cannot move with an OverviewPresentationState")
+    override fun goTo(position: PresentationPosition){
+        println("Cannot move with an OverviewPresentationState")
+    }
 }
 
 @Composable
@@ -41,11 +58,7 @@ private fun OverviewSlideView(
     val density = LocalDensity.current
 
     val state = LocalPresentationState.current
-    val config = state.config
 
-    val slide = state.slides[position.slideIndex]
-
-    val slideSize = remember { config.slideSpecs(slide).size }
     val outerContainerDpSize = with(density) { outerContainerSize.toDpSize() }
 
     CompositionLocalProvider(LocalDensity provides Density(density.density / shrinkRatio)) {
@@ -57,7 +70,6 @@ private fun OverviewSlideView(
                 .pointerHoverIcon(PointerIcon.Hand)
                 .clickable {
                     state.goTo(position)
-                    state.isInOverview = false
                 }
         ) {
             Box(
@@ -66,22 +78,10 @@ private fun OverviewSlideView(
                     .clipToBounds()
             ) {
                 CompositionLocalProvider(
-                    LocalPresentationSize provides (outerContainerSize / shrinkRatio)
+                    LocalPresentationSize provides (outerContainerSize / shrinkRatio),
+                    LocalPresentationState provides OverviewPresentationState(state, position),
                 ) {
-                    PresentationRatioContainer(
-                        defaultSlideSize = slideSize,
-                    ) {
-                        CompositionLocalProvider(LocalPresentationState provides OverviewPresentationState(state, position)) {
-                            config.presentation(this) {
-                                SlideContainer(
-                                    slide = slide,
-                                    step = position.step,
-                                    slideSize = slideSize,
-                                    content = LocalSlideContents.current[position.slideIndex],
-                                )
-                            }
-                        }
-                    }
+                    PresentationMainView()
                 }
             }
         }
@@ -89,10 +89,8 @@ private fun OverviewSlideView(
 
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-@PluginCupAPI
-public fun Overview() {
+internal fun Overview() {
     val state = LocalPresentationState.current
     val density = LocalDensity.current
     val outerContainerSize = LocalPresentationSize.current
