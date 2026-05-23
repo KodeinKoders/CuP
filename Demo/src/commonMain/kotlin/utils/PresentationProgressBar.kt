@@ -33,7 +33,7 @@ fun PresentationProgressBar(
                 .fillMaxHeight()
                 .fillMaxWidth(fraction = fraction)
                 .align(Alignment.CenterStart)
-                .background(KodeinTheme.Colors.purple800)
+                .background(KodeinTheme.Colors.purple600)
         )
     }
 }

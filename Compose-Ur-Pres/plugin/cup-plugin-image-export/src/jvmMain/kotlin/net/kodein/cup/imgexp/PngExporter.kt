@@ -106,7 +106,7 @@ internal class PngExporter : Exporter {
                 .bytes
 
             withContext(Dispatchers.IO) {
-                dirPath.resolve("$index-${state.currentSlide.name}-${state.currentPosition.step}.png").writeBytes(png)
+                dirPath.resolve("${state.currentPosition.slideIndex}-${state.currentSlide.name}-${state.currentPosition.step}.png").writeBytes(png)
             }
         }
     }
