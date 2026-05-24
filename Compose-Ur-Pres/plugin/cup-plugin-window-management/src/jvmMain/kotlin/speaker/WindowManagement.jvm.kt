@@ -77,6 +77,10 @@ private class WindowManagementPlugin(
             toggleFullscreen()
             return true
         }
+        if (resizeEnabled && isDialogOpen && event.key == Key.Escape) {
+            isDialogOpen = false
+            return true
+        }
         return false
     }
 

@@ -93,7 +93,6 @@ fun KodeinPresentation(
         slides = slides,
         configuration = {
             windowManagement()
-            overview()
             @OptIn(PluginCupAPI::class)
             plugin(object : CupPlugin {
 
@@ -113,6 +112,7 @@ fun KodeinPresentation(
             imageExport()
             keyEvents()
             autoMove()
+            overview()
         },
     ) { slidesContent ->
         KodeinMaterialTheme(isPresentationInDarkMode) {
