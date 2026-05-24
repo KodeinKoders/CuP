@@ -4,7 +4,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -95,10 +94,6 @@ fun KodeinPresentation(
             windowManagement()
             @OptIn(PluginCupAPI::class)
             plugin(object : CupPlugin {
-
-                @Composable
-                override fun BoxScope.Content() {}
-
                 override fun overlay(state: PresentationState) = listOf(
                     CupAdditionalOverlay(
                         text = "Toggle theme",
