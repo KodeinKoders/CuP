@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.rememberWindowState
-import com.chrisjenx.compose2pdf.RenderMode
 import kotlinx.coroutines.launch
 import net.kodein.cup.LocalPresentationState
 import net.kodein.cup.PresentationPosition
@@ -417,15 +416,7 @@ internal class ImageExportPlugin : CupPlugin {
                     ExporterState(
                         allExporters = listOf(
                             PngExporter(),
-                            PdfImageExporter("PDF", RenderMode.RASTER, "presentation.pdf"),
-                            // At the moment, vector mode produces bad results, so it is disabled.
-                            // Compared to Raster mode:
-                            // - It does not render Lottie animated images first frame.
-                            // - It does not support platform emoji (in Demo slide 1, using TextWithPlatformEmoji instead of TextWithNotoImageEmoji makes the renderer crash).
-                            // - It does not support XML vectors (in Demo, the Kodein logo is not displayed behind all slides, and in slide 8, the Kodein logo is not shown).
-                            // - It ignores icon tint (in Demo, all icons are black when they should be white-ish).
-                            // - It does not support multiple fonts (the Compose2Pdf API only supports one font family).
-                            // PdfImageExporter("Vector PDF", RenderMode.VECTOR, "presentation.pdf"),
+                            PdfImageExporter("presentation.pdf"),
                         ),
                         allSlides = presentationState.slides,
                     )

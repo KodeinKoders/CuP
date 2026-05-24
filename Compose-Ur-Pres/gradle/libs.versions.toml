@@ -1,7 +1,6 @@
 [versions]
 buildConfig = "6.0.9"                   # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 compose = "1.10.3"                      # https://github.com/JetBrains/compose-multiplatform/releases
-compose2pdf = "1.1.1"                   # https://github.com/chrisjenx/compose2pdf/releases
 dokka = "2.2.0"                         # https://github.com/Kotlin/dokka/releases
 emoji = "2.4.0"                         # https://github.com/kosi-libs/Emoji.kt/releases
 graalvm-js = "23.0.5"                   # https://github.com/oracle/graaljs/releases
@@ -15,6 +14,7 @@ material3 = "1.10.0-alpha05"            # https://github.com/JetBrains/compose-m
 materialIcons = "1.7.3"                 # https://github.com/JetBrains/compose-multiplatform/releases
 npm-highlightjs = "11.11.1"             # https://www.npmjs.com/package/highlight.js?activeTab=versions
 npm-ismobilejs = "1.1.1"                # https://www.npmjs.com/package/ismobilejs?activeTab=versions
+pdfBox = "3.0.7"                        # https://pdfbox.apache.org/
 
 [plugins]
 buildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
@@ -31,12 +31,12 @@ compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", v
 compose-material2 = { module = "org.jetbrains.compose.material:material", version.ref = "compose" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
-compose2pdf = { module = "com.chrisjenx:compose2pdf", version.ref = "compose2pdf" }
 emoji-compose = { module = "org.kodein.emoji:emoji-compose", version.ref = "emoji" }
 graalvm-js = { module = "org.graalvm.js:js", version.ref = "graalvm-js" }
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 kotlinx-collectionsImmutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collectionsImmutable" }
 markdown = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown" }
+pdfBox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfBox" }
 
 [bundles]
 compose = [

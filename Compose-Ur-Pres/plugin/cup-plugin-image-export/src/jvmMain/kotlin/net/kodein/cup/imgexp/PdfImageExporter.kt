@@ -14,12 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import com.chrisjenx.compose2pdf.PdfMargins
-import com.chrisjenx.compose2pdf.PdfPageConfig
-import com.chrisjenx.compose2pdf.RenderMode
-import com.chrisjenx.compose2pdf.renderToPdf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,22 +22,27 @@ import net.kodein.cup.FixedPresentationState
 import net.kodein.cup.currentSlide
 import net.kodein.cup.imgexp.utils.FileDialogMode
 import net.kodein.cup.imgexp.utils.fileDialog
+import net.kodein.cup.imgexp.utils.renderSceneToPng
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.PDPageContentStream
+import org.apache.pdfbox.pdmodel.common.PDRectangle
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import java.awt.Desktop
 import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
-import kotlin.io.path.outputStream
+import kotlin.io.path.name
 import kotlin.math.roundToInt
 
 
-
-
 internal class PdfImageExporter(
-    override val format: String,
-    val renderMode: RenderMode,
     defaultFileName: String,
 ) : Exporter {
+
+    override val format get() = "PDF"
+
     private var file: String by mutableStateOf(System.getProperty("user.dir") + "/cup-export/$defaultFileName")
 
     @Composable
@@ -80,31 +80,25 @@ internal class PdfImageExporter(
         size: Exporter.Size,
         states: List<FixedPresentationState>,
         progress: (ExportStatus.InProgress) -> Unit,
-    ) {
+    ) = withContext(Dispatchers.IO) {
         val path = Path(file)
         path.parent.createDirectories()
-        withContext(Dispatchers.IO) {
-            path.outputStream().use { output ->
-                renderToPdf(
-                    outputStream = output,
-                    config = PdfPageConfig(
-                        width = (size.widthIn * 72).dp,
-                        height = (size.heightIn * 72).dp,
-                        margins = PdfMargins.None,
-                    ),
-                    density = Density(size.density.toFloat() / 72f),
-                    mode = renderMode,
-                    pages = states.size,
-                ) { index ->
-                    val state = states[index]
-                    progress(ExportStatus.InProgress("${state.currentSlide.name} - ${state.currentPosition.step}", index.toFloat() / (states.size + 1).toFloat()))
-                    FixedCupSlide(
-                        width = (size.widthIn * size.density).roundToInt(),
-                        height = (size.heightIn * size.density).roundToInt(),
-                        state = state,
-                    )
-                }
+
+        val sceneWidth = (size.widthIn * size.density).roundToInt()
+        val sceneHeight = (size.heightIn * size.density).roundToInt()
+
+        PDDocument().use { pdfDocument ->
+            states.forEachIndexed { index, state ->
+                progress(ExportStatus.InProgress("${state.currentSlide.name} - ${state.currentPosition.step}", index.toFloat() / (states.size + 1).toFloat()))
+                val png = renderSceneToPng(sceneWidth, sceneHeight) { FixedCupSlide(sceneWidth, sceneHeight, state) }
+                val pdfPage = PDPage(PDRectangle(size.widthIn * 72f, size.heightIn * 72f))
+                val pdfImage = PDImageXObject.createFromByteArray(pdfDocument, png, "${state.currentPosition.slideIndex}-${state.currentSlide.name}-${state.currentPosition.step}.png")
+                PDPageContentStream(pdfDocument, pdfPage).use { it.drawImage(pdfImage, 0f, 0f, size.widthIn * 72f, size.heightIn * 72f) }
+                pdfDocument.addPage(pdfPage)
             }
+            progress(ExportStatus.InProgress(path.name, states.size.toFloat() / (states.size + 1).toFloat()))
+            pdfDocument.save(path.absolutePathString())
+            progress(ExportStatus.InProgress(path.name, 1f))
         }
     }
 

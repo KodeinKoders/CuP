@@ -35,7 +35,7 @@ kotlin {
         }
 
         jvmMain.dependencies {
-            implementation(libs.compose2pdf)
+            implementation(libs.pdfBox)
         }
 
         all {

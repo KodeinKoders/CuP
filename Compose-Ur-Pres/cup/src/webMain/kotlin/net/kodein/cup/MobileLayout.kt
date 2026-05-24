@@ -21,13 +21,13 @@ private fun NavigationButtons(
     val state = LocalPresentationState.current
 
     IconButton(
-        onClick = { state.goToPrevious() },
+        onClick = { state.goToPreviousStep() },
         modifier = Modifier.weight()
     ) {
         Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back", tint = Color.White)
     }
     IconButton(
-        onClick = { state.goToNext() },
+        onClick = { state.goToNextStep() },
         modifier = Modifier.weight()
     ) {
         Icon(Icons.AutoMirrored.Outlined.ArrowForward, "Forward", tint = Color.White)
