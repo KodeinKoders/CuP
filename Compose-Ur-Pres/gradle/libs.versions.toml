@@ -1,16 +1,16 @@
 [versions]
 buildConfig = "6.0.9"                   # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
-compose = "1.10.3"                      # https://github.com/JetBrains/compose-multiplatform/releases
+compose = "1.11.1"                      # https://github.com/JetBrains/compose-multiplatform/releases
 dokka = "2.2.0"                         # https://github.com/Kotlin/dokka/releases
 emoji = "2.4.0"                         # https://github.com/kosi-libs/Emoji.kt/releases
 graalvm-js = "23.0.5"                   # https://github.com/oracle/graaljs/releases
 gradle-pluginPublish = "2.1.1"          # https://plugins.gradle.org/plugin/com.gradle.plugin-publish
-kotlin = "2.3.21"                       # https://github.com/jetbrains/kotlin/releases
+kotlin = "2.4.10"                       # https://github.com/jetbrains/kotlin/releases
 kotlinx-browser = "0.5.0"               # https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-browser/versions
 kotlinx-collectionsImmutable = "0.4.0"  # https://github.com/Kotlin/kotlinx.collections.immutable/releases
 markdown = "0.40.2"                     # https://github.com/mikepenz/multiplatform-markdown-renderer/releases
 mavenPublish = "0.36.0"                 # https://github.com/vanniktech/gradle-maven-publish-plugin/releases
-material3 = "1.10.0-alpha05"            # https://github.com/JetBrains/compose-multiplatform/releases
+material3 = "1.11.0-alpha07"            # https://github.com/JetBrains/compose-multiplatform/releases
 materialIcons = "1.7.3"                 # https://github.com/JetBrains/compose-multiplatform/releases
 npm-highlightjs = "11.11.1"             # https://www.npmjs.com/package/highlight.js?activeTab=versions
 npm-ismobilejs = "1.1.1"                # https://www.npmjs.com/package/ismobilejs?activeTab=versions
