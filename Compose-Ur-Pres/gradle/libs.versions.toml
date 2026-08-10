@@ -2,7 +2,7 @@
 buildConfig = "6.0.9"                   # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 compose = "1.11.1"                      # https://github.com/JetBrains/compose-multiplatform/releases
 dokka = "2.2.0"                         # https://github.com/Kotlin/dokka/releases
-emoji = "2.4.0"                         # https://github.com/kosi-libs/Emoji.kt/releases
+emoji = "2.5.0"                         # https://github.com/kosi-libs/Emoji.kt/releases
 graalvm-js = "23.0.5"                   # https://github.com/oracle/graaljs/releases
 gradle-pluginPublish = "2.1.1"          # https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 kotlin = "2.4.10"                       # https://github.com/jetbrains/kotlin/releases
