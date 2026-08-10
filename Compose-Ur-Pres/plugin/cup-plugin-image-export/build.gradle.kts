@@ -12,6 +12,8 @@ kotlin {
     jvm()
     jvmToolchain(21)
 
+    macosArm64()
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
